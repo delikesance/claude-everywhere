@@ -3,7 +3,7 @@ import { MODEL_IDS } from "../../shared/constants";
 import type { ModelId } from "../../shared/constants";
 import { t } from "../../shared/i18n";
 import { Button, Icon, Select, Textarea } from "../../shared/ui";
-import { conversation, draft, setModel } from "../state/conversation";
+import { conversation, draft, reading, setModel } from "../state/conversation";
 import { hasKey } from "../state/session";
 import { cancelTurn, phase, send } from "../state/turn";
 
@@ -39,7 +39,7 @@ function SendOrStop() {
     );
   }
   return (
-    <Button variant="primary" compact disabled={!hasKey.value || draft.value.trim() === ""} onClick={send}>
+    <Button variant="primary" compact disabled={!hasKey.value || reading.value || draft.value.trim() === ""} onClick={send}>
       <Icon name="egress" />
       {t("sidebar_send")}
     </Button>
@@ -62,6 +62,7 @@ export function Composer() {
         <ModelSelect />
         <SendOrStop />
       </div>
+      <p class="caption">{t("sidebar_footHint")}</p>
       <p class="caption">{t("sidebar_privacy")}</p>
     </>
   );

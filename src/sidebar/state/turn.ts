@@ -3,7 +3,7 @@ import { connectChat } from "../../shared/messaging";
 import type { ChatConnection, ChatServerMsg } from "../../shared/messages";
 import { t } from "../../shared/i18n";
 import type { ApiError, ChatMessage, ContextItem } from "../../shared/types";
-import { conversation, draft, removeMessages, updateMessage } from "./conversation";
+import { conversation, draft, reading, removeMessages, updateMessage } from "./conversation";
 import { persistConversation } from "./persist";
 import { planFor, withoutEmpty } from "./plan";
 import { hasKey, settings } from "./session";
@@ -92,7 +92,8 @@ interface TurnContext {
   messages: ChatMessage[];
 }
 
-const canStart = (userText: string): boolean => phase.value === "idle" && userText.trim() !== "" && hasKey.value;
+const canStart = (userText: string): boolean =>
+  phase.value === "idle" && userText.trim() !== "" && hasKey.value && !reading.value;
 
 function startTurn(userText: string, restoreDraft: boolean, context?: TurnContext): void {
   if (!canStart(userText)) return;

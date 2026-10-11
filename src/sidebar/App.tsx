@@ -22,7 +22,7 @@ export function App() {
   }, []);
 
   return (
-    <div class="sidebar">
+    <div class="sidebar anim-slide-in">
       <Header />
       {view.value === "history" ? <HistoryList /> : <ConversationView />}
       {view.value === "chat" && (

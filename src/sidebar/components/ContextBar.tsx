@@ -2,15 +2,30 @@ import { useState } from "preact/hooks";
 import { formatChars } from "../../shared/format";
 import { t } from "../../shared/i18n";
 import type { BordereauLine, ContextItem } from "../../shared/types";
-import { Button, Chip } from "../../shared/ui";
+import { Button, Chip, Notice, cx } from "../../shared/ui";
 import { capture } from "../state/intake";
 import { conversation, removeItem, toggleItem } from "../state/conversation";
 import { currentPlan } from "../state/plan";
 import { LibraryPicker } from "./LibraryPicker";
 
-function ContextChip({ item, line }: { item: ContextItem; line: BordereauLine | undefined }) {
+function ReadingChip() {
   return (
-    <span class="row">
+    <span class="chip chip--reading" role="status">
+      <span class="kind" aria-hidden="true">¶</span>
+      {t("sidebar_reading")}
+      <span class="anim-dots" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </span>
+    </span>
+  );
+}
+
+function ContextChip({ item, line }: { item: ContextItem; line: BordereauLine | undefined }) {
+  if (item.status === "loading") return <ReadingChip />;
+  return (
+    <span class={cx("row", item.included && "anim-sweep")}>
       <Chip item={item} onToggle={toggleItem} onRemove={removeItem} />
       {line && (
         <span class="caption">
@@ -21,15 +36,22 @@ function ContextChip({ item, line }: { item: ContextItem; line: BordereauLine | 
   );
 }
 
+function ProtectedNotice() {
+  return <Notice title={t("sidebar_protectedTitle")}>{t("sidebar_protectedBody")}</Notice>;
+}
+
 export function ContextBar() {
   const [picking, setPicking] = useState(false);
   const { items } = conversation.value;
   const lines = new Map(currentPlan.value.bordereau.lines.map((line) => [line.itemId, line]));
+  const protectedPage = items.some((item) => item.status === "unreadable");
+  const readable = items.filter((item) => item.status !== "unreadable");
   return (
     <>
-      {items.length > 0 && (
+      {protectedPage && <ProtectedNotice />}
+      {readable.length > 0 && (
         <div class="sb-chips">
-          {items.map((item) => (
+          {readable.map((item) => (
             <ContextChip key={item.id} item={item} line={lines.get(item.id)} />
           ))}
         </div>
