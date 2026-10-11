@@ -54,7 +54,13 @@ export function startExplain(request: ExplainRequest, handlers: ExplainHandlers)
     else handlers.onError(message.error);
   });
 
-  connection.start({ requestId, history: [],...request });
+  connection.onDisconnect(() => {
+    if (finished) return;
+    finish();
+    handlers.onError({ kind: "network" });
+  });
+
+  connection.start({ requestId, history: [], ...request });
   return () => {
     if (finished) return;
     connection.cancel(requestId);

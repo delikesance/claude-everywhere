@@ -6,8 +6,11 @@ export type Catalog = Record<string, string>;
 
 const FALLBACK_LOCALE: UiLocale = "fr";
 
+let currentLocale: UiLocale = FALLBACK_LOCALE;
 let current: Catalog = {};
 let fallback: Catalog = {};
+
+export const uiLocale = (): UiLocale => currentLocale;
 
 export function resolveLocale(locale: UiLocale | "auto"): UiLocale {
   if (locale !== "auto") return locale;
@@ -21,6 +24,7 @@ async function loadCatalog(locale: UiLocale): Promise<Catalog> {
 
 export async function initI18n(locale: UiLocale | "auto", catalog?: Catalog): Promise<void> {
   const resolved = resolveLocale(locale);
+  currentLocale = resolved;
   current = catalog ?? (await loadCatalog(resolved));
   fallback = resolved === FALLBACK_LOCALE ? current : await loadCatalog(FALLBACK_LOCALE);
 }

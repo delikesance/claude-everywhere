@@ -60,5 +60,6 @@ export interface ChatConnection {
   start(msg: Omit<ChatStart, "type">): void;
   cancel(requestId: string): void;
   onMessage(cb: (m: ChatServerMsg) => void): void;
+  onDisconnect(cb: () => void): void;
   close(): void;
 }

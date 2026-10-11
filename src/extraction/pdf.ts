@@ -7,14 +7,38 @@ import { makePage } from "./make-page";
 
 const pageMarker = (pageNumber: number) => `--- page ${pageNumber} ---`;
 
+const tooLarge = () => new ExtractionError(errorData("pdf_failed", "The PDF is too large"));
+
+async function readCapped(response: Response): Promise<Uint8Array> {
+  if (Number(response.headers.get("content-length")) > PDF_MAX_BYTES) throw tooLarge();
+  const reader = response.body?.getReader();
+  if (!reader) return new Uint8Array(await response.arrayBuffer());
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  for (let chunk = await reader.read(); !chunk.done; chunk = await reader.read()) {
+    received += chunk.value.byteLength;
+    if (received > PDF_MAX_BYTES) {
+      await reader.cancel();
+      throw tooLarge();
+    }
+    chunks.push(chunk.value);
+  }
+  const bytes = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+
+// No credentials and no custom headers: the API key is only ever attached by the SDK client to the API base URL.
 async function fetchPdfBytes(url: string): Promise<Uint8Array> {
-  const response = await fetch(url).catch(() => {
+  const response = await fetch(url, { credentials: "omit" }).catch(() => {
     throw new ExtractionError(errorData("permission", "The PDF origin is not readable", `${new URL(url).origin}/*`));
   });
   if (!response.ok) throw new ExtractionError(errorData("pdf_failed", `PDF download failed (${response.status})`));
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  if (bytes.byteLength > PDF_MAX_BYTES) throw new ExtractionError(errorData("pdf_failed", "The PDF is too large"));
-  return bytes;
+  return readCapped(response);
 }
 
 async function openPdf(bytes: Uint8Array): Promise<PDFDocumentProxy> {

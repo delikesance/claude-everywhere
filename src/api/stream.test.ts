@@ -8,6 +8,7 @@ import type { ChatServerMsg, ChatStart } from "../shared/messages";
 import { installStorageStub } from "../shared/testing/browser-stub";
 import type { ContextItem } from "../shared/types";
 import { planContext, renderPrompt } from "./budget";
+import { ITEM_WRAPPER_CHARS } from "./prompt";
 import { streamChat, validateKey } from "./index";
 
 const API_KEY = "sk-ant-test-key-1234";
@@ -64,7 +65,7 @@ describe("streamChat", () => {
       requestId: "r1",
       stopReason: "end_turn",
       usage: { inputTokens: 12, outputTokens: 5 },
-      bordereau: { sentChars: ITEM.text.length, truncated: false },
+      bordereau: { sentChars: ITEM.text.length + ITEM.title.length + ITEM_WRAPPER_CHARS, truncated: false },
     });
     expect(terminal(messages)).toHaveLength(1);
   });

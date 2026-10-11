@@ -103,6 +103,29 @@ describe("chat port", () => {
     expect(port.postMessage).toHaveBeenCalledWith({ type: "error", requestId: "r1", error: { kind: "unknown", status: null } });
   });
 
+  it("rejects a start with an unknown model or malformed items", () => {
+    const port = fakePort();
+    connect(port);
+    port.receive({ ...startMsg, model: "claude-expensive-9" });
+    port.receive({ ...startMsg, requestId: "r2", items: [{ text: 1 }] });
+    port.receive({ ...startMsg, requestId: "r3", history: undefined });
+    expect(mocks.streamChat).not.toHaveBeenCalled();
+    expect(port.postMessage).toHaveBeenCalledTimes(3);
+    expect(port.postMessage).toHaveBeenCalledWith(expect.objectContaining({ type: "error", requestId: "r1" }));
+  });
+
+  it.each([
+    [10_000_000, 64_000],
+    [-5, 1],
+    [undefined, 4096],
+  ])("clamps maxTokens %s to %s", (sent, expected) => {
+    mocks.streamChat.mockReturnValue(new Promise(() => undefined));
+    const port = fakePort();
+    connect(port);
+    port.receive({ ...startMsg, maxTokens: sent });
+    expect(mocks.streamChat.mock.calls[0]?.[0]).toMatchObject({ maxTokens: expected });
+  });
+
   it("refuses ports from other extensions", () => {
     const port = fakePort("other@ext");
     connect(port);

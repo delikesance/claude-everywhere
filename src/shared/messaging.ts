@@ -18,6 +18,7 @@ export function connectChat(): ChatConnection {
     start: (msg) => post({ type: "start", ...msg }),
     cancel: (requestId) => post({ type: "cancel", requestId }),
     onMessage: (cb) => port.onMessage.addListener((m) => cb(m as ChatServerMsg)),
+    onDisconnect: (cb) => port.onDisconnect.addListener(cb),
     close: () => port.disconnect(),
   };
 }

@@ -11,13 +11,15 @@ function languageInstruction(answerLanguage: string): string {
   return name ? `Answer in ${name}.` : FOLLOW_QUESTION_LANGUAGE;
 }
 
-const CLOSING_TAG_PREFIX = `</${CONTEXT_TAG}`;
+const CLOSING_TAG_PATTERN = new RegExp(`<\\s*/\\s*${CONTEXT_TAG}`, "gi");
 const ESCAPED_CLOSING_TAG_PREFIX = `<\\/${CONTEXT_TAG}`;
 const ATTRIBUTE_FORBIDDEN = /["<>]/g;
 
+export const ITEM_WRAPPER_CHARS = renderItem({ title: "", text: "" }).length + 1;
+
 function renderItem(item: { title: string; text: string }): string {
   const title = item.title.replace(ATTRIBUTE_FORBIDDEN, "'");
-  const text = item.text.replaceAll(CLOSING_TAG_PREFIX, ESCAPED_CLOSING_TAG_PREFIX);
+  const text = item.text.replace(CLOSING_TAG_PATTERN, ESCAPED_CLOSING_TAG_PREFIX);
   return `<${ITEM_TAG} title="${title}">\n${text}\n</${ITEM_TAG}>`;
 }
 

@@ -5,10 +5,15 @@ import type { Bordereau, ContextItem } from "../../shared/types";
 
 const fake = vi.hoisted(() => {
   let listener: (m: unknown) => void = () => {};
+  let disconnectListener: () => void = () => {};
   return {
     start: vi.fn(),
     cancel: vi.fn(),
     close: vi.fn(),
+    onDisconnect: (cb: () => void) => {
+      disconnectListener = cb;
+    },
+    disconnect: () => disconnectListener(),
     emit: (m: unknown) => listener(m),
     onMessage: (cb: (m: unknown) => void) => {
       listener = cb;
@@ -86,6 +91,15 @@ describe("turn state machine", () => {
     expect(last().stopReason).toBe("interrupted");
     expect(turn.turnNotice.value).toEqual({ kind: "interrupted", words: 3 });
     expect(turn.phase.value).toBe("idle");
+  });
+
+  it("a dropped port keeps the partial answer and frees the turn", () => {
+    reply({ type: "delta", text: "Partiel ici" });
+    fake.disconnect();
+    expect(turn.phase.value).toBe("idle");
+    expect(last().text).toBe("Partiel ici");
+    expect(last().stopReason).toBe("interrupted");
+    expect(turn.turnNotice.value).toEqual({ kind: "network" });
   });
 
   it("aborted with no text rolls back and restores the draft", () => {

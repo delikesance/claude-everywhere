@@ -3,7 +3,7 @@ import type { ModelId } from "../shared/constants";
 import type { MessageKey } from "../shared/i18n";
 import type { Bordereau, BordereauLine, ContextItem } from "../shared/types";
 import { excerpt, questionTerms } from "./excerpt";
-import { renderUserMessage, systemPrompt } from "./prompt";
+import { ITEM_WRAPPER_CHARS, renderUserMessage, systemPrompt } from "./prompt";
 
 export interface ContextPlan {
   bordereau: Bordereau;
@@ -31,6 +31,8 @@ function availableChars(model: ModelId, reserve: OutputReserve): number {
   return Math.max(0, INPUT_BUDGET_CHARS[model] - used);
 }
 
+const itemOverhead = (item: ContextItem): number => item.title.length + ITEM_WRAPPER_CHARS;
+
 export function planContext(
   items: ContextItem[],
   question: string,
@@ -38,19 +40,22 @@ export function planContext(
   reserve: OutputReserve = NO_HISTORY,
 ): ContextPlan {
   const included = items.filter((item) => item.included);
-  const totalChars = sum(included.map((item) => item.text.length));
+  const overheads = included.map(itemOverhead);
+  const textChars = sum(included.map((item) => item.text.length));
+  const totalChars = textChars + sum(overheads);
   const budgetChars = availableChars(model, reserve);
+  const textBudget = Math.max(0, budgetChars - sum(overheads));
   const terms = questionTerms(question);
   const fits = totalChars <= budgetChars;
   const blocks = included.map((item) => ({
     itemId: item.id,
-    text: fits ? item.text : excerpt(item.text, terms, Math.floor((item.text.length * budgetChars) / totalChars)),
+    text: fits ? item.text : excerpt(item.text, terms, Math.floor((item.text.length * textBudget) / textChars)),
   }));
   const lines: BordereauLine[] = included.map((item, index) => ({
     itemId: item.id,
     title: item.title,
-    sentChars: blocks[index]?.text.length ?? 0,
-    totalChars: item.text.length,
+    sentChars: (blocks[index]?.text.length ?? 0) + (overheads[index] ?? 0),
+    totalChars: item.text.length + (overheads[index] ?? 0),
   }));
   const sentChars = sum(lines.map((line) => line.sentChars));
   const bordereau: Bordereau = {

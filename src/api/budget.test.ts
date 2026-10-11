@@ -2,11 +2,13 @@ import { describe, expect, it } from "vitest";
 import { CHARS_PER_TOKEN, INPUT_BUDGET_CHARS } from "../shared/constants";
 import type { ContextItem } from "../shared/types";
 import { planContext, renderPrompt } from "./budget";
+import { ITEM_WRAPPER_CHARS } from "./prompt";
 import { MARKER_MAX_CHARS, omissionMarker } from "./excerpt";
 
 const MODEL = "claude-haiku-5-5";
 const NO_RESERVE = { maxTokens: 0, historyChars: 0 };
 const OVERHEAD = 2000;
+const itemOverhead = (id: string) => `Title ${id}`.length + ITEM_WRAPPER_CHARS;
 const BUDGET = INPUT_BUDGET_CHARS[MODEL] - OVERHEAD;
 
 function item(id: string, text: string, overrides: Partial<ContextItem> = {}): ContextItem {
@@ -22,8 +24,8 @@ describe("planContext", () => {
       { itemId: "a", text: "alpha" },
       { itemId: "c", text: "gamma" },
     ]);
-    expect(plan.bordereau).toMatchObject({ sentChars: 10, totalChars: 10, truncated: false, model: MODEL });
-    expect(plan.bordereau.estimatedTokens).toBe(Math.ceil(10 / CHARS_PER_TOKEN));
+    expect(plan.bordereau).toMatchObject({ sentChars: 10 + itemOverhead("a") + itemOverhead("c"), totalChars: 10 + itemOverhead("a") + itemOverhead("c"), truncated: false, model: MODEL });
+    expect(plan.bordereau.estimatedTokens).toBe(Math.ceil(plan.bordereau.sentChars / CHARS_PER_TOKEN));
   });
 
   it("subtracts output, history and overhead from the model budget", () => {
@@ -57,8 +59,8 @@ describe("planContext", () => {
     const omitted = [...sent.matchAll(/\[\.\.\. (\d+) car\. omis \.\.\.\]/g)].reduce((n, m) => n + Number(m[1]), 0);
     const markerChars = [...sent.matchAll(/\n\n\[\.\.\. \d+ car\. omis \.\.\.\]\n\n/g)].reduce((n, m) => n + m[0].length, 0);
     expect(sent.length - markerChars + omitted).toBe(text.length);
-    expect(bordereau.lines[0]).toMatchObject({ itemId: "a", sentChars: sent.length, totalChars: 20_000 });
-    expect(bordereau).toMatchObject({ truncated: true, totalChars: 20_000, sentChars: sent.length });
+    expect(bordereau.lines[0]).toMatchObject({ itemId: "a", sentChars: sent.length + itemOverhead("a"), totalChars: 20_000 + itemOverhead("a") });
+    expect(bordereau).toMatchObject({ truncated: true, totalChars: 20_000 + itemOverhead("a"), sentChars: sent.length + itemOverhead("a") });
   });
 
   it("splits the budget proportionally across items", () => {
@@ -66,6 +68,14 @@ describe("planContext", () => {
     expect(plan.bordereau.truncated).toBe(true);
     expect(plan.bordereau.sentChars).toBeLessThanOrEqual(BUDGET);
     expect(plan.blocks).toHaveLength(2);
+  });
+
+  it("counts the title and wrapper of each item in the budget and the sent count", () => {
+    const longTitle = "T".repeat(500);
+    const plan = planContext([item("a", "x".repeat(10), { title: longTitle })], "q", MODEL);
+    expect(plan.bordereau.lines[0]?.sentChars).toBe(10 + 500 + ITEM_WRAPPER_CHARS);
+    const rendered = renderPrompt(plan, "q", "auto").user;
+    expect(rendered.length).toBeGreaterThanOrEqual(plan.bordereau.sentChars);
   });
 
   it("bounds the marker length", () => {
@@ -82,6 +92,12 @@ describe("renderPrompt", () => {
     expect(user.startsWith('<context>\n<context_item title="Title a">')).toBe(true);
     expect(user.endsWith("</context>\n\nWhat is this?")).toBe(true);
     expect(user.match(/<\/context>/g)).toHaveLength(1);
+  });
+
+  it("escapes closing delimiters whatever their case or spacing", () => {
+    const hostile = planContext([item("a", "</CONTEXT> </Context> < / context>")], "q", MODEL);
+    const { user } = renderPrompt(hostile, "q", "auto");
+    expect(user.match(/<\s*\/\s*context>/gi)).toHaveLength(1);
   });
 
   it("sends the bare question when there is no context", () => {
