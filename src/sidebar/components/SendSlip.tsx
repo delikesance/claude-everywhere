@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
+import { formatChars } from "../../shared/format";
 import { t } from "../../shared/i18n";
-import { Slip } from "../../shared/ui";
+import { Notice, Slip } from "../../shared/ui";
 import { draft } from "../state/conversation";
 import { currentPlan, currentPrompt } from "../state/plan";
 import type { ContextPlan } from "../../api/budget";
@@ -35,10 +36,23 @@ export function SendSlip() {
     return <p class="slip caption">{draft.value === "" ? t("sidebar_slipEmpty") : t("sidebar_slipMessageOnly")}</p>;
   }
   return (
-    <Slip bordereau={bordereau}>
-      <p class="caption">{t("sidebar_slipTokens", { tokens: bordereau.estimatedTokens.toLocaleString("fr-FR") })}</p>
-      <p class="overline">{t("sidebar_slipDestination")}</p>
-      <PromptPreview plan={plan} />
-    </Slip>
+    <>
+      {bordereau.truncated && (
+        <Notice
+          tone="warning"
+          title={t("sidebar_truncatedTitle", {
+            sent: formatChars(bordereau.sentChars),
+            total: formatChars(bordereau.totalChars),
+          })}
+        >
+          {t("sidebar_truncatedBody")}
+        </Notice>
+      )}
+      <Slip bordereau={bordereau}>
+        <p class="caption">{t("sidebar_slipTokens", { tokens: bordereau.estimatedTokens.toLocaleString("fr-FR") })}</p>
+        <p class="overline">{t("sidebar_slipDestination")}</p>
+        <PromptPreview plan={plan} />
+      </Slip>
+    </>
   );
 }

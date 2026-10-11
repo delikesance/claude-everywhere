@@ -58,7 +58,7 @@ export function Composer() {
         onInput={(event) => (draft.value = event.currentTarget.value)}
         onKeyDown={onComposerKey}
       />
-      <div class="sb-row">
+      <div class="sb-row row">
         <ModelSelect />
         <SendOrStop />
       </div>
