@@ -124,9 +124,9 @@ describe("App", () => {
     library.getArtifact.mockResolvedValue({ id: "a1", title: "Note", url: null, markdown: "md" });
     await mount();
     act(() => buttonByText("sidebar_addLibrary")?.click());
-    await act(async () => {});
+    await vi.waitFor(() => expect(buttonByText("Note")).toBeDefined());
     await act(async () => buttonByText("Note")?.click());
-    expect(conversation.value.items[0]).toMatchObject({ artifactId: "a1", title: "Note" });
+    await vi.waitFor(() => expect(conversation.value.items[0]).toMatchObject({ artifactId: "a1", title: "Note" }));
   });
 
   it("asks for confirmation before deleting a conversation", async () => {

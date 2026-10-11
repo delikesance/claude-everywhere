@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { STORAGE_KEYS } from "../../shared/constants";
 import { AppException } from "../../shared/types";
 import type { ContextItem, ExtractedPage } from "../../shared/types";
 
@@ -85,14 +86,14 @@ describe("intake", () => {
 
   it("loads a pending attach as a chip and excludes existing items", async () => {
     addItem({ id: "old", kind: "page", title: "o", url: null, text: "t", included: true, status: "ready" });
-    session.store.set(intake.PENDING_ATTACH_KEY, "a1");
+    session.store.set(STORAGE_KEYS.pendingAttach, ["a1"]);
     library.getArtifact.mockResolvedValueOnce(artifact);
     send.mockResolvedValueOnce(null);
     await intake.intakeOnOpen();
     const [old, attached] = conversation.value.items;
     expect(old?.included).toBe(false);
     expect(attached).toMatchObject({ id: "artifact-a1", included: true });
-    expect(session.store.has(intake.PENDING_ATTACH_KEY)).toBe(false);
+    expect(session.store.has(STORAGE_KEYS.pendingAttach)).toBe(false);
   });
 
   it("takes a capture stored after the sidebar opened", async () => {
@@ -113,7 +114,7 @@ describe("intake", () => {
   it("attaches an artifact whose id is stored after the sidebar opened", async () => {
     intake.watchIntake();
     library.getArtifact.mockResolvedValueOnce(artifact);
-    emitChange({ [intake.PENDING_ATTACH_KEY]: { newValue: "a1" } });
+    emitChange({ [STORAGE_KEYS.pendingAttach]: { newValue: ["a1"] } });
     await vi.waitFor(() => expect(conversation.value.items[0]).toMatchObject({ artifactId: "a1" }));
   });
 
