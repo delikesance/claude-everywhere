@@ -4,12 +4,14 @@ export const DEFAULT_MODEL: ModelId = "claude-sonnet-5-5";
 export const DEFAULT_MAX_TOKENS = 4096;
 export const CHARS_PER_TOKEN = 4;
 
-// Provisional: 600_000 chars (~150k tokens) for every model until verified against the provider docs.
-const PROVISIONAL_INPUT_BUDGET_CHARS = 600_000;
+// The three models have a context window of at least 200k tokens. 450_000 chars is 150k tokens at a
+// conservative 3 chars/token (code, accents and non-Latin text tokenize worse than the 4 chars/token estimate),
+// which leaves 50k tokens of margin for the system prompt, history and output.
+const CONSERVATIVE_INPUT_BUDGET_CHARS = 450_000;
 export const INPUT_BUDGET_CHARS: Record<ModelId, number> = {
-  "claude-haiku-5-5": PROVISIONAL_INPUT_BUDGET_CHARS,
-  "claude-sonnet-5-5": PROVISIONAL_INPUT_BUDGET_CHARS,
-  "claude-opus-5-5": PROVISIONAL_INPUT_BUDGET_CHARS,
+  "claude-haiku-5-5": CONSERVATIVE_INPUT_BUDGET_CHARS,
+  "claude-sonnet-5-5": CONSERVATIVE_INPUT_BUDGET_CHARS,
+  "claude-opus-5-5": CONSERVATIVE_INPUT_BUDGET_CHARS,
 };
 
 export const CHAT_PORT_NAME = "chat";
