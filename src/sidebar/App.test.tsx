@@ -58,9 +58,26 @@ beforeEach(() => {
 });
 
 describe("App", () => {
-  it("shows the empty margin", () => {
+  it("shows the empty margin with suggestions that send on click", () => {
     mount();
-    expect(root.textContent).toContain("sidebar_emptyTitle");
+    expect(root.textContent).toContain("sidebar_askPage");
+    click(".suggestion");
+    expect(fake.start).toHaveBeenCalledWith(expect.objectContaining({ userText: "sidebar_suggestSummary" }));
+  });
+
+  it("disables send and shows the reading chip while the page is loading", () => {
+    addItem({ ...item("loading", true), status: "loading" });
+    mount();
+    expect(root.querySelector(".chip--reading")?.textContent).toContain("sidebar_reading");
+    expect(root.querySelector<HTMLTextAreaElement>("textarea")?.disabled).toBe(false);
+    expect(root.querySelector(".btn--primary")?.getAttribute("aria-disabled")).toBe("true");
+  });
+
+  it("shows the protected-page notice without a chip", () => {
+    addItem({ ...item("protected", false), status: "unreadable" });
+    mount();
+    expect(root.textContent).toContain("sidebar_protectedTitle");
+    expect(root.querySelector(".chip--unreadable")).toBeNull();
   });
 
   it("keeps the turn running when Escape was handled by a dialog or editor", () => {

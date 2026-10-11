@@ -1,4 +1,4 @@
-import { signal } from "@preact/signals";
+import { computed, signal } from "@preact/signals";
 import type { ModelId } from "../../shared/constants";
 import type { ChatMessage, ContextItem, Conversation } from "../../shared/types";
 import { settings } from "./session";
@@ -10,6 +10,7 @@ export function emptyConversation(model: ModelId): Conversation {
 
 export const conversation = signal<Conversation>(emptyConversation(settings.value.defaultModel));
 export const draft = signal("");
+export const reading = computed(() => conversation.value.items.some((item) => item.status === "loading"));
 
 export function resetConversation(): void {
   conversation.value = emptyConversation(settings.value.defaultModel);
