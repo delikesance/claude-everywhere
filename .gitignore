@@ -1,0 +1,4 @@
+.claudework/
+node_modules/
+dist/
+web-ext-artifacts/
