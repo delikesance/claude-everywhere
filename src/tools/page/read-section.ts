@@ -1,5 +1,5 @@
 import type { ToolDef } from "../types";
-import { htmlToMarkdown } from "./to-markdown";
+import { htmlToMarkdown } from "../../extraction/markdown";
 import { runInTab } from "./run-in-tab";
 
 // Runs inside the page: must stay self-contained (no imports, no module-level helpers).

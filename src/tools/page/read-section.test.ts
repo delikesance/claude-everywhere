@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { sectionHtmlInPage } from "./read-section";
-import { htmlToMarkdown } from "./to-markdown";
+import { htmlToMarkdown } from "../../extraction/markdown";
 
 describe("sectionHtmlInPage", () => {
   beforeEach(() => {
