@@ -42,6 +42,7 @@ export interface ChatStart {
   userText: string;
   answerLanguage: "auto" | UiLocale;
   maxTokens?: number;
+  tabId?: number;
 }
 
 export type ChatClientMsg = ChatStart | { type: "cancel"; requestId: string };
@@ -55,6 +56,7 @@ export type ChatServerMsg =
       usage: { inputTokens: number; outputTokens: number };
       bordereau: Bordereau;
     }
+  | { type: "tool"; requestId: string; name: string; input: Record<string, unknown>; resultChars: number }
   | { type: "error"; requestId: string; error: ApiError };
 
 export interface ChatConnection {
