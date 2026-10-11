@@ -66,7 +66,7 @@ export function buildManifest({ version, testOrigin }) {
       "explain-selection": { suggested_key: { default: "Alt+Shift+E" }, description: msg("shared_cmdExplain") },
       "save-page": { suggested_key: { default: "Alt+Shift+S" }, description: msg("shared_cmdSave") },
     },
-    permissions: ["activeTab", "contextMenus", "scripting", "storage"],
+    permissions: ["activeTab", "contextMenus", "nativeMessaging", "scripting", "storage"],
     host_permissions: hostPermissions,
     optional_host_permissions: ["<all_urls>"],
     content_security_policy: { extension_pages: csp(connectOrigins) },

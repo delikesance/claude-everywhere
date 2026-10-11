@@ -1,9 +1,10 @@
 import { extractPdf } from "../extraction";
 import { openLibrary } from "../library";
-import { validateKey } from "../api";
+import { pingNative, validateKey } from "../api";
 import { AppException } from "../shared/errors";
 import type { Request, RequestMap, Result } from "../shared/messages";
 import { getSettings } from "../shared/settings";
+import type { Settings } from "../shared/types";
 import type { ArtifactDraft } from "../shared/types";
 import { runCapture } from "./capture";
 import { badRequest, toAppError } from "./errors";
@@ -36,12 +37,15 @@ function isContentScript(sender: Sender): boolean {
   return sender.tab !== undefined && !(sender.url ?? "").startsWith(browser.runtime.getURL(""));
 }
 
+const hasAnswerBackend = ({ backend, apiKey }: Settings): boolean => backend === "claude-code" || apiKey !== null;
+
 const handlers: Handlers = {
   "key/validate": async ({ apiKey }) => {
     if (typeof apiKey !== "string" || apiKey === "") return invalid("key");
     await validateKey(apiKey);
     return { valid: true };
   },
+  "native/ping": async () => ({ available: await pingNative() }),
   "capture/run": ({ mode, tabId, handoff }, sender) => {
     if (!CAPTURE_MODES.has(mode)) return invalid("mode");
     const overlay = isContentScript(sender);
@@ -52,8 +56,9 @@ const handlers: Handlers = {
   "pdf/extract": ({ url }) => (typeof url === "string" ? extractPdf(url) : invalid("url")),
   "artifact/save": async ({ draft }) => (isDraft(draft) ? (await openLibrary()).saveArtifact(draft) : invalid("draft")),
   "overlay/config": async () => {
-    const { defaultModel, uiLocale, answerLanguage, apiKey } = await getSettings();
-    return { defaultModel, uiLocale, answerLanguage, hasKey: apiKey !== null };
+    const settings = await getSettings();
+    const { defaultModel, uiLocale, answerLanguage } = settings;
+    return { defaultModel, uiLocale, answerLanguage, hasKey: hasAnswerBackend(settings) };
   },
 };
 
