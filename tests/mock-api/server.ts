@@ -4,6 +4,8 @@ import type { IncomingMessage, Server, ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
 import { basename, join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { plannedToolUse, toolUseBlock, toolUseEvents } from "./tool-use";
+import type { ToolUse } from "./tool-use";
 
 export interface RecordedRequest {
   method: string;
@@ -129,12 +131,22 @@ function sendWholeMessage(res: ServerResponse, model: string, scenario: Scenario
   sendJson(res, 200, { ...message, content: [{ type: "text", text: deltasFor(scenario).join("") }] });
 }
 
+function streamToolUse(res: ServerResponse, model: string, tool: ToolUse): void {
+  res.writeHead(200, { ...CORS_HEADERS, "content-type": "text/event-stream", "cache-control": "no-cache" });
+  sendEvent(res, "message_start", { message: messageShell(model, null, { input_tokens: USAGE.input_tokens, output_tokens: 0 }) });
+  for (const [type, data] of toolUseEvents(tool, { output_tokens: USAGE.output_tokens })) sendEvent(res, type, data);
+  res.end();
+}
+
 async function handleMessages(res: ServerResponse, record: RecordedRequest): Promise<void> {
   const body = record.body as { stream?: boolean; model?: string } | null;
   const scenario = pickScenario(record.headers["x-api-key"] as string | undefined, body);
   if (!record.headers["anthropic-version"]) return sendJson(res, 400, { type: "error", error: { type: "invalid_request_error", message: "missing anthropic-version" } });
   if (scenario in ERROR_BODIES) return sendError(res, scenario);
   const model = body?.model ?? "mock";
+  const tool = plannedToolUse(record.body, lastUserText(record.body));
+  if (tool && body?.stream) return streamToolUse(res, model, tool);
+  if (tool) return sendJson(res, 200, { ...messageShell(model, "tool_use", USAGE), content: [toolUseBlock(tool)] });
   if (body?.stream) return streamMessage(res, model, scenario as Scenario);
   sendWholeMessage(res, model, scenario as Scenario);
 }
