@@ -66,6 +66,7 @@
   --s-40: 2.5rem;
   --s-56: 3.5rem;
   --s-72: 4.5rem;
+  --section-gap: var(--s-56);
 
   /* Radii */
   --r-0: 0;

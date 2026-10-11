@@ -189,6 +189,7 @@ kbd { font: 500 var(--fs-caption)/var(--lh-caption) var(--font-mono); background
 .slip__inner { overflow: hidden; display: grid; gap: var(--s-4); }
 .slip__line { display: flex; align-items: center; gap: var(--s-8); padding: var(--s-4) var(--s-8); border-radius: var(--r-1); font: 400 var(--fs-mono)/var(--lh-mono) var(--font-mono); font-variant-numeric: tabular-nums; min-width: 0; }
 .slip__line .grow { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slip__line > :not(.grow) { flex: none; white-space: nowrap; }
 .preview { background: var(--sunken); border: 1px solid var(--border); border-radius: var(--r-1); padding: var(--s-8); font: 400 var(--fs-mono)/var(--lh-mono) var(--font-mono); white-space: pre-wrap; max-height: 120px; overflow: auto; color: var(--text); }
 .receipt { margin-top: var(--s-8); }
 .receipt > summary { cursor: pointer; font: 400 var(--fs-caption)/var(--lh-caption) var(--font-mono); color: var(--muted); min-height: 24px; display: flex; align-items: center; }
@@ -259,6 +260,8 @@ kbd { font: 500 var(--fs-caption)/var(--lh-caption) var(--font-mono); background
 /* ---------- Surface shells ---------- */
 .frame { border: 1px solid var(--border-strong); background: var(--bg); position: relative; overflow: hidden; }
 .frame-caption { margin-bottom: var(--s-8); }
+.frame :is(.notice--error, .overlay-card) { animation: none; }
+.doc main > section { margin-top: var(--section-gap); }
 .sidebar { display: flex; flex-direction: column; height: 100%; min-height: 0; }
 .sb-header { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 var(--s-8) 0 var(--s-16); background: var(--surface); border-bottom: 2px solid var(--text); flex: none; }
 .wordmark { font: 600 0.9375rem/1.25rem var(--font-serif); }

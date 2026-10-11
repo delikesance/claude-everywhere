@@ -54,7 +54,7 @@ Clair sur `:root` ; sombre sous `:root[data-theme="dark"]` et sous `@media (pref
 | `--selection-bg` | #CFDDF0 | #27456E | texte dessus 12,44 / 7,75 |
 | `--scrim` | rgba(31,27,22,.32) | rgba(0,0,0,.55) | |
 
-Autres jetons : polices `--font-serif` (Source Serif 4), `--font-sans` (Inter), `--font-mono` (JetBrains Mono), chacune avec repli système ; échelle `--fs-*` / `--lh-*` (display 28/34, h1 22/28, h2 18/24, h3 15/20, row-title 17/24, reading 16/26, reading-compact 15/23, ui 14/20, label 13/18, caption 12/16, mono 12,5/18, numeral 11/16) ; `--measure: 62ch` ; espacement `--s-2` à `--s-72` ; rayons `--r-0`, `--r-1` (2 px), `--r-2` (4 px), `--r-pill` ; ombres `--shadow-1` (menus), `--shadow-2` (dialogue) ; couches `--z-sticky`, `--z-menu`, `--z-dialog` ; durées `--t-1` 80 ms, `--t-2` 120, `--t-3` 180, `--t-4` 260, `--t-5` 320 ; courbes `--ease-out`, `--ease-in`, `--ease-standard`.
+Autres jetons : polices `--font-serif` (Source Serif 4), `--font-sans` (Inter), `--font-mono` (JetBrains Mono), chacune avec repli système ; échelle `--fs-*` / `--lh-*` (display 28/34, h1 22/28, h2 18/24, h3 15/20, row-title 17/24, reading 16/26, reading-compact 15/23, ui 14/20, label 13/18, caption 12/16, mono 12,5/18, numeral 11/16) ; `--measure: 62ch` ; espacement `--s-2` à `--s-72`, `--section-gap` (3,5 rem) pour l'espace au-dessus de chaque section titrée (`h2`) ; rayons `--r-0`, `--r-1` (2 px), `--r-2` (4 px), `--r-pill` ; ombres `--shadow-1` (menus), `--shadow-2` (dialogue) ; couches `--z-sticky`, `--z-menu`, `--z-dialog` ; durées `--t-1` 80 ms, `--t-2` 120, `--t-3` 180, `--t-4` 260, `--t-5` 320 ; courbes `--ease-out`, `--ease-in`, `--ease-standard`.
 
 ## 3. Composants et états
 
@@ -67,17 +67,17 @@ Autres jetons : polices `--font-serif` (Source Serif 4), `--font-sans` (Inter), 
 | Interrupteur, case | `.switch`, `.check` | off, on, focus, désactivé |
 | Pastille de contexte | `.chip` + `--off`, `--unreadable`, `--loading` | incluse (plein, `.sent`), non incluse (pointillé), illisible (icône cadenas), chargement |
 | Étiquette, badge, genre, statut | `.tag`, `.badge`, `.badge--local`, `.kind`, `.status-tag` | |
-| Bordereau | `.slip`, `.preview`, `.receipt` | fermé, ouvert (`data-open`), aperçu exact |
+| Bordereau | `.slip`, `.preview`, `.receipt` | fermé, ouvert (`data-open`), aperçu exact ; lignes sans retour à la ligne (le titre seul se tronque, « 4 812 car. » reste entier) |
 | Messages | `.msg-user`, `.msg-ai`, `.md`, `.msg-footer`, `.caret`, `.codeblock`, `.scroll-down` | en cours, terminé, interrompu |
 | Avis | `.notice` + `--success`, `--warning`, `--error` ; `.inline-confirm` | |
-| Squelette | `.ghost` | |
+| Squelette | `.ghost` | chargement de la bibliothèque, attente du premier jeton (`role=status`, texte lisible, barres `aria-hidden`) |
 | Menu, onglets, dialogue | `.menu`, `.tabs`, `.dialog`, `.scrim` | sélectionné, focus |
 | Surcouche | `.toolbar`, `.overlay-card` | |
 | Coquilles de surfaces | `.sidebar`, `.popup`, `.toc`, `.lib`, `.page`, `.section`, `.folio` | |
 
 ## 4. Mouvement
 
-Durées : 80 ms couleur, 120 ms pression, 180 ms menus et bordereau, 260 ms dialogue, 320 ms page. Un balayage (`.sent.is-new`) marque l'inclusion d'un élément au contexte. Curseur de rédaction et points de chargement sont décoratifs. Avec `prefers-reduced-motion: reduce`, durées ramenées à 80 ms de fondu au plus, curseur et points statiques, aucun balayage.
+Durées : 80 ms couleur, 120 ms pression, 180 ms menus et bordereau, 260 ms dialogue, 320 ms page. Un balayage (`.sent.is-new`) marque l'inclusion d'un élément au contexte. Curseur de rédaction et points de chargement sont décoratifs. Dans les maquettes (`.frame`), les animations d'entrée de `.overlay-card` et `.notice--error` sont désactivées pour que chaque état soit visible en capture statique. Avec `prefers-reduced-motion: reduce`, durées ramenées à 80 ms de fondu au plus, curseur et points statiques, aucun balayage.
 
 ## 5. Accessibilité
 
@@ -91,10 +91,10 @@ Durées : 80 ms couleur, 120 ms pression, 180 ms menus et bordereau, 260 ms dial
 
 ## 6. Notes par surface
 
-- Panneau latéral (360 px, variante 280 px) : en-tête, conversation, pied avec bordereau « Ce qui part », pastilles, champ, modèle, Envoyer / Arrêter. Le bordereau résume le prochain envoi et ouvre l'aperçu exact.
-- Fenêtre rapide (320 px) : sommaire de pointillés guidés, une action principale, lien vers le panneau.
-- Surcouche : barre flottante et carte de réponse sur la page hôte. Racine : shadow root fermé, `popover="manual"`, unités en px, piles de polices système uniquement (aucune police chargée dans les pages), thème du système. Documentation de `:host` : `all: initial`, `color-scheme: light dark`, les jetons y sont redéclarés en px via `tokens.css` embarqué ; z-index maximal géré par le popover.
-- Bibliothèque : liste, recherche (surlignage `mark.hit`, ni jaune d'envoi), état sans résultat, détail avec éditions, étiquettes, export, jonction au contexte. Marque « local » sur toute action qui n'envoie rien.
+- Panneau latéral (360 px, variante 280 px) : en-tête, conversation, pied avec bordereau « Ce qui part », pastilles, champ, modèle, Envoyer / Arrêter. Le bordereau résume le prochain envoi et ouvre l'aperçu exact. États montrés : vide, réponse en cours, élément de bibliothèque joint, erreurs (clé refusée et limite de débit ; réseau et interruption, en deux maquettes), page protégée, page tronquée (avis chiffré « N car. envoyés sur M », bordereau et pastille idem), contexte PDF (pastille `PDF`), attente du premier jeton (squelette), sans clé API.
+- Fenêtre rapide (320 px) : sommaire de pointillés guidés, une action principale, lien vers le panneau ; états résumé en cours, réponse, sans clé API (action unique « Ajouter une clé API »), page protégée.
+- Surcouche : barre flottante et carte de réponse sur la page hôte ; la carte a les états en cours, terminée, erreur (clé manquante) et page tronquée. Racine : shadow root fermé, `popover="manual"`, unités en px, piles de polices système uniquement (aucune police chargée dans les pages), thème du système. Documentation de `:host` : `all: initial`, `color-scheme: light dark`, les jetons y sont redéclarés en px via `tokens.css` embarqué ; z-index maximal géré par le popover.
+- Bibliothèque : liste, recherche (surlignage `mark.hit`, ni jaune d'envoi), état sans résultat, état vide (aucune entrée encore), chargement (squelette), détail avec éditions, étiquettes, export, jonction au contexte. Marque « local » sur toute action qui n'envoie rien.
 - Réglages : sections numérotées en folios, rail de navigation.
 - Accueil : trois étapes, clé API validée avant de continuer.
 
@@ -102,6 +102,6 @@ Durées : 80 ms couleur, 120 ms pression, 180 ms menus et bordereau, 260 ms dial
 
 1. Pages d'extension (panneau, fenêtre, options, bibliothèque, accueil) : `<link rel="stylesheet" href="tokens.css">` puis `components.css` ; tailles en rem.
 2. Surcouche : construire un `CSSStyleSheet` à partir des deux fichiers et l'adopter dans le shadow root fermé ; convertir rem en px à la génération ; ne charger aucune police.
-3. Thème : poser `data-theme="light|dark"` sur `:root` pour forcer ; l'absence d'attribut suit le système.
+3. Thème : poser `data-theme="light|dark"` sur `:root` pour forcer ; l'absence d'attribut suit le système. Les pages de cette maquette partagent `theme.js` (sélecteur Système / Clair / Sombre) et acceptent `?theme=light|dark` dans l'URL.
 4. Jamais de couleur codée en dur dans le code de l'extension : ajouter un jeton ici d'abord.
 5. Toute évolution de valeur passe par `tokens.css` et par un contrôle de contraste.
