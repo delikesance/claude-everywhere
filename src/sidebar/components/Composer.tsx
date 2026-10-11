@@ -44,10 +44,8 @@ function SendOrStop() {
 export function Composer() {
   const [picking, setPicking] = useState(false);
   const input = useRef<HTMLTextAreaElement>(null);
-  const keyless = useRef(!hasKey.value);
   useEffect(() => {
-    if (hasKey.value && keyless.current) input.current?.focus();
-    keyless.current = !hasKey.value;
+    if (hasKey.value) input.current?.focus();
   }, [hasKey.value]);
   useLayoutEffect(() => {
     const field = input.current;
