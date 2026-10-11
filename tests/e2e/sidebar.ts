@@ -5,6 +5,7 @@ import { find, findByText, jsClick, openExtensionPage, openTab, pageTabId, t, wa
 
 const COMPOSER = "textarea";
 const ANSWER = ".md";
+const MENU_TRIGGER = 'button[aria-haspopup="menu"]';
 
 export interface PageUnderTest {
   url: string;
@@ -19,21 +20,22 @@ export async function openSidebarBeside(harness: Harness, url: string, preparePa
   return { url, tabId: await pageTabId(harness.driver) };
 }
 
-/** The "+ Page" and "+ Selection" buttons read the browser's active tab, so the page tab is made active around the click. */
-export async function addFromPage(harness: Harness, page: PageUnderTest, buttonLabel: string, settledChip = ".chip__title"): Promise<void> {
+/** The "add page" and "add selection" menu items read the browser's active tab, so the page tab is made active around the click. */
+export async function addFromPage(harness: Harness, page: PageUnderTest, buttonLabel: string, settled = ".sb-chips .chip__title"): Promise<void> {
   const { driver } = harness;
-  const button = await findByText(driver, "button", buttonLabel);
+  await jsClick(driver, await find(driver, MENU_TRIGGER));
+  const item = await findByText(driver, "[role=menuitem]", buttonLabel);
   await whilePageIsActive(driver, page.tabId, async () => {
-    await jsClick(driver, button);
-    await waitForScript(driver, `document.querySelector(arguments[0])`, `.sb-chips ${settledChip}`);
+    await jsClick(driver, item);
+    await waitForScript(driver, `document.querySelector(arguments[0])`, settled);
   });
-  await find(driver, `.sb-chips ${settledChip}`);
+  await find(driver, settled);
 }
 
 export async function ask(harness: Harness, question: string): Promise<void> {
   const { driver } = harness;
   await driver.findElement(By.css(COMPOSER)).sendKeys(question);
-  await (await findByText(driver, "button", t("sidebar_send"))).click();
+  await (await find(driver, `button[aria-label="${t("sidebar_send")}"]`)).click();
 }
 
 export async function answerText(harness: Harness): Promise<string> {

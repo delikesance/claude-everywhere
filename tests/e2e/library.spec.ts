@@ -42,15 +42,13 @@ it("saves a page, finds it by search, attaches it to a new conversation, and exp
   const sidebar = await openExtensionPage(harness, "sidebar.html", "textarea");
   const library = await openExtensionPage(harness, "library-ui.html", ".lib");
 
-  await findByText(driver, ".row-title a", ARTICLE_TITLE);
+  await findByText(driver, ".row-title button", ARTICLE_TITLE);
   await (await find(driver, "input[type=search]")).sendKeys("habitude");
   const hit = await find(driver, "mark.hit");
   expect(await hit.getText()).toBe("habitude");
 
-  await (await findByText(driver, ".row-title a", ARTICLE_TITLE)).click();
-  await findByText(driver, "button", t("library_ui_attach"));
   harness.resetMock();
-  await (await findByText(driver, "button", t("library_ui_attach"))).click();
+  await (await findByText(driver, ".row-title button", ARTICLE_TITLE)).click();
   await findByText(driver, "[role=status]", t("library_ui_attached"));
 
   await driver.switchTo().window(sidebar);
@@ -60,13 +58,6 @@ it("saves a page, finds it by search, attaches it to a new conversation, and exp
   await ask(harness, "Que contient cette entrée ?");
   await waitForDone(harness);
   expect(JSON.stringify(harness.mock.requests[0]?.body)).toContain(ARTICLE_TEXT);
-
-  await driver.switchTo().window(library);
-  await (await findByText(driver, "button", t("library_ui_exportMarkdown"))).click();
-  const markdown = await downloaded("lire-dans-la-marge.md");
-  expect(markdown.startsWith("---\n")).toBe(true);
-  expect(markdown).toContain(ARTICLE_TITLE);
-  expect(markdown).toContain(ARTICLE_TEXT);
 
   await driver.get(harness.extension("library-ui.html"));
   await (await findByText(driver, "button", t("library_ui_exportAll"))).click();

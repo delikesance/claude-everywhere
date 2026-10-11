@@ -58,8 +58,8 @@ it("reports an http PDF on another origin as unreadable", async () => {
 
 it("marks a private page as unreadable in the sidebar", async () => {
   const page = await openSidebarBeside(harness, PRIVILEGED_URL);
-  await addFromPage(harness, page, t("sidebar_addPage"), ".chip--unreadable");
-  await findByText(harness.driver, ".chip--unreadable", t("sidebar_pageUnreadable"));
+  await addFromPage(harness, page, t("sidebar_addPage"), ".notice");
+  await findByText(harness.driver, ".notice", t("sidebar_protectedBody"));
 });
 
 it("logs no extension error or manifest warning", () => {

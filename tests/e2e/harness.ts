@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { closeSync, mkdtempSync, openSync, readFileSync } from "node:fs";
+import { closeSync, mkdtempSync, openSync, readdirSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -39,7 +39,8 @@ function buildXpi(): string {
   const outDir = mkdtempSync(join(tmpdir(), "ce-e2e-"));
   const webExt = join(ROOT, "node_modules/.bin/web-ext");
   execFileSync(webExt, ["build", "-s", join(ROOT, "dist-test"), "-a", outDir, "--overwrite-dest"], { stdio: "ignore" });
-  return join(outDir, "claude_everywhere-0.1.0.zip");
+  const [zip] = readdirSync(outDir).filter((name) => name.endsWith(".zip"));
+  return join(outDir, zip!);
 }
 
 function serveFixtures(): Promise<Server> {

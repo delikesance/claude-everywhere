@@ -1,4 +1,4 @@
-import { By, until } from "selenium-webdriver";
+import { By, Key, until } from "selenium-webdriver";
 import type { WebDriver, WebElement } from "selenium-webdriver";
 import { afterAll, beforeAll, beforeEach, expect, it } from "vitest";
 import { API_KEY, startHarness } from "./harness";
@@ -31,8 +31,8 @@ async function selectArticleIntro(driver: WebDriver): Promise<void> {
   await driver.executeScript(`
     const paragraph = [...document.querySelectorAll("article p")].find((p) => p.textContent.includes(arguments[0]));
     getSelection().selectAllChildren(paragraph);
-    document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
   `, SELECTED);
+  await driver.actions().keyDown(Key.SHIFT).keyUp(Key.SHIFT).perform();
 }
 
 async function overlayRoot(driver: WebDriver): Promise<WebElement> {
@@ -49,17 +49,11 @@ it("explains the selection from the floating bar and sends only the selection", 
   const root = await overlayRoot(driver);
   await driver.wait(async () => (await root.findElements(By.css("[role=toolbar] button"))).length > 0, 10_000);
   const explain = await root.findElement(By.css("[role=toolbar] button"));
-  expect(await explain.getText()).toBe(t("overlay_explain"));
+  expect(await explain.getText()).toBe(t("overlay_ask"));
   expect(harness.mock.requests).toEqual([]);
   await explain.click();
 
   const dialog = await root.findElement(By.css("[role=dialog]"));
-  expect(await dialog.getText()).toContain(SELECTED);
-  expect(harness.mock.requests).toEqual([]);
-  const cardButtons = await dialog.findElements(By.css("button"));
-  const send = await Promise.all(cardButtons.map(async (button) => ((await button.getText()) === t("overlay_explain") ? button : null)));
-  await send.find((button) => button !== null)?.click();
-
   await driver.wait(async () => (await (await root.findElement(By.css("[role=dialog]"))).getText()).includes("serveur factice"), 10_000);
   expect(harness.mock.requests).toHaveLength(1);
   expect(harness.mock.requests[0]?.headers["x-api-key"]).toBe(API_KEY);

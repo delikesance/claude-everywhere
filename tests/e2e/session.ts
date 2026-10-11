@@ -35,6 +35,7 @@ export async function storeApiKey(harness: Harness, key = API_KEY): Promise<void
 /** Turning on the floating bar asks for the all-sites permission, which the test profile grants without a prompt. */
 export async function enableAllSites(harness: Harness): Promise<void> {
   const { driver } = harness;
+  await (await driver.findElement(By.css("details.advanced summary"))).click();
   const [overlaySwitch] = await driver.findElements(By.css(SWITCH));
   await overlaySwitch?.click();
   await driver.wait(

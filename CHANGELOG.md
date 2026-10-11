@@ -4,6 +4,19 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## [Non publié]
 
+## [0.1.4] - 2026-10-11
+
+### Modifié
+
+- Panneau latéral aligné sur la maquette : en-tête unique (titre de la conversation, nouvelle conversation, bibliothèque), pied de page réduit à une pastille « Part : … » et un champ à envoi en une flèche, modèle et ajouts de contexte dans le menu « + ».
+- Avis de changement d'onglet en haut du panneau, sans décaler la conversation ; avis « Document long » ; page protégée.
+- Le panneau occupe toute la hauteur de la barre latérale.
+- Bibliothèque simplifiée (« Gardé », clic pour ouvrir dans la conversation) et réglages avancés repliés.
+
+### Corrigé
+
+- Tests de bout en bout adaptés au nouveau flux et exécutés dans Firefox.
+
 ## [0.1.3] - 2026-10-11
 
 ### Ajouté

@@ -42,7 +42,7 @@ for (const theme of THEMES) {
     await find(harness.driver, `html[data-theme=${theme}]`);
     await shoot("options", theme);
 
-    await showPage("library-ui.html", ".row-title a");
+    await showPage("library-ui.html", ".row-title button");
     await shoot("library", theme);
 
     await showPage("sidebar.html", "textarea");
