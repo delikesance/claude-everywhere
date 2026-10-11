@@ -6,6 +6,7 @@ import { MODEL_META } from "../../api/budget";
 import type { Phase } from "../state/turn";
 import { useFrameValue } from "./hooks";
 import { FollowUps } from "./FollowUps";
+import { ToolTrace } from "./ToolTrace";
 import { CopyButton, KeepButton } from "./TurnActions";
 
 export interface AssistantTurnProps {
@@ -37,6 +38,7 @@ export function AssistantTurn({ message, number, phase, onRegenerate, onFollowUp
   const shown = useFrameValue(message.text);
   return (
     <AssistantMessage label={t("sidebar_answerLabel", { number })} number={number}>
+      <ToolTrace calls={message.toolCalls ?? []} />
       <div class="reading" aria-busy={live}>
         <Markdown source={live ? shown : message.text} />
         {phase === "streaming" && <span class="caret anim-caret" aria-hidden="true" />}

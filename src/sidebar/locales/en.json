@@ -103,6 +103,8 @@
   "sidebar_kept": "Kept",
   "sidebar_tabChangedTitle": "New tab: {title}",
   "sidebar_tabChangedGeneric": "New tab detected",
+  "sidebar_toolsLabel": "Tools used (read-only)",
+  "sidebar_toolChars": "{chars} chars",
   "sidebar_tabChangedBody": "Read this page instead?",
   "sidebar_readPage": "Read",
   "sidebar_keepPreviousPage": "Keep the previous one",

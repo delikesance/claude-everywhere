@@ -62,6 +62,7 @@ export interface ChatMessage {
   model?: ModelId;
   stopReason?: StopReason | "interrupted";
   bordereau?: Bordereau;
+  toolCalls?: { name: string; inputSummary: string; resultChars: number }[];
 }
 
 export interface Conversation {
