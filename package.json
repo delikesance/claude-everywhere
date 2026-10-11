@@ -1,6 +1,6 @@
 {
   "name": "claude-everywhere",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "type": "module",
   "description": "Firefox extension: ask Claude about the page you read, keep the useful answers.",

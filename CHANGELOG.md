@@ -4,6 +4,20 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## [Non publié]
 
+## [0.1.5] - 2026-10-11
+
+### Ajouté
+
+- La pastille « Part : … » compte les messages précédents de la conversation.
+- Badge « Lu » sur l'icône après la lecture de la page.
+- Suite de tests de bout en bout étendue (83 tests dans Firefox) : conversation, composeur, erreurs, clic sur l'icône, surcouche, bibliothèque, réglages.
+
+### Corrigé
+
+- Le champ de saisie prend le focus après le dépôt de la clé et à l'arrivée d'une page depuis l'icône.
+- L'avis « serveur surchargé » est annoncé comme une alerte.
+- L'avis de changement d'onglet ne s'affiche plus pour les pages de l'extension.
+
 ## [0.1.4] - 2026-10-11
 
 ### Modifié
