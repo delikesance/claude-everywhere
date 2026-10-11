@@ -18,6 +18,8 @@
 | [D-014](#d-014-internationalisation) | i18n |
 | [D-015](#d-015-commandes) | Commandes |
 | [D-016](#d-016-tests) | Tests |
+| [D-017](#d-017-lecture-des-pdf) | Lecture des PDF |
+| [D-018](#d-018-historique-des-versions) | Historique des versions |
 
 ## D-001 Direction artistique
 
@@ -124,7 +126,7 @@ Permissions : `storage`, `activeTab`, `scripting`, `contextMenus` (alias `menus`
 
 **Choix**
 
-`extension_pages` : `script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self' data:; connect-src https://api.anthropic.com; base-uri 'none'; form-action 'none'`. Le build de test ajoute l'origine locale. `'wasm-unsafe-eval'` n'est ajouté que si `pdfjs-dist` l'exige ; vérification : test E2E sur un PDF de test contre cette CSP, ajout seulement sur violation constatée en console, puis consigné ici. Aucun code distant, aucun script en ligne, polices embarquées.
+`extension_pages` : `script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self' data:; connect-src https://api.anthropic.com https:; base-uri 'none'; form-action 'none'`. Le build de test ajoute l'origine locale. Le schéma `https:` dans `connect-src` est justifié par D-017. `'wasm-unsafe-eval'` n'est ajouté que si `pdfjs-dist` l'exige ; vérification : test E2E sur un PDF de test contre cette CSP, ajout seulement sur violation constatée en console, puis consigné ici. Aucun code distant, aucun script en ligne, polices embarquées.
 
 **Alternatives écartées**
 
@@ -186,7 +188,7 @@ Il n'existe pas d'API publique pour écrire des artefacts ou des Projets claude.
 
 **Choix**
 
-Budget en caractères par modèle (constante documentée, estimation d'environ 4 caractères par jeton). En cas de dépassement : conserver début, fin et sections correspondant aux termes de la question. Toujours afficher « N car. envoyés / M total » (le bordereau de la maquette) ; jamais de troncature silencieuse. Le même calcul alimente l'aperçu et l'envoi.
+Budget en caractères par modèle : 450 000 caractères pour les trois modèles (constante documentée, estimation d'environ 4 caractères par jeton ; 450 000 caractères valent 150 000 jetons à 3 caractères par jeton, ce qui laisse 50 000 jetons de marge). Le titre et l'enveloppe de chaque élément sont comptés dans le budget et dans le nombre de caractères envoyés du bordereau. En cas de dépassement : conserver début, fin et sections correspondant aux termes de la question. Toujours afficher « N car. envoyés / M total » (le bordereau de la maquette) ; jamais de troncature silencieuse. Le même calcul alimente l'aperçu et l'envoi.
 
 **Alternatives écartées**
 
@@ -274,3 +276,34 @@ vitest avec jsdom (happy-dom écarté : DOMPurify n'y assainit pas correctement)
 **Raison**
 
 - Tests déterministes, sans réseau ni secret ; le paquet publié est celui qui est audité.
+
+## D-017 Lecture des PDF
+
+**Choix**
+
+`connect-src` devient `https://api.anthropic.com https:` pour que le fond télécharge un PDF en https que l'utilisateur demande explicitement de lire (action explicite, avec `activeTab` ou la permission d'hôte). Les PDF en `http:` et `file:` restent non pris en charge : ils retombent sur le chemin existant « page restreinte / collage » avec un message clair. La garantie demeure : la clé API n'est attachée que par le client du SDK à l'URL de base de l'API ; le téléchargement du PDF part sans en-tête personnalisé et avec `credentials: "omit"` (test unitaire dédié). Le build de test garde en plus l'origine locale du simulacre.
+
+**Alternatives écartées**
+
+- Joker `*` dans `connect-src` : autoriserait aussi `http:` et tout schéma, sans nécessité.
+- Garder `connect-src` limité à l'API : la lecture d'un PDF hébergé ailleurs est alors cassée.
+
+**Raison**
+
+- Élargissement minimal qui rend la fonction utilisable, déclenché uniquement par l'utilisateur ; aucun secret ne peut accompagner la requête.
+- Le harnais E2E ne sert pas de https : le cas https est couvert par un test unitaire de la CSP produite (`scripts/manifest.test.ts`) et par le test E2E sur l'origine du simulacre ; le cas `http:` hors simulacre est vérifié en E2E comme non lisible.
+
+## D-018 Historique des versions
+
+**Choix**
+
+L'historique d'un artefact est plafonné à 20 versions : au-delà, les plus anciennes sont supprimées à l'enregistrement d'une nouvelle version.
+
+**Alternatives écartées**
+
+- Historique illimité : croissance sans borne d'IndexedDB.
+- Plafond configurable : réglage supplémentaire sans besoin démontré.
+
+**Raison**
+
+- Borne le stockage tout en gardant assez de recul pour revenir en arrière.

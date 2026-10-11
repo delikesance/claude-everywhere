@@ -3,6 +3,7 @@ import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ExtractionError } from "./error";
+import { PDF_MAX_BYTES } from "./constants";
 import { extractPdf } from "./pdf";
 import { polyfillFirefoxRuntime, readFixture } from "./testing";
 
@@ -34,6 +35,36 @@ describe("extractPdf", () => {
     expect(page.markdown).toContain("First page of the sample document.");
     expect(page.markdown).toContain("--- page 2 ---");
     expect(page.markdown).toContain("The quick brown fox jumps over the lazy dog.");
+  });
+
+  it("fetches without credentials, key or custom headers", async () => {
+    const fetchMock = vi.fn(async () => new Response(new Uint8Array(readFixture("sample.pdf"))));
+    vi.stubGlobal("fetch", fetchMock);
+    await extractPdf(PDF_URL);
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(init).toEqual({ credentials: "omit" });
+    expect(JSON.stringify(init).toLowerCase()).not.toMatch(/x-api-key|authorization/);
+  });
+
+  it("rejects an oversized PDF from its content-length before reading the body", async () => {
+    const response = new Response("x", { headers: { "content-length": String(PDF_MAX_BYTES + 1) } });
+    stubFetch(async () => response);
+    expect((await errorOf(extractPdf(PDF_URL))).data).toMatchObject({ kind: "pdf_failed" });
+    expect(response.bodyUsed).toBe(false);
+  });
+
+  it("aborts the stream once it exceeds the cap", async () => {
+    let cancelled = false;
+    const chunk = new Uint8Array(PDF_MAX_BYTES / 2 + 1);
+    const body = new ReadableStream<Uint8Array>({
+      pull: (controller) => controller.enqueue(chunk),
+      cancel: () => {
+        cancelled = true;
+      },
+    });
+    stubFetch(async () => new Response(body));
+    expect((await errorOf(extractPdf(PDF_URL))).data).toMatchObject({ kind: "pdf_failed" });
+    expect(cancelled).toBe(true);
   });
 
   it("reports a denied fetch as a permission error carrying the origin", async () => {

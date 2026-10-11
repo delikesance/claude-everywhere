@@ -50,10 +50,10 @@ it("reads an open PDF into the sidebar and sends its text", async () => {
   expect(JSON.stringify(harness.mock.requests[0]?.body)).toContain(PDF_SENTENCE);
 });
 
-// Known product bug: connect-src admits only the API origin, so a PDF on any other origin cannot be fetched (see DECISIONS.md D-006).
-it.fails("cannot yet read a PDF from another origin", async () => {
+// D-017: only https PDFs are readable; an http PDF on another origin falls back to the restricted/paste path.
+it("reports an http PDF on another origin as unreadable", async () => {
   const pdf = await send({ type: "pdf/extract", url: harness.fixture("sample.pdf") });
-  expect(pdf).toMatchObject({ ok: true });
+  expect(pdf).toMatchObject({ ok: false, error: { kind: "permission" } });
 });
 
 it("falls back to the paste path on a page the browser keeps private", async () => {

@@ -6,6 +6,7 @@ export const MODEL_IDS = [
 export type ModelId = (typeof MODEL_IDS)[number];
 export const DEFAULT_MODEL: ModelId = "claude-sonnet-5-5";
 export const DEFAULT_MAX_TOKENS = 4096;
+export const MAX_OUTPUT_TOKENS = 64_000;
 export const CHARS_PER_TOKEN = 4;
 
 // The three models have a context window of at least 200k tokens. 450_000 chars is 150k tokens at a

@@ -10,6 +10,7 @@ import { closeOtherTabs, find, openExtensionPage, runInPage } from "./ui";
 let harness: Harness;
 
 const SCREENSHOTS_DIR = join(import.meta.dirname, "../../docs/screenshots");
+const UPDATE_SCREENSHOTS = process.env["UPDATE_SCREENSHOTS"] === "1";
 const THEMES = ["light", "dark"] as const;
 const SAMPLE_NOTE = { title: "Lire dans la marge", url: null, sourceType: "note", tags: ["lecture"], markdown: "Annoter un texte en marge est une habitude ancienne." };
 
@@ -18,11 +19,12 @@ beforeAll(async () => {
   await startSession(harness);
   await storeApiKey(harness);
   await runInPage(harness.driver, `await browser.runtime.sendMessage({ type: "artifact/save", draft: arguments[0] });`, SAMPLE_NOTE);
-  mkdirSync(SCREENSHOTS_DIR, { recursive: true });
+  if (UPDATE_SCREENSHOTS) mkdirSync(SCREENSHOTS_DIR, { recursive: true });
 });
 afterAll(() => harness.close());
 
 async function shoot(name: string, theme: string): Promise<void> {
+  if (!UPDATE_SCREENSHOTS) return;
   const png = await harness.driver.takeScreenshot();
   writeFileSync(join(SCREENSHOTS_DIR, `${name}-${theme}.png`), png, "base64");
 }

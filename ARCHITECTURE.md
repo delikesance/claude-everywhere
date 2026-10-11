@@ -175,16 +175,16 @@ export function planContext(items: ContextItem[], question: string, model: Model
 export function renderPrompt(plan: ContextPlan, userText: string, answerLanguage: string): { system: string; user: string }; // EXACT text sent; the preview shows this
 export const MODEL_META: Record<ModelId, { labelKey: MessageKey; rank: 1 | 2 | 3 }>;
 ```
-`planContext`: included items only, in order; total > budget => per item keep head + tail + paragraphs/sections sharing terms with `question` (accent-insensitive, stopwords ignored), joined by an explicit `[... N car. omis ...]` marker; `bordereau.truncated = true`. Budget = `INPUT_BUDGET_CHARS[model] - maxTokens*CHARS_PER_TOKEN - history chars - 2000`. `stop_reason: "refusal"` and `"max_tokens"` are returned in `done` (UI shows a notice), never thrown.
+`planContext`: included items only, in order; total > budget => per item keep head + tail + paragraphs/sections sharing terms with `question` (accent-insensitive, stopwords ignored), joined by an explicit `[... N car. omis ...]` marker; `bordereau.truncated = true`. Budget = `INPUT_BUDGET_CHARS[model]` (450,000 chars, D-011) `- maxTokens*CHARS_PER_TOKEN - history chars - 2000`; each item counts its text plus title and wrapper tags (`ITEM_WRAPPER_CHARS`). `stop_reason: "refusal"` and `"max_tokens"` are returned in `done` (UI shows a notice), never thrown.
 
 ```ts
-// extraction/index.ts  (background; uses scripting.executeScript, needs activeTab grant or host permission)
+// extraction/index.ts  (background; uses scripting.executeScript, needs activeTab grant or host permission; the injected script stores its result in a globalThis slot read by a second executeScript)
 export class ExtractionError extends Error { constructor(readonly data: ExtractionErrorData) }
 export function extractTab(tabId: number, mode: CaptureMode): Promise<ExtractedPage>;   // runs injected/page.js or injected/selection.js, re-reads URL+title on every call
 export function extractPdf(url: string): Promise<ExtractedPage>;                        // fetch + bundled pdfjs-dist; "permission" error carries origin
 // extraction/manual.ts (pure)
 export function manualPage(text: string, title?: string): ExtractedPage;                // sourceType "manual"
-// extraction/injected/*.ts: IIFE returning ExtractedPage | ExtractionErrorData as the executeScript result
+// extraction/injected/*.ts: IIFE storing ExtractedPage | ExtractionErrorData in the globalThis slot
 ```
 ```ts
 // library/index.ts  (extension pages + background; IndexedDB via idb; stores artifacts, versions, conversations)
@@ -218,10 +218,10 @@ export function artifactToContextItem(a: ArtifactWithContent): ContextItem; // k
 
 ## 4. Runtime topology
 
-- Background (event page, module, non persistent): `runtime.onMessage` router for `RequestMap` (always answers `Result`), `runtime.onConnect` for `chat` Ports, `commands.onCommand`, `menus.onClicked`, `runtime.onInstalled` (menus creation, open onboarding on first install). All listeners registered synchronously at top level. Cross-wake state: `storage.session.pendingCapture`, `storage.local.settings`; nothing only in globals.
-- `scripting.executeScript` is the only injection path. `overlayAllSites` on => `scripting.registerContentScripts` (persistent, `overlay.js`, `<all_urls>`, `runAt: document_idle`) after `permissions.request`; off => `unregisterContentScripts`. Overlay has a `window` guard against double mount; re-triggering sends `TabMessage overlay/show`.
+- Background (event page, module, non persistent): `runtime.onMessage` router for `RequestMap` (always answers `Result`), `runtime.onConnect` for `chat` Ports, `commands.onCommand`, `contextMenus.onClicked`, `runtime.onInstalled` (context menu creation, open onboarding on first install). All listeners registered synchronously at top level. Cross-wake state: `storage.session.pendingCapture`, `storage.local.settings`; nothing only in globals.
+- `scripting.executeScript` is the only injection path. Injected scripts do not rely on a returned value: each writes its result to a `globalThis` slot (`RESULT_SLOT`) and a second `executeScript` reads it back. `overlayAllSites` on => `scripting.registerContentScripts` (persistent, `overlay.js`, `<all_urls>`, `runAt: document_idle`) after `permissions.request`; off => `unregisterContentScripts`. Measured cost of this opt-in mode: `overlay.js` is about 99 KB minified and sends `overlay/config` at every page load, which wakes the event page; selection listeners are cheap. Accepted trade-off (lazy config on first selection and a split bundle are possible later work). Overlay has a `window` guard against double mount; re-triggering sends `TabMessage overlay/show`.
 - Content script never receives the key; it sends `ChatStart` over a Port and renders `delta`s.
-- `sidebarAction.open()` is only called inside synchronous user-action handlers in background (`commands.onCommand`, `menus.onClicked`) or in the popup click handler. The overlay cannot open the sidebar: it shows the shortcut hint and the capture is already in `pendingCapture`.
+- `sidebarAction.open()` is only called inside synchronous user-action handlers in background (`commands.onCommand`, `contextMenus.onClicked`) or in the popup click handler. The overlay cannot open the sidebar: it shows the shortcut hint and the capture is already in `pendingCapture`.
 - Sidebar reads the active tab id with `tabs.query` (no `tabs` permission needed for ids; URL comes from extraction, not from `tabs`). Without `<all_urls>` it cannot extract by itself: it shows the pending capture or the "capture via popup/shortcut" empty state ("La marge est vide.").
 
 ## 5. Acceptance journeys

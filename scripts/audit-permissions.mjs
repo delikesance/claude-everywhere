@@ -8,7 +8,7 @@ const EXPECTED = {
   optional_host_permissions: ["<all_urls>"],
   csp:
     "script-src 'self'; object-src 'none'; style-src 'self'; img-src 'self' data:; " +
-    "connect-src https://api.anthropic.com; base-uri 'none'; form-action 'none'",
+    "connect-src https://api.anthropic.com https:; base-uri 'none'; form-action 'none'",
 };
 const FORBIDDEN_TOP_LEVEL = ["content_scripts"];
 const LOCALHOST = /localhost|127\.0\.0\.1|\[::1\]/;

@@ -1,5 +1,6 @@
 import { streamChat } from "../api";
 import type { ChatClientMsg, ChatServerMsg, ChatStart } from "../shared/messages";
+import { parseChatStart } from "./chat-start";
 import { badRequest } from "./errors";
 
 interface ActiveStream {
@@ -44,13 +45,19 @@ export function handleChatPort(port: browser.runtime.Port): void {
       });
   };
 
+  const startValidated = (raw: ChatStart) => {
+    const msg = parseChatStart(raw as unknown as Record<string, unknown>);
+    if (msg) start(msg);
+    else post({ type: "error", requestId: raw.requestId, error: badRequest("invalid chat request") });
+  };
+
   port.onDisconnect.addListener(() => {
     connected = false;
     active?.controller.abort();
   });
   port.onMessage.addListener((raw) => {
     if (!isChatClientMsg(raw)) return;
-    if (raw.type === "start") start(raw);
+    if (raw.type === "start") startValidated(raw);
     else if (active?.requestId === raw.requestId) active.controller.abort();
   });
 }

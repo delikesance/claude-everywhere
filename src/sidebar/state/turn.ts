@@ -117,6 +117,7 @@ function startTurn(userText: string, restoreDraft: boolean, context?: TurnContex
   turnNotice.value = null;
   phase.value = "waiting";
   connection.onMessage((msg) => handle(turn, msg));
+  connection.onDisconnect(() => active === turn && onError(turn, { kind: "network" }));
   connection.start({
     requestId: turn.requestId,
     model,

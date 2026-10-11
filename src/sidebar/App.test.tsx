@@ -6,7 +6,7 @@ import { initI18n } from "../shared/i18n";
 import { DEFAULT_SETTINGS } from "../shared/settings";
 import type { ChatMessage, ContextItem } from "../shared/types";
 
-const fake = vi.hoisted(() => ({ start: vi.fn(), cancel: vi.fn(), close: vi.fn(), onMessage: vi.fn() }));
+const fake = vi.hoisted(() => ({ start: vi.fn(), cancel: vi.fn(), close: vi.fn(), onMessage: vi.fn(), onDisconnect: vi.fn() }));
 const library = vi.hoisted(() => ({
   saveConversation: async () => {},
   listArtifacts: vi.fn(),

@@ -4,6 +4,9 @@ const API_HOST = "https://api.anthropic.com";
 const ICONS = { 48: "icons/icon-48.svg", 96: "icons/icon-96.svg" };
 const SIDEBAR_ICON = "icons/sidebar.svg";
 
+// https: lets the background download an https PDF the user explicitly asks to read (D-017).
+const PDF_CONNECT_SCHEME = "https:";
+
 const csp = (connectOrigins) =>
   [
     "script-src 'self'",
@@ -27,7 +30,7 @@ const sortDeep = (value) => {
 
 /** testOrigin: e.g. "http://127.0.0.1:8787" for the test build, undefined for production. */
 export function buildManifest({ version, testOrigin }) {
-  const connectOrigins = testOrigin ? [API_HOST, testOrigin] : [API_HOST];
+  const connectOrigins = testOrigin ? [API_HOST, PDF_CONNECT_SCHEME, testOrigin] : [API_HOST, PDF_CONNECT_SCHEME];
   const hostPermissions = testOrigin ? [`${API_HOST}/*`, `${testOrigin}/*`] : [`${API_HOST}/*`];
   return sortDeep({
     manifest_version: 3,

@@ -29,7 +29,8 @@ const bordereau = (overrides: Partial<Bordereau> = {}): Bordereau => ({
 let roots: ShadowRoot[];
 let messageListener: (message: unknown) => void;
 let deliver: (message: ChatServerMsg) => void;
-const connection = { start: vi.fn(), cancel: vi.fn(), close: vi.fn(), onMessage: vi.fn() } satisfies ChatConnection;
+let disconnect: () => void;
+const connection = { start: vi.fn(), cancel: vi.fn(), close: vi.fn(), onMessage: vi.fn(), onDisconnect: vi.fn() } satisfies ChatConnection;
 
 const card = () => roots.at(-1)!;
 const text = (selector: string) => card().querySelector(selector)?.textContent ?? "";
@@ -74,6 +75,7 @@ beforeEach(() => {
     browser: { runtime: { onMessage: { addListener: (fn: typeof messageListener) => (messageListener = fn) } } },
   });
   connection.onMessage.mockImplementation((cb: typeof deliver) => (deliver = cb));
+  connection.onDisconnect.mockImplementation((cb: () => void) => (disconnect = cb));
   vi.mocked(connectChat).mockReturnValue(connection);
   vi.mocked(planContext).mockReturnValue({ bordereau: bordereau(), blocks: [] });
   select(SELECTED);
@@ -198,6 +200,18 @@ describe("card", () => {
     const requestId = connection.start.mock.calls[0]![0].requestId as string;
     deliver({ type: "error", requestId, error: { kind: "auth" } });
     expect(text(".notice--error")).toContain("refusée");
+    expect(connection.close).toHaveBeenCalled();
+  });
+
+  it("ends the card with a network error when the port drops mid-answer", async () => {
+    await mount();
+    await openCard();
+    button("Expliquer").click();
+    const requestId = connection.start.mock.calls[0]![0].requestId as string;
+    deliver({ type: "delta", requestId, text: "Partiel" });
+    disconnect();
+    expect(text(".notice--error")).not.toBe("");
+    expect(card().textContent).toContain("Partiel");
     expect(connection.close).toHaveBeenCalled();
   });
 

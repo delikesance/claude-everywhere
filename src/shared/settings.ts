@@ -1,9 +1,8 @@
-import { DEFAULT_MAX_TOKENS, DEFAULT_MODEL, MODEL_IDS, SCHEMA_VERSION, STORAGE_KEYS } from "./constants";
+import { DEFAULT_MAX_TOKENS, DEFAULT_MODEL, MAX_OUTPUT_TOKENS, MODEL_IDS, SCHEMA_VERSION, STORAGE_KEYS } from "./constants";
 import type { ModelId } from "./constants";
 import type { Settings, Theme, UiLocale } from "./types";
 
 const MIN_MAX_TOKENS = 1;
-const MAX_MAX_TOKENS = 64_000;
 
 export const DEFAULT_SETTINGS: Settings = {
   schemaVersion: SCHEMA_VERSION,
@@ -25,7 +24,7 @@ const bool = (value: unknown, fallback: boolean): boolean => (typeof value === "
 
 function validMaxTokens(value: unknown): number {
   if (typeof value !== "number" || !Number.isInteger(value)) return DEFAULT_MAX_TOKENS;
-  return Math.min(Math.max(value, MIN_MAX_TOKENS), MAX_MAX_TOKENS);
+  return Math.min(Math.max(value, MIN_MAX_TOKENS), MAX_OUTPUT_TOKENS);
 }
 
 function validApiKey(value: unknown): string | null {
