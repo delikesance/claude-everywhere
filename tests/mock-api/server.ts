@@ -16,7 +16,7 @@ export interface MockApi {
   close: () => Promise<void>;
 }
 
-type Scenario = "normal" | "slow" | "rate_limit" | "overloaded" | "refusal" | "max_tokens" | "drop";
+type Scenario = "normal" | "slow" | "rate_limit" | "overloaded" | "refusal" | "max_tokens" | "drop" | "unsafe_markdown";
 
 const DEFAULT_PORT = 8787;
 const INVALID_KEY = "sk-ant-invalid";
@@ -26,6 +26,11 @@ const SLOW_DELAY_MS = 250;
 const RETRY_AFTER_SEC = 7;
 const DROP_AFTER_DELTAS = 1;
 const DELTAS = ["Bonjour", " depuis", " le", " serveur", " factice."];
+const UNSAFE_DELTAS = [
+  "Titre sûr <script>window.pwned = 1</script>\n\n",
+  "<img src=x onerror=\"window.pwned = 2\"> ",
+  "[lien](javascript:window.pwned=3) et [sain](https://example.org/ok)",
+];
 const USAGE = { input_tokens: 12, output_tokens: 5 };
 const CORS_HEADERS = {
   "access-control-allow-origin": "*",
@@ -40,7 +45,9 @@ const ERROR_BODIES: Record<string, { status: number; type: string; headers?: Rec
 };
 const STOP_REASONS: Partial<Record<Scenario, string>> = { refusal: "refusal", max_tokens: "max_tokens" };
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const deltasFor = (scenario: Scenario) => (scenario === "unsafe_markdown" ? UNSAFE_DELTAS : DELTAS);
+
+const sleep =(ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -101,7 +108,7 @@ async function streamMessage(res: ServerResponse, model: string, scenario: Scena
   sendEvent(res, "message_start", { message: messageShell(model, null, { input_tokens: USAGE.input_tokens, output_tokens: 0 }) });
   sendEvent(res, "content_block_start", { index: 0, content_block: { type: "text", text: "" } });
   const delay = scenario === "slow" ? SLOW_DELAY_MS : NORMAL_DELAY_MS;
-  for (const [position, text] of DELTAS.entries()) {
+  for (const [position, text] of deltasFor(scenario).entries()) {
     await sleep(delay);
     if (scenario === "drop" && position === DROP_AFTER_DELTAS) return void res.socket?.destroy();
     sendEvent(res, "content_block_delta", { index: 0, delta: { type: "text_delta", text } });
@@ -117,7 +124,7 @@ async function streamMessage(res: ServerResponse, model: string, scenario: Scena
 
 function sendWholeMessage(res: ServerResponse, model: string, scenario: Scenario): void {
   const message = messageShell(model, STOP_REASONS[scenario] ?? "end_turn", USAGE);
-  sendJson(res, 200, { ...message, content: [{ type: "text", text: DELTAS.join("") }] });
+  sendJson(res, 200, { ...message, content: [{ type: "text", text: deltasFor(scenario).join("") }] });
 }
 
 async function handleMessages(res: ServerResponse, record: RecordedRequest): Promise<void> {

@@ -23,8 +23,8 @@ describe("commands and menus", () => {
 
   it("creates the three menu entries with translated titles", async () => {
     await createMenus();
-    expect(fake.menus.create.mock.calls.map(([entry]) => entry.id)).toEqual(["explain-selection", "ask-page", "save-page"]);
-    expect(fake.menus.create.mock.calls[0]?.[0].title).toBe("t:background_menuExplain");
+    expect(fake.contextMenus.create.mock.calls.map(([entry]) => entry.id)).toEqual(["explain-selection", "ask-page", "save-page"]);
+    expect(fake.contextMenus.create.mock.calls[0]?.[0].title).toBe("t:background_menuExplain");
   });
 
   it("opens the sidebar synchronously from the ask-page menu and hands the capture over", async () => {

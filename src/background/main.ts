@@ -12,7 +12,7 @@ browser.runtime.onConnect.addListener((port) => {
 });
 browser.runtime.onInstalled.addListener(onInstalled);
 browser.commands.onCommand.addListener(onCommand);
-browser.menus.onClicked.addListener(onMenuClicked);
+browser.contextMenus.onClicked.addListener(onMenuClicked);
 browser.permissions.onAdded.addListener(syncOverlayRegistration);
 browser.permissions.onRemoved.addListener(syncOverlayRegistration);
 browser.storage.onChanged.addListener(onStorageChanged);
