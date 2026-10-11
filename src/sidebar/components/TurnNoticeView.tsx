@@ -21,7 +21,7 @@ const SPECS: Record<TurnNotice["kind"], NoticeSpec> = {
   no_key: { tone: "warning", title: "sidebar_noKeyTitle", action: "settings" },
   auth: { tone: "error", title: "sidebar_errAuthTitle", body: "sidebar_errAuthBody", action: "settings" },
   rate_limit: { tone: "warning", role: "alert", title: "sidebar_errRateTitle", action: "retry" },
-  overloaded: { tone: "warning", title: "sidebar_errOverloadedTitle", body: "sidebar_errOverloadedBody", action: "retry" },
+  overloaded: { tone: "warning", role: "alert", title: "sidebar_errOverloadedTitle", body: "sidebar_errOverloadedBody", action: "retry" },
   network: { tone: "error", title: "sidebar_errNetworkTitle", body: "sidebar_errNetworkBody", action: "retry" },
   bad_request: { tone: "error", title: "sidebar_errBadRequestTitle" },
   unknown: { tone: "error", title: "sidebar_errUnknownTitle", body: "sidebar_errUnknownBody", action: "retry" },
