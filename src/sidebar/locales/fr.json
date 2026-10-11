@@ -61,6 +61,7 @@
   "sidebar_previewUser": "Message",
   "sidebar_privacy": "Rien n'est envoyé sans votre action. Clé stockée localement.",
   "sidebar_receipt": "Envoyé à {time} · {chars}",
+  "sidebar_receiptNoContext": "question seule",
   "sidebar_refusalBody": "Le modèle a décliné de répondre à cette demande. Reformulez-la si besoin.",
   "sidebar_refusalTitle": "Pas de réponse.",
   "sidebar_retry": "Réessayer",

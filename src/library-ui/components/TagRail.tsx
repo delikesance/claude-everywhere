@@ -20,7 +20,7 @@ export function TagRail({ tagCounts, total, activeTag, onSelect }: TagRailProps)
   return (
     <nav class="lib__rail" aria-label={t("library_ui_filters")}>
       <p class="overline">{t("library_ui_tagsTitle")}</p>
-      <ul class="stack">
+      <ul class="stack toc">
         <li>
           <TagButton label={t("library_ui_allTags", { count: total })} active={activeTag === null} onClick={() => onSelect(null)} />
         </li>

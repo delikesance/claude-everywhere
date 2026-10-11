@@ -1,5 +1,5 @@
 export function formatDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleDateString(undefined, { day: "numeric", month: "long" });
+  return new Date(timestamp).toLocaleDateString(document.documentElement.lang || undefined, { day: "numeric", month: "long" });
 }
 
 export function hostOf(url: string | null): string | null {

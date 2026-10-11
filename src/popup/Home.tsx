@@ -10,7 +10,7 @@ export interface HomeProps {
 
 export function Home({ onAsk, onSave, onOpenLibrary }: HomeProps) {
   return (
-    <div class="stack">
+    <>
       <p class="overline">{t("popup_sectionPage")}</p>
       <Button variant="primary" onClick={onAsk}>
         {t("popup_ask")}
@@ -20,7 +20,7 @@ export function Home({ onAsk, onSave, onOpenLibrary }: HomeProps) {
         <Icon name="library" />
         {t("popup_openLibrary")}
       </Button>
-    </div>
+    </>
   );
 }
 

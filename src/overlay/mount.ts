@@ -16,21 +16,21 @@ function isShowMessage(message: unknown): boolean {
 function listen(overlay: Overlay, hostElement: Element): void {
   const fromHost = (event: Event) => event.composedPath().includes(hostElement);
   const refresh = (event: Event) => {
-    if (!fromHost(event)) setTimeout(overlay.refreshToolbar);
+    if (event.isTrusted && !fromHost(event)) setTimeout(overlay.refreshToolbar);
   };
   document.addEventListener("mouseup", refresh);
   document.addEventListener("keyup", refresh);
   document.addEventListener(
     "pointerdown",
     (event) => {
-      if (overlay.isCardOpen() && !fromHost(event)) overlay.dismiss();
+      if (event.isTrusted && overlay.isCardOpen() && !fromHost(event)) overlay.dismiss();
     },
     true,
   );
   window.addEventListener(
     "keydown",
     (event) => {
-      if (event.key === "Escape") overlay.dismiss();
+      if (event.isTrusted && event.key === "Escape") overlay.dismiss();
     },
     true,
   );

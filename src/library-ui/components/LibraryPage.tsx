@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
 import type { Library, ListQuery, SearchHit } from "../../library";
 import { t } from "../../shared/i18n";
-import { Icon, Input, Select } from "../../shared/ui";
+import { Input, Select } from "../../shared/ui";
 import type { Artifact } from "../../shared/types";
 import { attachToContext, exportAndDownload } from "../actions";
 import { SEARCH_DEBOUNCE_MS, SEARCH_LIMIT } from "../constants";
@@ -12,6 +12,8 @@ import { EmptyLibrary, ListSkeleton, LoadError, NoResult, NoTagged } from "./Lis
 import { LibraryTools } from "./LibraryTools";
 import { SelectionBar } from "./SelectionBar";
 import { TagRail } from "./TagRail";
+
+const SEARCH_WIDTH = "260px";
 
 type Sort = NonNullable<ListQuery["sort"]>;
 const SORTS: { value: Sort; labelKey: "library_ui_sortUpdated" | "library_ui_sortCreated" | "library_ui_sortTitle" }[] = [
@@ -69,8 +71,7 @@ export function LibraryPage({ library }: { library: Library }) {
               </option>
             ))}
           </Select>
-          <div class="input-group">
-            <Icon name="search" />
+          <div class="input-group" style={{ width: SEARCH_WIDTH }}>
             <Input
               type="search"
               aria-label={t("library_ui_search")}
@@ -91,7 +92,7 @@ export function LibraryPage({ library }: { library: Library }) {
         <StatusLine status={status} />
         {searching && <ResultsCount count={visibleHits.length} query={query} />}
         {rows.length > 0 && (
-          <ul class="stack">
+          <ul class="toc">
             {rows.map((row) => (
               <ArtifactRow key={row.artifact.id} {...row} selected={selected.has(row.artifact.id)} onToggle={toggle} />
             ))}
