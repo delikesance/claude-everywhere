@@ -22,6 +22,7 @@ const SECTIONS: { id: string; folio: string; titleKey: MessageKey }[] = [
   { id: "shortcuts", folio: "V", titleKey: "options_shortcutsTitle" },
   { id: "data", folio: "VI", titleKey: "options_dataTitle" },
   { id: "privacy", folio: "VII", titleKey: "options_privacyTitle" },
+  { id: "native", folio: "VIII", titleKey: "options_backendSection" },
 ];
 
 function sectionProps(id: string) {
@@ -46,14 +47,12 @@ export function OptionsPage() {
         <h1 class="display">{t("options_pageTitle")}</h1>
         <Section {...sectionProps("key")}>
           <BackendSelector value={settings.backend} onChange={(backend) => void update({ backend })} />
-          {settings.backend === "api-key" ? (
+          {settings.backend === "api-key" && (
             <ApiKeyField
               storedKey={settings.apiKey}
               onOutcome={() => void refresh()}
               onClear={() => void update({ apiKey: null })}
             />
-          ) : (
-            <NativeHostCheck />
           )}
         </Section>
         <Section {...sectionProps("model")}>
@@ -81,27 +80,33 @@ export function OptionsPage() {
           />
           <ThemeToggle theme={settings.theme} onChange={(theme) => void update({ theme })} />
         </Section>
-        <Section {...sectionProps("sites")}>
-          <PermissionToggle
-            label={t("options_overlayAllSites")}
-            checked={settings.overlayAllSites}
-            onChange={(overlayAllSites) => update({ overlayAllSites })}
-          />
-          <PermissionToggle
-            label={t("options_sidebarReadsActiveTab")}
-            checked={settings.sidebarReadsActiveTab}
-            onChange={(sidebarReadsActiveTab) => update({ sidebarReadsActiveTab })}
-          />
-        </Section>
-        <Section {...sectionProps("shortcuts")}>
-          <ShortcutsSection />
-        </Section>
-        <Section {...sectionProps("data")}>
-          <DataSection />
-        </Section>
-        <Section {...sectionProps("privacy")}>
-          <PrivacySection />
-        </Section>
+        <details class="advanced">
+          <summary>{t("options_advancedTitle")}</summary>
+          <Section {...sectionProps("sites")}>
+            <PermissionToggle
+              label={t("options_overlayAllSites")}
+              checked={settings.overlayAllSites}
+              onChange={(overlayAllSites) => update({ overlayAllSites })}
+            />
+            <PermissionToggle
+              label={t("options_sidebarReadsActiveTab")}
+              checked={settings.sidebarReadsActiveTab}
+              onChange={(sidebarReadsActiveTab) => update({ sidebarReadsActiveTab })}
+            />
+          </Section>
+          <Section {...sectionProps("shortcuts")}>
+            <ShortcutsSection />
+          </Section>
+          <Section {...sectionProps("data")}>
+            <DataSection />
+          </Section>
+          <Section {...sectionProps("privacy")}>
+            <PrivacySection />
+          </Section>
+          <Section {...sectionProps("native")}>
+            <NativeHostCheck />
+          </Section>
+        </details>
       </main>
     </div>
   );
