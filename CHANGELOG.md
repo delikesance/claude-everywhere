@@ -7,6 +7,18 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 ### Ajouté
 
 - Réglage « Répondre via » : Claude Code (local, utilise votre compte Claude, Firefox de bureau, via `npm run install:native-host`) ou clé API. Test de connexion de l'hôte natif.
+- Clé d'API saisie directement dans le panneau latéral, sans page d'accueil à l'installation.
+- Surcouche unique « Demander » pour interroger une sélection sur la page.
+- Animations sobres (glissement, balayage, apparition échelonnée, points de saisie), désactivées avec `prefers-reduced-motion`.
+
+### Modifié
+
+- Conversation d'abord : le clic sur l'icône de la barre d'outils ouvre ou ferme le panneau et transmet la page active au panneau.
+
+### Supprimé
+
+- Fenêtre rapide (popup) : la barre d'outils et le panneau la remplacent.
+- Page d'accueil à l'installation (`onboarding.html`) et réglage interne `onboardingDone`, retiré sans migration (les valeurs stockées sont ignorées).
 
 ## [0.1.0] - 2026-10-11
 

@@ -62,12 +62,10 @@ it("marks a private page as unreadable in the sidebar", async () => {
   await findByText(harness.driver, ".chip--unreadable", t("sidebar_pageUnreadable"));
 });
 
-// The install-time onboarding tab is closed by startSession while it is still loading, which logs a teardown error of its own.
 it("logs no extension error or manifest warning", () => {
   const problems = harness
     .browserLog()
     .split("\n")
-    .filter((line) => !line.includes("/onboarding.js"))
     .filter((line) => /JavaScript error: moz-extension|console\.error.*moz-extension|Reading manifest|Warning processing/.test(line));
   expect(problems).toEqual([]);
 });

@@ -15,7 +15,6 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: "system",
   overlayAllSites: false,
   sidebarReadsActiveTab: false,
-  onboardingDone: false,
 };
 
 const oneOf = <T extends string>(allowed: readonly T[], value: unknown, fallback: T): T =>
@@ -46,7 +45,6 @@ export function normalizeSettings(raw: unknown): Settings {
     theme: oneOf<Theme>(["system", "light", "dark"], stored["theme"], d.theme),
     overlayAllSites: bool(stored["overlayAllSites"], d.overlayAllSites),
     sidebarReadsActiveTab: bool(stored["sidebarReadsActiveTab"], d.sidebarReadsActiveTab),
-    onboardingDone: bool(stored["onboardingDone"], d.onboardingDone),
   };
 }
 
