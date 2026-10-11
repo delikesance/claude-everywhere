@@ -1,3 +1,5 @@
+import { t } from "../../shared/i18n";
+
 export interface FollowUpsProps {
   suggestions: string[];
   onPick: (suggestion: string) => void;
@@ -7,6 +9,7 @@ export function FollowUps({ suggestions, onPick }: FollowUpsProps) {
   if (suggestions.length === 0) return null;
   return (
     <div class="followups">
+      <span class="followups__label">{t("sidebar_followUpsLabel")}</span>
       {suggestions.map((text, index) => (
         <button
           key={index}

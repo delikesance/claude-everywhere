@@ -105,5 +105,6 @@
   "sidebar_readPage": "Read",
   "sidebar_keepPreviousPage": "Keep the previous one",
   "sidebar_followUpDetail": "Detail the last point",
+  "sidebar_followUpsLabel": "Suggestions from Claude",
   "sidebar_followUpCompare": "Compare with another source"
 }

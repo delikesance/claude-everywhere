@@ -180,6 +180,7 @@ kbd { font: 500 var(--fs-caption)/var(--lh-caption) var(--font-mono); background
 }
 .suggestion:hover { background: var(--raised); }
 .followups { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-4); }
+.followups__label { color: var(--muted); font: 500 var(--fs-caption)/var(--lh-caption) var(--font-sans); margin-bottom: var(--s-4); }
 .followup {
   padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer;
   font: 400 var(--fs-caption)/var(--lh-caption) var(--font-sans); text-align: left;
