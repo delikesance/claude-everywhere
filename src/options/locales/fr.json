@@ -1,6 +1,7 @@
 {
   "options_answerLanguage": "Langue des réponses",
   "options_answerLanguageAuto": "Comme la page",
+  "options_actionFailed": "L'action a échoué. Réessayez.",
   "options_cancel": "Annuler",
   "options_dataEraseAll": "Tout effacer…",
   "options_dataEraseConfirm": "Effacer toute la bibliothèque et les conversations de cet appareil ? Cette action est définitive.",
@@ -28,7 +29,7 @@
   "options_keyValid": "Clé valide",
   "options_keyValidate": "Valider",
   "options_keyValidating": "Vérification…",
-  "options_keyWarning": "Clé enregistrée, mais l'API est momentanément limitée ou saturée : elle n'a pas pu être vérifiée.",
+  "options_keyWarning": "Clé enregistrée, non vérifiée : l'API est momentanément limitée ou saturée.",
   "options_languageTitle": "Langue et thème",
   "options_localeEn": "English",
   "options_localeFr": "Français",

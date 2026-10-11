@@ -8,7 +8,7 @@ import { SEARCH_DEBOUNCE_MS, SEARCH_LIMIT } from "../constants";
 import { useDebounced, useLibraryData, useSelection } from "../hooks";
 import { StatusLine, useStatus } from "../status";
 import { ArtifactRow } from "./ArtifactRow";
-import { EmptyLibrary, ListSkeleton, NoResult, NoTagged } from "./ListStates";
+import { EmptyLibrary, ListSkeleton, LoadError, NoResult, NoTagged } from "./ListStates";
 import { LibraryTools } from "./LibraryTools";
 import { SelectionBar } from "./SelectionBar";
 import { TagRail } from "./TagRail";
@@ -42,10 +42,10 @@ export function LibraryPage({ library }: { library: Library }) {
   const { selected, toggle, clear } = useSelection();
   const { status, run } = useStatus();
 
-  const { data: artifacts } = useLibraryData(library, (lib) => lib.listArtifacts({ sort }), [sort]);
+  const { data: artifacts, error } = useLibraryData(library, (lib) => lib.listArtifacts({ sort }), [sort]);
   const { data: hits } = useLibraryData(library, (lib) => (query ? lib.search(query, SEARCH_LIMIT) : Promise.resolve(null)), [query]);
 
-  if (!artifacts) return <ListSkeleton />;
+  if (!artifacts) return error ? <LoadError /> : <ListSkeleton />;
 
   const matchesTag = (artifact: Artifact) => tag === null || artifact.tags.includes(tag);
   const searching = query !== "" && hits != null;
@@ -53,7 +53,8 @@ export function LibraryPage({ library }: { library: Library }) {
   const rows = searching
     ? visibleHits.map((hit) => ({ artifact: hit.artifact, snippets: hit.snippets }))
     : artifacts.filter(matchesTag).map((artifact) => ({ artifact, snippets: undefined }));
-  const ids = [...selected];
+  const existingIds = new Set(artifacts.map((artifact) => artifact.id));
+  const ids = [...selected].filter((id) => existingIds.has(id));
 
   return (
     <div class="lib">
@@ -79,9 +80,9 @@ export function LibraryPage({ library }: { library: Library }) {
             />
           </div>
         </div>
-        {selected.size > 0 && (
+        {ids.length > 0 && (
           <SelectionBar
-            count={selected.size}
+            count={ids.length}
             onAttach={() => run(() => attachToContext(ids), "library_ui_attached")}
             onExport={() => run(() => exportAndDownload(library, ids, true), "library_ui_exported")}
             onClear={clear}

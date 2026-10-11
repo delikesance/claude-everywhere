@@ -1,5 +1,5 @@
 import { t } from "../../shared/i18n";
-import { Button, Icon } from "../../shared/ui";
+import { Button, Icon, Notice } from "../../shared/ui";
 
 export function ListSkeleton() {
   return (
@@ -18,6 +18,10 @@ export function ListSkeleton() {
       </ul>
     </div>
   );
+}
+
+export function LoadError() {
+  return <Notice tone="error" title={t("library_ui_loadError")} />;
 }
 
 export function EmptyLibrary() {

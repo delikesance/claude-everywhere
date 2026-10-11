@@ -1,6 +1,8 @@
 import type { ExportFile, Library } from "../library";
 import { STORAGE_KEYS } from "../shared/constants";
 
+const REVOKE_DELAY_MS = 1000;
+
 export function downloadFile(file: ExportFile): void {
   const url = URL.createObjectURL(
     new Blob([file.content], { type: file.mime }),
@@ -8,8 +10,10 @@ export function downloadFile(file: ExportFile): void {
   const link = document.createElement("a");
   link.href = url;
   link.download = file.filename;
+  document.body.append(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), REVOKE_DELAY_MS);
 }
 
 /** The sidebar must be opened synchronously: it only opens inside the user gesture. */
@@ -17,8 +21,8 @@ export function attachToContext(ids: string[]): Promise<void> {
   const saved = browser.storage.session.set({
     [STORAGE_KEYS.pendingAttach]: ids,
   });
-  void browser.sidebarAction.open();
-  return saved;
+  const opened = browser.sidebarAction.open();
+  return Promise.all([saved, opened]).then(() => undefined);
 }
 
 export async function exportAndDownload(

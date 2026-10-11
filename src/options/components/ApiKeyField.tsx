@@ -37,12 +37,13 @@ export function ApiKeyField({ storedKey, submitLabel = t("options_keyValidate"),
     event.preventDefault();
     if (busy) return;
     setBusy(true);
-    void submitKey(draft)
+    submitKey(draft)
       .then((result) => {
         setOutcome(result);
         if (isStored(result)) setDraft("");
         onOutcome(result);
       })
+      .catch(() => setOutcome("unknown"))
       .finally(() => setBusy(false));
   };
 
