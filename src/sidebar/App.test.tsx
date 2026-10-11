@@ -84,7 +84,7 @@ describe("App", () => {
   it("shows the missing-key state and disables the composer", () => {
     settings.value = { ...DEFAULT_SETTINGS, apiKey: null };
     mount();
-    expect(root.textContent).toContain("sidebar_noKeyTitle");
+    expect(root.textContent).toContain("sidebar_key_title");
     expect(root.querySelector("textarea")?.disabled).toBe(true);
   });
 
