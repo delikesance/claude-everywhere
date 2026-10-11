@@ -5,7 +5,7 @@ import { applyTheme } from "../../shared/theme";
 import type { Settings } from "../../shared/types";
 
 export const settings = signal<Settings>(DEFAULT_SETTINGS);
-export const hasKey = computed(() => settings.value.apiKey !== null);
+export const hasKey = computed(() => settings.value.backend === "claude-code" || settings.value.apiKey !== null);
 
 export async function loadSettings(): Promise<void> {
   settings.value = await getSettings();

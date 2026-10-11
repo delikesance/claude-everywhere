@@ -11,7 +11,7 @@ export function NativeHostCheck() {
   const test = () => {
     setState("busy");
     sendRequest("native/ping", {})
-      .then(({ ok }) => setState(ok ? "ok" : "failed"))
+      .then(({ available }) => setState(available ? "ok" : "failed"))
       .catch(() => setState("failed"));
   };
 
