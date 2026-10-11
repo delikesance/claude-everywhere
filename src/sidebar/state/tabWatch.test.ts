@@ -22,7 +22,10 @@ describe("watchActiveTab", () => {
     onActivated = listenerSet();
     onUpdated = listenerSet();
     tabs.get.mockReset();
-    vi.stubGlobal("browser", { tabs: { ...tabs, onActivated, onUpdated } });
+    vi.stubGlobal("browser", {
+      runtime: { getURL: (path: string) => `moz-extension://test-uuid/${path}` },
+      tabs: { ...tabs, onActivated, onUpdated },
+    });
   });
 
   afterEach(() => {
@@ -49,6 +52,17 @@ describe("watchActiveTab", () => {
     updated!(3, { url: "https://example.org" }, { active: true, title: "Example", url: "https://example.org" });
 
     expect(onChange).toHaveBeenCalledWith({ title: "Example", url: "https://example.org" });
+  });
+
+  it("reports no tab when the active one is an extension page", async () => {
+    tabs.get.mockResolvedValue({ id: 6, title: "Options", url: "moz-extension://test-uuid/options.html" });
+    const onChange = vi.fn();
+    watchActiveTab(onChange);
+
+    const [activated] = [...onActivated.listeners] as Array<(info: { tabId: number }) => Promise<void>>;
+    await activated!({ tabId: 6 });
+
+    expect(onChange).toHaveBeenCalledWith(null);
   });
 
   it("ignores url changes of background tabs", () => {

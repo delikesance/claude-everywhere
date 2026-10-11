@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import { t } from "../../shared/i18n";
 import { Icon } from "../../shared/ui";
 import { conversation, draft, reading } from "../state/conversation";
@@ -44,6 +44,11 @@ function SendOrStop() {
 export function Composer() {
   const [picking, setPicking] = useState(false);
   const input = useRef<HTMLTextAreaElement>(null);
+  const keyless = useRef(!hasKey.value);
+  useEffect(() => {
+    if (hasKey.value && keyless.current) input.current?.focus();
+    keyless.current = !hasKey.value;
+  }, [hasKey.value]);
   useLayoutEffect(() => {
     const field = input.current;
     if (!field) return;

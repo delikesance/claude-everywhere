@@ -13,8 +13,12 @@ export function watchTabChanges(): void {
   });
 }
 
-export function watchActiveTab(onChange: (tab: WatchedTab) => void): () => void {
-  const report = (tab: browser.tabs.Tab) => onChange({ title: tab.title ?? "", url: tab.url ?? "" });
+export function watchActiveTab(onChange: (tab: WatchedTab | null) => void): () => void {
+  const ownPagesPrefix = browser.runtime.getURL("");
+  const report = (tab: browser.tabs.Tab) => {
+    const isOwnPage = tab.url?.startsWith(ownPagesPrefix) ?? false;
+    onChange(isOwnPage ? null : { title: tab.title ?? "", url: tab.url ?? "" });
+  };
 
   const onActivated = async ({ tabId }: { tabId: number }) => {
     const tab = await browser.tabs.get(tabId).catch(() => undefined);
