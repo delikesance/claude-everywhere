@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Vidéo de test - YouTube</title>
+  </head>
+  <body>
+    <video controls muted></video>
+    <script>
+      window.ytInitialPlayerResponse = {
+        videoDetails: {
+          videoId: "e2eVideo001",
+          title: "Vidéo de test",
+          author: "Chaîne de test",
+          shortDescription: "Une description factice.",
+          lengthSeconds: "125",
+        },
+        captions: {
+          playerCaptionsTracklistRenderer: {
+            captionTracks: [{ baseUrl: `${location.origin}/api/timedtext?v=e2eVideo001&lang=fr`, languageCode: "fr" }],
+          },
+        },
+      };
+    </script>
+  </body>
+</html>
