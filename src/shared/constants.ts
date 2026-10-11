@@ -5,6 +5,10 @@ export const MODEL_IDS = [
 ] as const;
 export type ModelId = (typeof MODEL_IDS)[number];
 export const DEFAULT_MODEL: ModelId = "claude-sonnet-5-5";
+export const BACKENDS = ["claude-code", "api-key"] as const;
+export type Backend = (typeof BACKENDS)[number];
+export const DEFAULT_BACKEND: Backend = "api-key";
+export const NATIVE_HOST_NAME = "claude_everywhere";
 export const DEFAULT_MAX_TOKENS = 4096;
 export const MAX_OUTPUT_TOKENS = 64_000;
 export const CHARS_PER_TOKEN = 4;

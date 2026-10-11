@@ -6,8 +6,10 @@ import { AppException } from "../shared/errors";
 import type { ChatMessage, StopReason } from "../shared/types";
 import { planContext, renderPrompt } from "./budget";
 import { mapSdkError } from "./errors";
+import { streamNative, transcriptPrompt } from "./native";
 
 export { mapSdkError } from "./errors";
+export { pingNative } from "./native";
 
 const KEY_CHECK_MODEL = "claude-haiku-5-5";
 const KEY_CHECK_MAX_TOKENS = 1;
@@ -38,16 +40,37 @@ export async function validateKey(apiKey: string): Promise<void> {
   }
 }
 
+function prepare(req: ChatStart) {
+  const maxTokens = req.maxTokens ?? DEFAULT_MAX_TOKENS;
+  const historyChars = req.history.reduce((total, m) => total + m.text.length, 0);
+  const plan = planContext(req.items, req.userText, req.model, { maxTokens, historyChars });
+  const { system, user } = renderPrompt(plan, req.userText, req.answerLanguage);
+  return { maxTokens, plan, system, user };
+}
+
+async function runNativeChat(req: ChatStart, signal: AbortSignal, on: (m: ChatServerMsg) => void): Promise<ChatServerMsg> {
+  const { maxTokens, plan, system, user } = prepare(req);
+  return streamNative(
+    {
+      requestId: req.requestId,
+      model: req.model,
+      system,
+      prompt: transcriptPrompt(req.history, user),
+      maxTokens,
+      bordereau: plan.bordereau,
+    },
+    signal,
+    on,
+  );
+}
+
 async function runChat(
   req: ChatStart,
   apiKey: string,
   signal: AbortSignal,
   on: (m: ChatServerMsg) => void,
 ): Promise<ChatServerMsg> {
-  const maxTokens = req.maxTokens ?? DEFAULT_MAX_TOKENS;
-  const historyChars = req.history.reduce((total, m) => total + m.text.length, 0);
-  const plan = planContext(req.items, req.userText, req.model, { maxTokens, historyChars });
-  const { system, user } = renderPrompt(plan, req.userText, req.answerLanguage);
+  const { maxTokens, plan, system, user } = prepare(req);
   const stream = createClient(apiKey).messages.stream(
     {
       model: req.model,
@@ -79,7 +102,8 @@ export async function streamChat(
 
 async function settle(req: ChatStart, signal: AbortSignal, on: (m: ChatServerMsg) => void): Promise<ChatServerMsg> {
   try {
-    const { apiKey } = await getSettings();
+    const { backend, apiKey } = await getSettings();
+    if (backend === "claude-code") return await runNativeChat(req, signal, on);
     if (!apiKey) return { type: "error", requestId: req.requestId, error: { kind: "no_key" } };
     return await runChat(req, apiKey, signal, on);
   } catch (e) {

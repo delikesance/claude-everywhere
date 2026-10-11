@@ -1,4 +1,4 @@
-import type { ModelId } from "./constants";
+import type { Backend, ModelId } from "./constants";
 
 export { AppException } from "./errors";
 
@@ -7,6 +7,7 @@ export type Theme = "system" | "light" | "dark";
 
 export interface Settings {
   schemaVersion: 1;
+  backend: Backend;
   apiKey: string | null;
   defaultModel: ModelId;
   maxTokens: number;

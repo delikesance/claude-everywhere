@@ -1,11 +1,12 @@
-import { DEFAULT_MAX_TOKENS, DEFAULT_MODEL, MAX_OUTPUT_TOKENS, MODEL_IDS, SCHEMA_VERSION, STORAGE_KEYS } from "./constants";
-import type { ModelId } from "./constants";
+import { BACKENDS, DEFAULT_BACKEND, DEFAULT_MAX_TOKENS, DEFAULT_MODEL, MAX_OUTPUT_TOKENS, MODEL_IDS, SCHEMA_VERSION, STORAGE_KEYS } from "./constants";
+import type { Backend, ModelId } from "./constants";
 import type { Settings, Theme, UiLocale } from "./types";
 
 const MIN_MAX_TOKENS = 1;
 
 export const DEFAULT_SETTINGS: Settings = {
   schemaVersion: SCHEMA_VERSION,
+  backend: DEFAULT_BACKEND,
   apiKey: null,
   defaultModel: DEFAULT_MODEL,
   maxTokens: DEFAULT_MAX_TOKENS,
@@ -36,6 +37,7 @@ export function normalizeSettings(raw: unknown): Settings {
   const d = DEFAULT_SETTINGS;
   return {
     schemaVersion: SCHEMA_VERSION,
+    backend: oneOf<Backend>(BACKENDS, stored["backend"], d.backend),
     apiKey: validApiKey(stored["apiKey"]),
     defaultModel: oneOf<ModelId>(MODEL_IDS, stored["defaultModel"], d.defaultModel),
     maxTokens: validMaxTokens(stored["maxTokens"]),

@@ -17,6 +17,7 @@ export type Result<T> = { ok: true; value: T } | { ok: false; error: AppError };
 
 export interface RequestMap {
   "key/validate": { req: { apiKey: string }; res: { valid: true } };
+  "native/ping": { req: Record<string, never>; res: { available: boolean } };
   "capture/run": { req: { mode: CaptureMode; tabId?: number; handoff: boolean }; res: ExtractedPage };
   "capture/takePending": { req: Record<string, never>; res: ExtractedPage | null };
   "pdf/extract": { req: { url: string }; res: ExtractedPage };

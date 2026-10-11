@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const EXPECTED = {
-  permissions: ["activeTab", "contextMenus", "scripting", "storage"],
+  permissions: ["activeTab", "contextMenus", "nativeMessaging", "scripting", "storage"],
   host_permissions: ["https://api.anthropic.com/*"],
   optional_host_permissions: ["<all_urls>"],
   csp:
