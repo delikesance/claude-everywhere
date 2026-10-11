@@ -3,6 +3,7 @@ import type { SearchHit } from "../../library";
 import { t } from "../../shared/i18n";
 import type { Artifact } from "../../shared/types";
 import { byText, click, fakeLibrary, initFrench, installBrowserStub, mount, settle, typeInto } from "../testing";
+import { ImportControl } from "./ImportControl";
 import { LibraryPage } from "./LibraryPage";
 
 const artifact: Artifact = {
@@ -52,17 +53,13 @@ it("says nothing is in the margin when the search finds nothing", async () => {
   expect(page.textContent).toContain("Rien dans la marge pour");
 });
 
-it("attaches the selection to the context and opens the sidebar in the click", async () => {
-  const library = fakeLibrary({ listArtifacts: vi.fn(async () => [artifact]) });
+it("shows the empty state when nothing has been kept", async () => {
+  const library = fakeLibrary({ listArtifacts: vi.fn(async () => []) });
   const page = await mount(<LibraryPage library={library} />);
   await settle();
 
-  await click(page.querySelector("input[type=checkbox]"));
-  await click(byText(page, "button", "Ajouter au contexte"));
-
-  const { storage, sidebarAction } = (globalThis as unknown as { browser: typeof browser }).browser;
-  expect(storage.session.set).toHaveBeenCalledWith({ pendingAttach: ["a1"] });
-  expect(sidebarAction.open).toHaveBeenCalledTimes(1);
+  expect(page.textContent).toContain(t("library_ui_emptyTitle"));
+  expect(byText(page, "button", "Exporter")).toBeNull();
 });
 
 it("reopens an entry in the conversation when its title is clicked", async () => {
@@ -77,27 +74,10 @@ it("reopens an entry in the conversation when its title is clicked", async () =>
   expect(sidebarAction.open).toHaveBeenCalledTimes(1);
 });
 
-it("downloads the selected artifacts as a bundle through a blob URL", async () => {
-  const exportMarkdown = vi.fn(async () => ({ filename: "lot.md", mime: "text/markdown", content: "# x" }));
-  const createObjectURL = vi.fn(() => "blob:x");
-  Object.assign(URL, { createObjectURL, revokeObjectURL: vi.fn() });
-  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
-  const library = fakeLibrary({ listArtifacts: vi.fn(async () => [artifact]), exportMarkdown });
-  const page = await mount(<LibraryPage library={library} />);
-  await settle();
-
-  await click(page.querySelector("input[type=checkbox]"));
-  await click(byText(page, "button", "Exporter le lot"));
-
-  expect(exportMarkdown).toHaveBeenCalledWith(["a1"], true);
-  expect(createObjectURL).toHaveBeenCalledTimes(1);
-});
-
 it("shows the import report", async () => {
   const importJson = vi.fn(async () => ({ artifacts: 2, versions: 3, conversations: 1, skipped: 0 }));
-  const library = fakeLibrary({ listArtifacts: vi.fn(async () => [artifact]), importJson });
-  const page = await mount(<LibraryPage library={library} />);
-  await settle();
+  const library = fakeLibrary({ importJson });
+  const page = await mount(<ImportControl library={library} />);
 
   const input = page.querySelector<HTMLInputElement>("input[type=file]")!;
   Object.defineProperty(input, "files", { value: [{ text: async () => "{}" }] });
@@ -106,4 +86,19 @@ it("shows the import report", async () => {
 
   expect(importJson).toHaveBeenCalledWith("{}");
   expect(page.textContent).toContain(t("library_ui_importReportTitle"));
+});
+
+it("exports the whole library as JSON from the footer", async () => {
+  const exportJson = vi.fn(async () => ({ filename: "gardé.json", mime: "application/json", content: "{}" }));
+  const createObjectURL = vi.fn(() => "blob:x");
+  Object.assign(URL, { createObjectURL, revokeObjectURL: vi.fn() });
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
+  const library = fakeLibrary({ listArtifacts: vi.fn(async () => [artifact]), exportJson });
+  const page = await mount(<LibraryPage library={library} />);
+  await settle();
+
+  await click(byText(page, "button", "Exporter"));
+
+  expect(exportJson).toHaveBeenCalledTimes(1);
+  expect(createObjectURL).toHaveBeenCalledTimes(1);
 });

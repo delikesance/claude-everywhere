@@ -1,12 +1,18 @@
-import { renderSafeMarkdown } from "../shared/render-markdown";
 import { formatChars } from "../shared/format";
 import { t } from "../shared/i18n";
-import { closeButton, el, icon, relabel, textButton } from "./dom";
+import { renderSafeMarkdown } from "../shared/render-markdown";
+import { actionButton, closeButton, el, icon, relabel } from "./dom";
 
 export type NoticeKind = "warning" | "error";
 
+export interface NoticeContent {
+  kind: NoticeKind;
+  body?: string;
+  title?: string;
+  action?: { label: string; onClick: () => void };
+}
+
 export interface CardActions {
-  explain(): void;
   copy(): void;
   save(): void;
   panel(): void;
@@ -18,87 +24,86 @@ export interface CardView {
   setSentChars(count: number | null): void;
   setAnswer(markdown: string, streaming: boolean): void;
   setWriting(writing: boolean): void;
-  setRetryVisible(visible: boolean): void;
-  setResultActionsVisible(visible: boolean): void;
+  setFootVisible(visible: boolean): void;
   setCopied(): void;
   setSaved(): void;
-  showNotice(kind: NoticeKind, body: string, title?: string): void;
+  showNotice(content: NoticeContent): void;
   clearNotice(): void;
-  setHint(text: string): void;
   focus(): void;
 }
 
 const NOTICE_ICON = { warning: "triangleAlert", error: "circleAlert" } as const;
 
-function notice(kind: NoticeKind, body: string, title?: string): HTMLElement {
-  const text = el("div", "notice__text");
-  if (title) text.append(el("p", "notice__title", title));
-  text.append(el("p", "notice__body", body));
-  const element = el("div", `notice notice--${kind}`, el("span", "notice__icon", icon(NOTICE_ICON[kind])), text);
+function dots(): HTMLElement {
+  return el("span", "anim-dots", el("span", ""), el("span", ""), el("span", ""));
+}
+
+function noticeElement({ kind, body, title, action }: NoticeContent): HTMLElement {
+  const content = el("div", "");
+  if (title) content.append(el("p", "notice__title", title));
+  if (body) content.append(el("p", "notice__body", body));
+  if (action) content.append(el("div", "notice__actions", actionButton(action.label, "secondary", action.onClick)));
+  const element = el("div", `notice notice--${kind}`, el("span", "notice__icon", icon(NOTICE_ICON[kind])), content);
   element.setAttribute("role", kind === "error" ? "alert" : "status");
   return element;
 }
 
 export function buildCard(quote: string, actions: CardActions): CardView {
-  const quoteBox = el("blockquote", "overlay-card__quote sent", quote);
-  const noticeSlot = el("div", "");
-  const answer = el("div", "reading reading--compact md");
-  answer.setAttribute("aria-live", "polite");
-  const hint = el("p", "caption");
-  hint.setAttribute("role", "status");
-  const body = el("div", "overlay-card__body", noticeSlot, answer, hint);
-
-  const status = el("span", "status-tag");
-  status.setAttribute("role", "status");
-  status.hidden = true;
-  const retry = textButton(t("overlay_ask"), "egress", actions.explain);
-  retry.hidden = true;
-  const copy = textButton(t("overlay_copy"), "copy", actions.copy);
-  const save = textButton(t("overlay_save"), "bookmarkPlus", actions.save);
-  const panel = textButton(t("overlay_panel"), "arrowUpRight", actions.panel);
-  panel.classList.replace("btn--quiet", "btn--primary");
-  const resultActions = [copy, save, panel];
-  const foot = el(
+  const head = el(
     "div",
-    "overlay-card__foot",
-    status,
-    el("span", "grow"),
-    retry,
-    ...resultActions,
+    "overlay-card__head",
+    el("span", "grow", t("overlay_cardTitle")),
     closeButton(t("shared_close"), actions.close),
   );
+  const quoteBox = el("blockquote", "overlay-card__quote sent", quote);
+  const sent = el("p", "overlay-card__sent");
+  sent.hidden = true;
+  const noticeSlot = el("div", "");
+  const waiting = el("p", "reading reading--compact", dots(), ` ${t("overlay_writing")}`);
+  waiting.setAttribute("role", "status");
+  waiting.hidden = true;
+  const answer = el("div", "reading reading--compact md");
+  answer.setAttribute("aria-live", "polite");
+  const body = el("div", "overlay-card__body", noticeSlot, waiting, answer);
 
-  const element = el("div", "overlay-card anim-pop", quoteBox, body, foot);
+  const panel = actionButton(t("overlay_panel"), "primary", actions.panel);
+  const copy = actionButton(t("overlay_copy"), "quiet", actions.copy, "copy");
+  const save = actionButton(t("overlay_save"), "quiet", actions.save, "bookmarkPlus");
+  const foot = el("div", "overlay-card__foot", panel, copy, save);
+  foot.hidden = true;
+
+  const element = el("div", "overlay-card anim-pop", head, quoteBox, sent, body, foot);
   element.setAttribute("role", "dialog");
   element.setAttribute("aria-label", t("overlay_dialogLabel"));
   element.tabIndex = -1;
 
-  const setResultActionsVisible = (visible: boolean) => resultActions.forEach((button) => (button.hidden = !visible));
-  setResultActionsVisible(false);
-
   return {
     element,
     setSentChars(count) {
-      status.hidden = count === null;
-      if (count !== null) status.textContent = t("overlay_sent", { chars: formatChars(count) });
+      sent.hidden = count === null;
+      if (count !== null) sent.textContent = t("overlay_sent", { chars: formatChars(count) });
     },
     setAnswer(markdown, streaming) {
+      waiting.hidden = true;
       answer.replaceChildren(renderSafeMarkdown(markdown));
       if (streaming) answer.append(el("span", "caret"));
     },
     setWriting(writing) {
       answer.setAttribute("aria-busy", String(writing));
-      if (writing && !answer.hasChildNodes()) answer.append(el("span", "ellipsis", t("overlay_writing").replace("…", "")));
+      waiting.hidden = !writing;
+      foot.hidden = false;
+      [panel, copy, save].forEach((button) => (button.disabled = writing));
     },
-    setRetryVisible(visible) {
-      retry.hidden = !visible;
+    setFootVisible(visible) {
+      foot.hidden = !visible;
     },
-    setResultActionsVisible,
     setCopied: () => relabel(copy, t("overlay_copied")),
-    setSaved: () => relabel(save, t("overlay_saved")),
-    showNotice: (kind, text, title) => noticeSlot.replaceChildren(notice(kind, text, title)),
+    setSaved() {
+      save.replaceChildren(icon("check"), t("overlay_saved"));
+      save.setAttribute("aria-pressed", "true");
+    },
+    showNotice: (content) => noticeSlot.replaceChildren(noticeElement(content)),
     clearNotice: () => noticeSlot.replaceChildren(),
-    setHint: (text) => void (hint.textContent = text),
     focus: () => element.focus(),
   };
 }

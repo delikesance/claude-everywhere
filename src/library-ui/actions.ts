@@ -1,4 +1,4 @@
-import type { ExportFile, Library } from "../library";
+import type { ExportFile } from "../library";
 import { STORAGE_KEYS } from "../shared/constants";
 
 const REVOKE_DELAY_MS = 1000;
@@ -23,16 +23,4 @@ export function attachToContext(ids: string[]): Promise<void> {
   });
   const opened = browser.sidebarAction.open();
   return Promise.all([saved, opened]).then(() => undefined);
-}
-
-export async function exportAndDownload(
-  library: Library,
-  ids: string[],
-  bundle: boolean,
-): Promise<void> {
-  downloadFile(await library.exportMarkdown(ids, bundle));
-}
-
-export function copyText(text: string): Promise<void> {
-  return navigator.clipboard.writeText(text);
 }

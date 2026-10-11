@@ -1,4 +1,5 @@
 import { planContext } from "../api/budget";
+import { formatChars, formatNumber } from "../shared/format";
 import { t } from "../shared/i18n";
 import type { RequestMap } from "../shared/messages";
 import type { ContextItem } from "../shared/types";
@@ -43,19 +44,19 @@ export function openCard(surface: Surface, selection: PageSelection, config: Ove
     onClosed();
   };
 
-  const runAction = async (action: () => Promise<void>, onSuccess: () => void) => {
+  const runAction = async (action: () => Promise<void>, onSuccess?: () => void) => {
     try {
       await action();
-      onSuccess();
+      onSuccess?.();
     } catch {
-      view.showNotice("error", t("overlay_actionFailed"));
+      view.showNotice({ kind: "error", body: t("overlay_actionFailed") });
     }
   };
 
+  const panel = () => void runAction(continueInPanel);
+
   const explain = () => {
     view.clearNotice();
-    view.setRetryVisible(false);
-    view.setResultActionsVisible(false);
     view.setWriting(true);
     abort = startExplain(
       { items: [item], model: config.defaultModel, userText: prompt, answerLanguage: config.answerLanguage },
@@ -67,23 +68,21 @@ export function openCard(surface: Surface, selection: PageSelection, config: Ove
         onDone() {
           view.setWriting(false);
           view.setAnswer(answer, false);
-          view.setResultActionsVisible(true);
         },
         onError(error) {
           view.setWriting(false);
           if (error.kind === "aborted") return;
-          view.setRetryVisible(true);
-          view.showNotice("error", errorText(error));
+          if (!answer) view.setFootVisible(false);
+          view.showNotice({ kind: "error", body: errorText(error) });
         },
       },
     );
   };
 
   const view = buildCard(selection.text, {
-    explain,
     copy: () => void runAction(() => copyText(answer), view.setCopied),
     save: () => void runAction(() => saveAnswer(answer), view.setSaved),
-    panel: () => void runAction(continueInPanel, () => view.setHint(t("overlay_panelHint"))),
+    panel,
     close,
   });
 
@@ -92,10 +91,18 @@ export function openCard(surface: Surface, selection: PageSelection, config: Ove
     const { bordereau } = planContext([item], prompt, config.defaultModel);
     view.setSentChars(bordereau.sentChars);
     if (bordereau.truncated) {
-      view.showNotice("warning", t("overlay_truncated", { sent: bordereau.sentChars, total: bordereau.totalChars }));
+      view.showNotice({
+        kind: "warning",
+        title: t("overlay_truncated", { sent: formatChars(bordereau.sentChars), total: formatNumber(bordereau.totalChars) }),
+      });
     }
   } else {
-    view.showNotice("warning", t("overlay_noKeyBody"), t("overlay_noKeyTitle"));
+    view.showNotice({
+      kind: "error",
+      title: t("overlay_noKeyTitle"),
+      body: t("overlay_noKeyBody"),
+      action: { label: t("overlay_openPanel"), onClick: panel },
+    });
   }
 
   placeNear(view.element, selection.rect, CARD_WIDTH_PX);

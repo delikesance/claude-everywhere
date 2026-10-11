@@ -47,18 +47,3 @@ export function useLibraryData<T>(library: Library, load: (library: Library) => 
 
   return { data, error, reload };
 }
-
-export function useSelection() {
-  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
-  const toggle = useCallback(
-    (id: string) =>
-      setSelected((current) => {
-        const next = new Set(current);
-        if (!next.delete(id)) next.add(id);
-        return next;
-      }),
-    [],
-  );
-  const clear = useCallback(() => setSelected(new Set()), []);
-  return { selected, toggle, clear };
-}
