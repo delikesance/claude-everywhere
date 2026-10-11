@@ -11,6 +11,7 @@ type NoticeAction = "settings" | "retry" | "continue";
 
 interface NoticeSpec {
   tone: NoticeTone;
+  role?: "status" | "alert";
   title: MessageKey;
   body?: MessageKey;
   action?: NoticeAction;
@@ -19,7 +20,7 @@ interface NoticeSpec {
 const SPECS: Record<TurnNotice["kind"], NoticeSpec> = {
   no_key: { tone: "warning", title: "sidebar_noKeyTitle", action: "settings" },
   auth: { tone: "error", title: "sidebar_errAuthTitle", body: "sidebar_errAuthBody", action: "settings" },
-  rate_limit: { tone: "warning", title: "sidebar_errRateTitle", action: "retry" },
+  rate_limit: { tone: "warning", role: "alert", title: "sidebar_errRateTitle", action: "retry" },
   overloaded: { tone: "warning", title: "sidebar_errOverloadedTitle", body: "sidebar_errOverloadedBody", action: "retry" },
   network: { tone: "error", title: "sidebar_errNetworkTitle", body: "sidebar_errNetworkBody", action: "retry" },
   bad_request: { tone: "error", title: "sidebar_errBadRequestTitle" },
@@ -60,6 +61,7 @@ export function TurnNoticeView({ notice }: { notice: TurnNotice }) {
   return (
     <Notice
       tone={spec.tone}
+      role={spec.role}
       title={titleOf(notice, spec)}
       actions={
         action && (

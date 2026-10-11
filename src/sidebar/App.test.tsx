@@ -76,7 +76,7 @@ describe("App", () => {
   it("shows the protected-page notice without a chip", () => {
     addItem({ ...item("protected", false), status: "unreadable" });
     mount();
-    expect(root.textContent).toContain("sidebar_protectedTitle");
+    expect(root.textContent).toContain("sidebar_protectedBody");
     expect(root.querySelector(".chip--unreadable")).toBeNull();
   });
 

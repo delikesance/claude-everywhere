@@ -2,11 +2,12 @@ import { useState } from "preact/hooks";
 import { formatChars } from "../../shared/format";
 import { t } from "../../shared/i18n";
 import type { BordereauLine, ContextItem } from "../../shared/types";
-import { Button, Chip, Notice, cx } from "../../shared/ui";
+import { Button, Chip, cx } from "../../shared/ui";
 import { capture } from "../state/intake";
 import { conversation, removeItem, toggleItem } from "../state/conversation";
 import { currentPlan } from "../state/plan";
 import { LibraryPicker } from "./LibraryPicker";
+import { ProtectedNotice } from "./ProtectedNotice";
 
 function ReadingChip() {
   return (
@@ -34,10 +35,6 @@ function ContextChip({ item, line }: { item: ContextItem; line: BordereauLine | 
       )}
     </span>
   );
-}
-
-function ProtectedNotice() {
-  return <Notice title={t("sidebar_protectedTitle")}>{t("sidebar_protectedBody")}</Notice>;
 }
 
 export function ContextBar() {

@@ -22,4 +22,8 @@ export const planFor = (
 
 export const currentPlan = computed(() => planFor(draft.value));
 
+export const truncatedLine = computed(
+  () => currentPlan.value.bordereau.lines.find((line) => line.sentChars < line.totalChars) ?? null,
+);
+
 export const currentPrompt = (plan: ContextPlan) => renderPrompt(plan, draft.value, settings.value.answerLanguage);
