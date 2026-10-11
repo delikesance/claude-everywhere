@@ -33,7 +33,11 @@ export function createLibrary(db: LibraryDb): Library {
   };
 
   return {
-    saveArtifact: (draft) => mutating(store.saveArtifact(db, draft)),
+    saveArtifact: async (draft) => {
+      const { artifact, changed } = await store.saveArtifact(db, draft);
+      if (changed) changes.notify();
+      return artifact;
+    },
     getArtifact: (id) => store.getArtifact(db, id),
     listArtifacts: (q) => store.listArtifacts(db, q),
     updateArtifact: (id, patch) => mutating(store.updateArtifact(db, id, patch)),

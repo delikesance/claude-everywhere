@@ -1,5 +1,7 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ArtifactWithContent } from "../shared/types";
 import type { Library } from "./contract";
+import { createSearchIndex } from "./search";
 import { draft, freshLibrary } from "./test-utils";
 
 describe("search", () => {
@@ -68,5 +70,15 @@ describe("search", () => {
     expect((await library.search("etiquette"))[0]?.snippets[0]?.field).toBe("tag");
     await library.deleteArtifact(saved.id);
     expect(await library.search("nouveau")).toHaveLength(0);
+  });
+});
+
+describe("search index failures", () => {
+  it("retries loading after a rejected load", async () => {
+    const load = vi.fn<() => Promise<ArtifactWithContent[]>>().mockRejectedValueOnce(new Error("idb")).mockResolvedValue([]);
+    const index = createSearchIndex(load);
+    await expect(index.search("mot")).rejects.toThrow("idb");
+    expect(await index.search("mot")).toEqual([]);
+    expect(load).toHaveBeenCalledTimes(2);
   });
 });

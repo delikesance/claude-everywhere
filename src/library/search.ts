@@ -11,14 +11,12 @@ const WHITESPACE = /\s+/g;
 
 type Field = keyof typeof FIELD_WEIGHT;
 interface Token {
-  folded: string;
   start: number;
   end: number;
 }
 interface IndexedField {
   field: Field;
   text: string;
-  tokens: Token[];
 }
 interface IndexEntry {
   artifact: Artifact;
@@ -33,32 +31,31 @@ export function foldText(text: string): string {
   return text.normalize("NFD").replace(COMBINING_MARKS, "").toLowerCase();
 }
 
-function tokenize(text: string): Token[] {
-  return Array.from(text.matchAll(WORD), (match) => ({
-    folded: foldText(match[0]),
-    start: match.index,
-    end: match.index + match[0].length,
-  }));
+function queryTerms(text: string): string[] {
+  return Array.from(text.matchAll(WORD), (match) => foldText(match[0]));
 }
 
-function indexField(field: Field, text: string): IndexedField {
-  return { field, text, tokens: tokenize(text) };
+function findToken(text: string, term: string): Token | undefined {
+  for (const match of text.matchAll(WORD)) {
+    if (foldText(match[0]).startsWith(term)) return { start: match.index, end: match.index + match[0].length };
+  }
+  return undefined;
 }
 
 function buildEntry({ markdown, ...artifact }: ArtifactWithContent): IndexEntry {
   return {
     artifact,
     fields: [
-      indexField("title", artifact.title),
-      ...artifact.tags.map((tag) => indexField("tag", tag)),
-      indexField("text", markdown),
+      { field: "title", text: artifact.title },
+      ...artifact.tags.map((tag): IndexedField => ({ field: "tag", text: tag })),
+      { field: "text", text: markdown },
     ],
   };
 }
 
 function matchesOfTerm(entry: IndexEntry, term: string): FieldMatch[] {
   return entry.fields.flatMap((indexed) => {
-    const token = indexed.tokens.find((candidate) => candidate.folded.startsWith(term));
+    const token = findToken(indexed.text, term);
     return token ? [{ indexed, token }] : [];
   });
 }
@@ -96,10 +93,13 @@ export function createSearchIndex(load: () => Promise<ArtifactWithContent[]>) {
       entries = null;
     },
     async search(query: string, limit = DEFAULT_SEARCH_LIMIT): Promise<SearchHit[]> {
-      const terms = tokenize(query).map((token) => token.folded);
+      const terms = queryTerms(query);
       if (terms.length === 0) return [];
-      entries ??= load().then((artifacts) => artifacts.map(buildEntry));
-      return (await entries)
+      const pending = (entries ??= load().then((artifacts) => artifacts.map(buildEntry)));
+      pending.catch(() => {
+        if (entries === pending) entries = null;
+      });
+      return (await pending)
         .map((entry) => scoreEntry(entry, terms))
         .filter((hit): hit is SearchHit => hit !== null)
         .sort((a, b) => b.score - a.score || b.artifact.updatedAt - a.artifact.updatedAt)
