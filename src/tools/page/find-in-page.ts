@@ -6,12 +6,12 @@ export interface PageHit {
   snippet: string;
 }
 
-const CONTEXT_CHARS = 60;
 export const MAX_HITS = 20;
 
 // Runs inside the page: must stay self-contained (no imports, no module-level helpers).
 // The query must be non-empty.
 export function findInPagePage(query: string, maxResults: number, doc: Document = document): PageHit[] {
+  const CONTEXT_CHARS = 60;
   const needle = query.toLowerCase();
   const headings = Array.from(doc.querySelectorAll("h1,h2,h3,h4"));
   const sectionOf = (node: Node): string | null => {

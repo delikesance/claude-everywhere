@@ -32,10 +32,13 @@ export async function addFromPage(harness: Harness, page: PageUnderTest, buttonL
   await find(driver, settled);
 }
 
-export async function ask(harness: Harness, question: string): Promise<void> {
+/** The sidebar sends the page's tab id only while that page is the active tab, so a turn that uses tools passes `page`. */
+export async function ask(harness: Harness, question: string, page?: PageUnderTest): Promise<void> {
   const { driver } = harness;
   await driver.findElement(By.css(COMPOSER)).sendKeys(question);
-  await (await find(driver, `button[aria-label="${t("sidebar_send")}"]`)).click();
+  const send = await find(driver, `button[aria-label="${t("sidebar_send")}"]`);
+  if (page) await whilePageIsActive(driver, page.tabId, () => jsClick(driver, send));
+  else await send.click();
 }
 
 export async function answerText(harness: Harness): Promise<string> {

@@ -63,7 +63,7 @@ async function sidebarWithArticle(): Promise<void> {
 
 it("stops the tool loop after MAX_TOOL_TURNS requests and finishes the turn", async () => {
   await sidebarWithArticle();
-  await ask(harness, "Lis la page [toolloop:page_outline {}] [scenario:slow]");
+  await ask(harness, "Lis la page [toolloop:page_outline {}] [scenario:slow]", page);
   await waitForRequests(MAX_TOOL_TURNS);
   await waitForIdle();
 
@@ -75,7 +75,7 @@ it("stops the tool loop after MAX_TOOL_TURNS requests and finishes the turn", as
 
 it("cancels a tool loop mid-run and keeps the chat usable afterwards", async () => {
   await sidebarWithArticle();
-  await ask(harness, "Lis la page [toolloop:page_outline {}] [scenario:slow]");
+  await ask(harness, "Lis la page [toolloop:page_outline {}] [scenario:slow]", page);
   await (await find(harness.driver, STOP)).click();
   await findByText(harness.driver, ".notice", "Interrompu par vous");
   await waitForIdle();
@@ -89,7 +89,7 @@ it("cancels a tool loop mid-run and keeps the chat usable afterwards", async () 
 
 it("returns an Error: tool_result for a restricted page and still completes the answer", async () => {
   page = await openSidebarBeside(harness, "about:blank");
-  await ask(harness, "Question [tool:page_outline {}]");
+  await ask(harness, "Question [tool:page_outline {}]", page);
   await waitForDone(harness);
 
   expect(apiRequests()).toHaveLength(2);
@@ -101,7 +101,7 @@ it("returns an Error: tool_result for a restricted page and still completes the 
 
 it("returns an Error: tool_result for an unknown tool name", async () => {
   await sidebarWithArticle();
-  await ask(harness, "Question [tool:no_such_tool {}]");
+  await ask(harness, "Question [tool:no_such_tool {}]", page);
   await waitForDone(harness);
 
   expect(toolResults(1)).toEqual(["Error: unknown tool no_such_tool"]);
@@ -113,7 +113,7 @@ it.skip("sends no tools with the claude-code backend", () => {});
 
 it("keeps the tool rows of a finished turn after the conversation is reloaded", async () => {
   await sidebarWithArticle();
-  await ask(harness, "Lis la page [toolloop:page_outline {}] [scenario:slow]");
+  await ask(harness, "Lis la page [toolloop:page_outline {}] [scenario:slow]", page);
   await waitForRequests(MAX_TOOL_TURNS);
   await waitForIdle();
   expect(await countOf(TOOL_NAME)).toBe(TOOL_CALLS_RUN);
