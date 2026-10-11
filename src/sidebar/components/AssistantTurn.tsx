@@ -11,6 +11,7 @@ export interface AssistantTurnProps {
   message: ChatMessage;
   number: number;
   phase: Phase | null;
+  onRegenerate?: (() => void) | undefined;
 }
 
 const LIVE_STATUS: Record<Phase, MessageKey | null> = {
@@ -27,7 +28,7 @@ function statusText(message: ChatMessage, live: Phase | null): string {
   return t("sidebar_statusDone", { model });
 }
 
-export function AssistantTurn({ message, number, phase }: AssistantTurnProps) {
+export function AssistantTurn({ message, number, phase, onRegenerate }: AssistantTurnProps) {
   const live = phase !== null && phase !== "idle";
   const shown = useFrameValue(message.text);
   return (
@@ -41,7 +42,7 @@ export function AssistantTurn({ message, number, phase }: AssistantTurnProps) {
           {statusText(message, phase)}
           {live && <span class="ellipsis" aria-hidden="true" />}
         </span>
-        {!live && message.text !== "" && <AnswerActions markdown={message.text} />}
+        {!live && message.text !== "" && <AnswerActions markdown={message.text} onRegenerate={onRegenerate} />}
       </div>
     </AssistantMessage>
   );

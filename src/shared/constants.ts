@@ -15,7 +15,11 @@ export const INPUT_BUDGET_CHARS: Record<ModelId, number> = {
 };
 
 export const CHAT_PORT_NAME = "chat";
-export const STORAGE_KEYS = { settings: "settings", pendingCapture: "pendingCapture" } as const;
+export const STORAGE_KEYS = {
+  settings: "settings",
+  pendingCapture: "pendingCapture",
+  pendingAttach: "pendingAttach",
+} as const;
 export const DB_NAME = "claude-everywhere";
 export const DB_VERSION = 1;
 export const LIBRARY_CHANNEL = "library-changed";

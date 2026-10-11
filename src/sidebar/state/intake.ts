@@ -9,7 +9,6 @@ import type { ContextItem, ContextKind, ExtractedPage } from "../../shared/types
 import { addItem, attachItem, conversation, replaceItem, resetConversation } from "./conversation";
 import { settings } from "./session";
 
-export const PENDING_ATTACH_KEY = "pendingAttach";
 const ALL_URLS = "<all_urls>";
 
 const KIND_BY_SOURCE: Record<ExtractedPage["sourceType"], ContextKind> = {
@@ -68,18 +67,33 @@ export async function intakePending(): Promise<void> {
   if (page) addItem(pageToItem(page));
 }
 
-export async function attachArtifact(id: string): Promise<void> {
-  await browser.storage.session.remove(PENDING_ATTACH_KEY);
+async function loadArtifactItem(id: string): Promise<ContextItem | null> {
   const artifact = await (await openLibrary()).getArtifact(id);
-  if (!artifact) return;
+  return artifact ? artifactToContextItem(artifact) : null;
+}
+
+export async function addArtifact(id: string): Promise<void> {
+  const item = await loadArtifactItem(id);
+  if (item && !conversation.value.items.some((existing) => existing.id === item.id)) addItem(item);
+}
+
+const isIdList = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.length > 0 && value.every((id) => typeof id === "string");
+
+export async function attachArtifacts(ids: string[]): Promise<void> {
+  await browser.storage.session.remove(STORAGE_KEYS.pendingAttach);
+  const loaded = await Promise.all(ids.map(loadArtifactItem));
+  const [first, ...rest] = loaded.filter((item) => item !== null);
+  if (!first) return;
   if (conversation.value.messages.length > 0) resetConversation();
-  attachItem(artifactToContextItem(artifact));
+  attachItem(first);
+  rest.forEach(addItem);
 }
 
 async function readPendingAttach(): Promise<void> {
-  const stored = await browser.storage.session.get(PENDING_ATTACH_KEY);
-  const id: unknown = stored[PENDING_ATTACH_KEY];
-  if (typeof id === "string") await attachArtifact(id);
+  const stored = await browser.storage.session.get(STORAGE_KEYS.pendingAttach);
+  const ids: unknown = stored[STORAGE_KEYS.pendingAttach];
+  if (isIdList(ids)) await attachArtifacts(ids);
 }
 
 async function shouldAutoCapture(): Promise<boolean> {
@@ -96,8 +110,8 @@ export async function intakeOnOpen(): Promise<void> {
 export function watchIntake(): void {
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "session") return;
-    const attach = changes[PENDING_ATTACH_KEY]?.newValue as unknown;
-    if (typeof attach === "string") void attachArtifact(attach);
+    const attach = changes[STORAGE_KEYS.pendingAttach]?.newValue as unknown;
+    if (isIdList(attach)) void attachArtifacts(attach);
     if (changes[STORAGE_KEYS.pendingCapture]?.newValue !== undefined) void intakePending();
   });
 }
