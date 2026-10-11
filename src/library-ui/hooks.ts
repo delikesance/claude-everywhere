@@ -27,6 +27,7 @@ export function useOpenLibrary(): LibraryState {
 /** Loads data, reloading when the library changes and ignoring results made stale by newer loads. */
 export function useLibraryData<T>(library: Library, load: (library: Library) => Promise<T>, deps: unknown[]) {
   const [data, setData] = useState<T | undefined>(undefined);
+  const [error, setError] = useState(false);
   const [revision, setRevision] = useState(0);
   const latest = useRef(0);
   const reload = useCallback(() => setRevision((value) => value + 1), []);
@@ -34,10 +35,17 @@ export function useLibraryData<T>(library: Library, load: (library: Library) => 
   useEffect(() => library.onChange(reload), [library, reload]);
   useEffect(() => {
     const ticket = ++latest.current;
-    load(library).then((result) => ticket === latest.current && setData(result));
+    load(library).then(
+      (result) => {
+        if (ticket !== latest.current) return;
+        setData(result);
+        setError(false);
+      },
+      () => ticket === latest.current && setError(true),
+    );
   }, [library, revision, ...deps]);
 
-  return { data, reload };
+  return { data, error, reload };
 }
 
 export function useSelection() {

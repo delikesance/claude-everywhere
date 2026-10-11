@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import { t } from "../../shared/i18n";
+import type { MessageKey } from "../../shared/i18n";
 import { ensureHostPermission } from "../../shared/permissions";
 import { Switch } from "../../shared/ui";
 
@@ -13,18 +14,17 @@ interface PermissionToggleProps {
 
 /** The setting only turns on once the permission is granted, so a refusal leaves the switch off. */
 export function PermissionToggle({ label, checked, onChange }: PermissionToggleProps) {
-  const [refused, setRefused] = useState(false);
-  const toggle = (enabled: boolean) => {
-    if (!enabled) {
-      setRefused(false);
-      void onChange(false);
-      return;
+  const [errorKey, setErrorKey] = useState<MessageKey | null>(null);
+  const apply = async (enabled: boolean) => {
+    try {
+      const granted = !enabled || (await ensureHostPermission(ALL_URLS_ORIGIN));
+      setErrorKey(granted ? null : "options_permissionRefused");
+      if (granted) await onChange(enabled);
+    } catch {
+      setErrorKey("options_actionFailed");
     }
-    void ensureHostPermission(ALL_URLS_ORIGIN).then((granted) => {
-      setRefused(!granted);
-      if (granted) return onChange(true);
-    });
   };
+  const toggle = (enabled: boolean) => void apply(enabled);
   return (
     <div class="stack">
       <div class="row">
@@ -32,7 +32,7 @@ export function PermissionToggle({ label, checked, onChange }: PermissionToggleP
         <span aria-hidden="true">{label}</span>
       </div>
       <p class="help help--error" role="status">
-        {refused && t("options_permissionRefused")}
+        {errorKey && t(errorKey)}
       </p>
     </div>
   );

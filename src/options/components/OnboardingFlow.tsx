@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { t } from "../../shared/i18n";
-import { Button } from "../../shared/ui";
+import { Button, Notice } from "../../shared/ui";
 import { patchSettings } from "../../shared/settings";
 import { ApiKeyField } from "./ApiKeyField";
 import { isStored } from "./submitKey";
@@ -22,10 +22,16 @@ function ReadStep({ onContinue }: { onContinue: () => void }) {
   );
 }
 
+function ActionFailed() {
+  return <Notice tone="error" title={t("options_actionFailed")} />;
+}
+
 function KeyStep({ onStored }: { onStored: () => void }) {
+  const [failed, setFailed] = useState(false);
   const finish = (outcome: KeyOutcome) => {
     if (!isStored(outcome)) return;
-    void patchSettings({ onboardingDone: true }).then(onStored);
+    setFailed(false);
+    patchSettings({ onboardingDone: true }).then(onStored, () => setFailed(true));
   };
   return (
     <>
@@ -33,11 +39,17 @@ function KeyStep({ onStored }: { onStored: () => void }) {
         {t("options_onboardingKeyTitle")}
       </h1>
       <ApiKeyField storedKey={null} submitLabel={t("options_onboardingSubmit")} onOutcome={finish} />
+      {failed && <ActionFailed />}
     </>
   );
 }
 
 function ReadyStep({ onBack }: { onBack: () => void }) {
+  const [failed, setFailed] = useState(false);
+  const openPanel = () => {
+    setFailed(false);
+    browser.sidebarAction.open().catch(() => setFailed(true));
+  };
   return (
     <>
       <h1 class="display" tabIndex={-1} data-step-heading>
@@ -46,10 +58,11 @@ function ReadyStep({ onBack }: { onBack: () => void }) {
       <p class="reading">{t("options_onboardingReadyBody")}</p>
       <div class="row">
         <Button onClick={onBack}>{t("options_onboardingBack")}</Button>
-        <Button variant="primary" onClick={() => void browser.sidebarAction.open()}>
+        <Button variant="primary" onClick={openPanel}>
           {t("options_onboardingOpenPanel")}
         </Button>
       </div>
+      {failed && <ActionFailed />}
     </>
   );
 }

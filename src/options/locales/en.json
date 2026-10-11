@@ -1,6 +1,7 @@
 {
   "options_answerLanguage": "Answer language",
   "options_answerLanguageAuto": "Same as the page",
+  "options_actionFailed": "The action failed. Try again.",
   "options_cancel": "Cancel",
   "options_dataEraseAll": "Erase everything…",
   "options_dataEraseConfirm": "Erase the whole library and all conversations from this device? This cannot be undone.",
@@ -28,7 +29,7 @@
   "options_keyValid": "Valid key",
   "options_keyValidate": "Validate",
   "options_keyValidating": "Verifying…",
-  "options_keyWarning": "Key saved, but the API is temporarily limited or overloaded: it could not be verified.",
+  "options_keyWarning": "Key saved, not verified: the API is temporarily limited or overloaded.",
   "options_languageTitle": "Language and theme",
   "options_localeEn": "English",
   "options_localeFr": "Français",

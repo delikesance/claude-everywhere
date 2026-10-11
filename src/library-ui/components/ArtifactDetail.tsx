@@ -10,6 +10,7 @@ import { listHref } from "../route";
 import { StatusLine, useStatus } from "../status";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { DetailTitle } from "./DetailTitle";
+import { LoadError } from "./ListStates";
 import { TagEditor } from "./TagEditor";
 import { VersionTabs } from "./VersionTabs";
 
@@ -38,12 +39,12 @@ function SavedOn({ artifact }: { artifact: Artifact }) {
 }
 
 export function ArtifactDetail({ library, id }: { library: Library; id: string }) {
-  const { data, reload } = useLibraryData(library, (lib) => loadDetail(lib, id), [id]);
+  const { data, error, reload } = useLibraryData(library, (lib) => loadDetail(lib, id), [id]);
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const { status, run } = useStatus();
 
-  if (!data) return <Skeleton />;
+  if (!data) return error ? <LoadError /> : <Skeleton />;
   const { artifact, versions } = data;
   if (!artifact) {
     return (
@@ -59,24 +60,30 @@ export function ArtifactDetail({ library, id }: { library: Library; id: string }
   const shown = versions.find((version) => version.id === (pickedId ?? artifact.currentVersionId)) ?? versions[versions.length - 1];
   const isCurrent = shown?.id === artifact.currentVersionId;
   const restore = (versionId: string) =>
-    void library.restoreVersion(id, versionId).then(() => {
+    run(async () => {
+      await library.restoreVersion(id, versionId);
       setPickedId(null);
       reload();
-    });
-  const remove = () => {
-    setConfirmingDelete(false);
-    void library.deleteArtifact(id).then(() => {
-      location.hash = listHref;
-    });
-  };
+    }, "library_ui_restored");
+  const update = (patch: Partial<Pick<Artifact, "title" | "tags">>) =>
+    run(() => library.updateArtifact(id, patch).then(reload), "library_ui_updated");
+  const remove = () =>
+    run(async () => {
+      try {
+        await library.deleteArtifact(id);
+        location.hash = listHref;
+      } finally {
+        setConfirmingDelete(false);
+      }
+    }, "library_ui_deleted");
 
   return (
     <div class="lib">
       <BackRail />
       <div class="lib__main">
-        <DetailTitle title={artifact.title} onRename={(title) => void library.updateArtifact(id, { title }).then(reload)} />
+        <DetailTitle title={artifact.title} onRename={(title) => update({ title })} />
         <SavedOn artifact={artifact} />
-        <TagEditor tags={artifact.tags} onChange={(tags) => void library.updateArtifact(id, { tags }).then(reload)} />
+        <TagEditor tags={artifact.tags} onChange={(tags) => update({ tags })} />
         <VersionTabs versions={versions} currentVersionId={artifact.currentVersionId} selectedId={shown?.id ?? ""} onSelect={setPickedId} />
         <div role="tabpanel">
           <Markdown source={shown?.markdown ?? ""} />

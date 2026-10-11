@@ -7,7 +7,11 @@ export const detailHref = (id: string) => `${DETAIL_PREFIX}${encodeURIComponent(
 
 export function parseArtifactId(hash: string): string | null {
   if (!hash.startsWith(DETAIL_PREFIX)) return null;
-  return decodeURIComponent(hash.slice(DETAIL_PREFIX.length));
+  try {
+    return decodeURIComponent(hash.slice(DETAIL_PREFIX.length));
+  } catch {
+    return null;
+  }
 }
 
 export function useArtifactRoute(): string | null {
