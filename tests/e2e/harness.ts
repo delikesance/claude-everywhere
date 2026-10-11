@@ -27,6 +27,7 @@ export interface Harness {
   driver: WebDriver;
   mock: MockApi;
   fixture: (name: string) => string;
+  mockPdf: (name: string) => string;
   extension: (page: string) => string;
   downloadsDir: string;
   browserLog: () => string;
@@ -81,6 +82,7 @@ export async function startHarness(): Promise<Harness> {
   return {
     driver,
     mock,
+    mockPdf: (name) => `${mock.url}/fixtures/${name}`,
     fixture: (name) => `http://127.0.0.1:${fixturePort}/${name}`,
     extension: (page) => `moz-extension://${EXTENSION_UUID}/${page}`,
     downloadsDir,

@@ -1,6 +1,8 @@
+import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import type { IncomingMessage, Server, ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
+import { basename, join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export interface RecordedRequest {
@@ -137,6 +139,18 @@ async function handleMessages(res: ServerResponse, record: RecordedRequest): Pro
   sendWholeMessage(res, model, scenario as Scenario);
 }
 
+const PDF_FIXTURE_PREFIX = "/fixtures/";
+const FIXTURES_DIR = join(import.meta.dirname, "../fixtures");
+
+/** Lets an end-to-end test read a document from the single non-API origin the test CSP allows; never recorded. */
+function sendPdfFixture(res: ServerResponse, name: string): void {
+  try {
+    res.writeHead(200, { "content-type": "application/pdf", ...CORS_HEADERS }).end(readFileSync(join(FIXTURES_DIR, basename(name))));
+  } catch {
+    res.writeHead(404).end();
+  }
+}
+
 export function startMockApi(port = 0): Promise<MockApi> {
   const requests: RecordedRequest[] = [];
   const server: Server = createServer(async (req, res) => {
@@ -147,6 +161,7 @@ export function startMockApi(port = 0): Promise<MockApi> {
       requests.length = 0;
       return sendJson(res, 200, {});
     }
+    if (req.method === "GET" && url.startsWith(PDF_FIXTURE_PREFIX)) return sendPdfFixture(res, url.slice(PDF_FIXTURE_PREFIX.length));
     const record: RecordedRequest = { method: req.method ?? "", url, headers: req.headers, body: parseJson(await readBody(req)) };
     requests.push(record);
     if (req.method === "POST" && url.startsWith("/v1/messages")) return handleMessages(res, record);
