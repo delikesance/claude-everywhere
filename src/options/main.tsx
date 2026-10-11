@@ -1,3 +1,4 @@
-import { render } from "preact";
+import { bootPage } from "../library-ui/boot";
+import { OptionsPage } from "./components/OptionsPage";
 
-render(<main>Options</main>, document.getElementById("root")!);
+void bootPage(<OptionsPage />);
