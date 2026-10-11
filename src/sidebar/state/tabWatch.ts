@@ -6,6 +6,7 @@ export interface WatchedTab {
 }
 
 export const changedTab = signal<WatchedTab | null>(null);
+export const activeTabId = signal<number | undefined>(undefined);
 
 export function watchTabChanges(): void {
   watchActiveTab((tab) => {
@@ -17,6 +18,7 @@ export function watchActiveTab(onChange: (tab: WatchedTab | null) => void): () =
   const ownPagesPrefix = browser.runtime.getURL("");
   const report = (tab: browser.tabs.Tab) => {
     const isOwnPage = tab.url?.startsWith(ownPagesPrefix) ?? false;
+    activeTabId.value = isOwnPage ? undefined : tab.id;
     onChange(isOwnPage ? null : { title: tab.title ?? "", url: tab.url ?? "" });
   };
 

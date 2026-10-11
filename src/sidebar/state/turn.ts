@@ -7,6 +7,7 @@ import { conversation, draft, reading, removeMessages, updateMessage } from "./c
 import { persistConversation } from "./persist";
 import { planFor, withoutEmpty } from "./plan";
 import { hasKey, settings } from "./session";
+import { activeTabId } from "./tabWatch";
 
 export type TurnNotice =
   | Exclude<ApiError, { kind: "aborted" }>
@@ -71,6 +72,16 @@ function onDone(turn: ActiveTurn, msg: Extract<ChatServerMsg, { type: "done" }>)
   void persistConversation();
 }
 
+const INPUT_SUMMARY_CHARS = 120;
+
+const summarizeInput = (input: Record<string, unknown>): string => JSON.stringify(input).slice(0, INPUT_SUMMARY_CHARS);
+
+function onTool(turn: ActiveTurn, msg: Extract<ChatServerMsg, { type: "tool" }>): void {
+  const previous = conversation.value.messages.find((m) => m.id === turn.assistantId)?.toolCalls ?? [];
+  const call = { name: msg.name, inputSummary: summarizeInput(msg.input), resultChars: msg.resultChars };
+  updateMessage(turn.assistantId, { toolCalls: [...previous, call] });
+}
+
 function onError(turn: ActiveTurn, error: ApiError): void {
   const text = answerText(turn);
   if (text === "") rollback(turn);
@@ -84,6 +95,7 @@ function handle(turn: ActiveTurn, msg: ChatServerMsg): void {
   if (active !== turn || msg.requestId !== turn.requestId) return;
   if (msg.type === "delta") onDelta(turn, msg.text);
   else if (msg.type === "done") onDone(turn, msg);
+  else if (msg.type === "tool") onTool(turn, msg);
   else onError(turn, msg.error);
 }
 
@@ -127,6 +139,7 @@ function startTurn(userText: string, restoreDraft: boolean, context?: TurnContex
     userText,
     answerLanguage: settings.value.answerLanguage,
     maxTokens: settings.value.maxTokens,
+    ...(activeTabId.value !== undefined && { tabId: activeTabId.value }),
   });
 }
 

@@ -103,6 +103,8 @@
   "sidebar_kept": "Gardé",
   "sidebar_tabChangedTitle": "Nouvel onglet : {title}",
   "sidebar_tabChangedGeneric": "Nouvel onglet détecté",
+  "sidebar_toolsLabel": "Outils utilisés (lecture seule)",
+  "sidebar_toolChars": "{chars} car.",
   "sidebar_tabChangedBody": "Lire cette page à la place ?",
   "sidebar_readPage": "Lire",
   "sidebar_keepPreviousPage": "Garder l'ancienne",
