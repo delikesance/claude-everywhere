@@ -1,3 +1,1 @@
-import type { ToolDef } from "../types";
-
-export const youtubeTools: ToolDef[] = [];
+export { youtubeTools } from "./tools";
