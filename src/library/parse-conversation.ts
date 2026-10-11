@@ -1,11 +1,14 @@
 import { MODEL_IDS } from "../shared/constants";
 import type { Bordereau, BordereauLine, ChatMessage, ContextItem, Conversation } from "../shared/types";
+
+type ToolCall = NonNullable<ChatMessage["toolCalls"]>[number];
 import {
   MAX_ITEMS_PER_CONVERSATION,
   MAX_LINES_PER_BORDEREAU,
   MAX_MESSAGES_PER_CONVERSATION,
   MAX_TEXT_CHARS,
   MAX_TITLE_CHARS,
+  MAX_TOOL_CALLS_PER_MESSAGE,
   MAX_URL_CHARS,
   isBoundedArray,
   isCount,
@@ -30,6 +33,12 @@ function parseLine(raw: unknown): BordereauLine | null {
   if (!isRecord(raw) || !isId(raw.itemId) || !isText(raw.title, MAX_TITLE_CHARS)) return null;
   if (!isCount(raw.sentChars) || !isCount(raw.totalChars)) return null;
   return { itemId: raw.itemId, title: raw.title, sentChars: raw.sentChars, totalChars: raw.totalChars };
+}
+
+function parseToolCall(raw: unknown): ToolCall | null {
+  if (!isRecord(raw) || !isText(raw.name, MAX_TITLE_CHARS) || !isText(raw.inputSummary, MAX_TITLE_CHARS)) return null;
+  if (!isCount(raw.resultChars)) return null;
+  return { name: raw.name, inputSummary: raw.inputSummary, resultChars: raw.resultChars };
 }
 
 function parseBordereau(raw: unknown): Bordereau | null {
@@ -64,6 +73,11 @@ function parseMessage(raw: unknown): ChatMessage | null {
     const bordereau = parseBordereau(raw.bordereau);
     if (!bordereau) return null;
     message.bordereau = bordereau;
+  }
+  if (raw.toolCalls !== undefined) {
+    const toolCalls = parseList(raw.toolCalls, MAX_TOOL_CALLS_PER_MESSAGE, parseToolCall);
+    if (!toolCalls) return null;
+    message.toolCalls = toolCalls;
   }
   return message;
 }
