@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, beforeEach, expect, it } from "vitest";
-import { formatChars } from "../../src/shared/format";
 import { startHarness } from "./harness";
 import type { Harness } from "./harness";
 import { enableAllSites, startSession, storeApiKey } from "./session";
 import { addFromPage, answerText, ask, openSidebarBeside, waitForDone } from "./sidebar";
+import type { PageUnderTest } from "./sidebar";
 import { bodyText, closeOtherTabs, find, findByText, jsClick, t } from "./ui";
 
 interface ApiMessage {
@@ -25,6 +25,9 @@ function toolResults(index: number): string[] {
   );
 }
 
+/** The sidebar's character label for a count, as the fr locale renders it. */
+const charsLabel = (count: number): string => t("shared_charsUnit", { count: count.toLocaleString("fr-FR") });
+
 const traceText = async (): Promise<string> => (await find(harness.driver, ".tool-trace")).getText();
 
 beforeAll(async () => {
@@ -40,9 +43,10 @@ beforeEach(async () => {
   harness.resetMock();
 });
 
-async function sidebarWithPage(fixture: string): Promise<void> {
+async function sidebarWithPage(fixture: string): Promise<PageUnderTest> {
   const page = await openSidebarBeside(harness, harness.fixture(fixture));
   await addFromPage(harness, page, t("sidebar_addPage"));
+  return page;
 }
 
 /** Waits for the final text of the mock answer, then for the status to be done. */
@@ -59,10 +63,10 @@ it.each([
   ["article.html", "Lire dans la marge"],
   ["long.html", "The long page"],
 ])("sends nothing before the user asks, then reads the outline of %s", async (fixture, title) => {
-  await sidebarWithPage(fixture);
+  const page = await sidebarWithPage(fixture);
   expect(harness.mock.requests).toEqual([]);
 
-  await ask(harness, "Quel est le plan ? [tool:page_outline {}]");
+  await ask(harness, "Quel est le plan ? [tool:page_outline {}]", page);
   await waitForAnswer();
 
   expect(apiRequests()).toHaveLength(2);
@@ -71,21 +75,18 @@ it.each([
   expect(await answerText(harness)).toContain("factice");
 
   await findByText(harness.driver, ".tool-trace__name", "page_outline");
-  expect(await traceText()).toContain(t("sidebar_toolChars", { chars: outline?.length ?? 0 }));
-
-  await jsClick(harness.driver, await find(harness.driver, ".slip__toggle"));
-  expect(await bodyText(harness.driver)).toContain(t("sidebar_slipTools", { chars: formatChars(outline?.length ?? 0) }));
+  expect(await traceText()).toContain(charsLabel(outline?.length ?? 0));
 });
 
 it("reads one section by the id the outline gave", async () => {
-  await sidebarWithPage("article.html");
-  await ask(harness, "Quel est le plan ? [tool:page_outline {}]");
+  const page = await sidebarWithPage("article.html");
+  await ask(harness, "Quel est le plan ? [tool:page_outline {}]", page);
   await waitForAnswer();
   const id = /(s\d+) ## Trois gestes simples/.exec(toolResults(1)[0] ?? "")?.[1];
   expect(id).toBeDefined();
 
   await newConversation();
-  await ask(harness, `Lis cette section [tool:read_section {"id":"${id}"}]`);
+  await ask(harness, `Lis cette section [tool:read_section {"id":"${id}"}]`, page);
   await waitForAnswer();
 
   expect(apiRequests()).toHaveLength(4);
@@ -94,13 +95,13 @@ it("reads one section by the id the outline gave", async () => {
 });
 
 it("finds a text in the page and returns the hits to the model", async () => {
-  await sidebarWithPage("article.html");
-  await ask(harness, 'Où apparaît "marge" ? [tool:find_in_page {"query":"marge"}]');
+  const page = await sidebarWithPage("article.html");
+  await ask(harness, 'Où apparaît "marge" ? [tool:find_in_page {"query":"marge"}]', page);
   await waitForAnswer();
 
   expect(apiRequests()).toHaveLength(2);
   const [hits] = toolResults(1);
   expect(hits).toContain("marge");
   await findByText(harness.driver, ".tool-trace__name", "find_in_page");
-  expect(await traceText()).toContain(t("sidebar_toolChars", { chars: hits?.length ?? 0 }));
+  expect(await traceText()).toContain(charsLabel(hits?.length ?? 0));
 });

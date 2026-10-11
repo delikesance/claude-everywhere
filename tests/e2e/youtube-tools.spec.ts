@@ -4,6 +4,7 @@ import { startHarness } from "./harness";
 import type { Harness } from "./harness";
 import { enableAllSites, startSession, storeApiKey } from "./session";
 import { ask, openSidebarBeside, waitForDone } from "./sidebar";
+import type { PageUnderTest } from "./sidebar";
 import { closeOtherTabs } from "./ui";
 
 type ContextDriver = WebDriver & { setContext(context: "chrome" | "content"): Promise<void> };
@@ -13,6 +14,7 @@ const WATCH_VIDEO_ID = "e2eVideo001";
 const NO_CAPTIONS_VIDEO_ID = "e2eNoCaption";
 const NO_TRANSCRIPT = "No transcript is available for this video.";
 let harness: Harness;
+let page: PageUnderTest;
 
 // youtube.com must resolve to the loopback mock, over plain http and without the HSTS preload list,
 // so that the real host check of the tools sees a watch page.
@@ -50,7 +52,7 @@ function toolResults(): string[] {
 
 /** Asks the mock to call one tool through the sidebar and returns the result the model received. */
 async function askTool(marker: string): Promise<string> {
-  await ask(harness, `Que vois-tu ? [tool:${marker}]`);
+  await ask(harness, `Que vois-tu ? [tool:${marker}]`, page);
   await waitForDone(harness);
   expect(apiRequests()).toHaveLength(2);
   const [result] = toolResults();
@@ -72,7 +74,7 @@ beforeEach(async () => {
 });
 
 it("video_state returns the title, duration, current time, captions and description of the watch page", async () => {
-  await openSidebarBeside(harness, watchUrl(WATCH_VIDEO_ID));
+  page = await openSidebarBeside(harness, watchUrl(WATCH_VIDEO_ID));
   const result = await askTool("video_state {}");
 
   expect(result).toContain("Title: Vidéo de test");
@@ -84,14 +86,14 @@ it("video_state returns the title, duration, current time, captions and descript
 });
 
 it("video_transcript returns the caption lines of the requested range with mm:ss markers", async () => {
-  await openSidebarBeside(harness, watchUrl(WATCH_VIDEO_ID));
+  page = await openSidebarBeside(harness, watchUrl(WATCH_VIDEO_ID));
   const result = await askTool('video_transcript {"fromSec":0,"toSec":60}');
 
   expect(result).toBe("[00:00] Bonjour le monde");
 });
 
 it("video_transcript falls back to the video description when the video has no captions", async () => {
-  await openSidebarBeside(harness, watchUrl(NO_CAPTIONS_VIDEO_ID));
+  page = await openSidebarBeside(harness, watchUrl(NO_CAPTIONS_VIDEO_ID));
   const result = await askTool('video_transcript {"fromSec":0,"toSec":60}');
 
   expect(result.startsWith(NO_TRANSCRIPT)).toBe(true);
@@ -103,7 +105,7 @@ it("video_transcript falls back to the video description when the video has no c
 });
 
 it("returns an Error result for a page that is not a YouTube watch page", async () => {
-  await openSidebarBeside(harness, harness.fixture("article.html"));
+  page = await openSidebarBeside(harness, harness.fixture("article.html"));
   const result = await askTool("video_state {}");
 
   expect(result).toMatch(/^Error: /);
