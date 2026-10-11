@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChatServerMsg } from "../../shared/messages";
 import { DEFAULT_SETTINGS } from "../../shared/settings";
-import type { Bordereau } from "../../shared/types";
+import type { Bordereau, ContextItem } from "../../shared/types";
 
 const fake = vi.hoisted(() => {
   let listener: (m: unknown) => void = () => {};
@@ -20,7 +20,7 @@ const library = vi.hoisted(() => ({ saveConversation: vi.fn(async () => {}) }));
 vi.mock("../../shared/messaging", () => ({ connectChat: () => fake }));
 vi.mock("../../library", () => ({ openLibrary: async () => library }));
 
-const { conversation, draft, resetConversation } = await import("./conversation");
+const { conversation, draft, resetConversation, updateMessage } = await import("./conversation");
 const { settings } = await import("./session");
 const turn = await import("./turn");
 
@@ -131,6 +131,39 @@ describe("turn state machine", () => {
     expect(second.userText).toBe("Bonjour");
     expect(second.history).toHaveLength(0);
     expect(conversation.value.messages).toHaveLength(2);
+  });
+
+  it("regenerate keeps the question and answer when it cannot start", () => {
+    reply({ type: "delta", text: "ok" });
+    reply({ type: "done", stopReason: "end_turn", usage: { inputTokens: 1, outputTokens: 1 }, bordereau });
+    settings.value = { ...DEFAULT_SETTINGS, apiKey: null };
+    turn.regenerate();
+    expect(fake.start).toHaveBeenCalledTimes(1);
+    expect(conversation.value.messages.map((m) => m.text)).toEqual(["Bonjour", "ok"]);
+  });
+
+  it("regenerate resends the context of the original turn", () => {
+    const item = (id: string, included: boolean): ContextItem => ({
+      id,
+      kind: "page",
+      title: id,
+      url: null,
+      text: id,
+      included,
+      status: "ready",
+    });
+    const sent = { ...bordereau, lines: [{ itemId: "a", title: "a", sentChars: 1, totalChars: 1 }] };
+    reply({ type: "delta", text: "ok" });
+    reply({ type: "done", stopReason: "end_turn", usage: { inputTokens: 1, outputTokens: 1 }, bordereau: sent });
+    conversation.value = { ...conversation.value, items: [item("a", false), item("b", true)] };
+    updateMessage(conversation.value.messages[0]!.id, { bordereau: sent });
+    turn.regenerate();
+    const second = fake.start.mock.calls[1]?.[0] as { items: ContextItem[] };
+    expect(second.items.map((i) => [i.id, i.included])).toEqual([
+      ["a", true],
+      ["b", false],
+    ]);
+    expect(conversation.value.messages[0]?.bordereau?.lines.map((l) => l.itemId)).toEqual(["a"]);
   });
 
   it("continue sends a follow-up turn keeping history", () => {

@@ -2,10 +2,10 @@ import { signal } from "@preact/signals";
 import { connectChat } from "../../shared/messaging";
 import type { ChatConnection, ChatServerMsg } from "../../shared/messages";
 import { t } from "../../shared/i18n";
-import type { ApiError, ChatMessage } from "../../shared/types";
+import type { ApiError, ChatMessage, ContextItem } from "../../shared/types";
 import { conversation, draft, removeMessages, updateMessage } from "./conversation";
 import { persistConversation } from "./persist";
-import { planFor, sentHistory } from "./plan";
+import { planFor, withoutEmpty } from "./plan";
 import { hasKey, settings } from "./session";
 
 export type TurnNotice =
@@ -87,11 +87,19 @@ function handle(turn: ActiveTurn, msg: ChatServerMsg): void {
   else onError(turn, msg.error);
 }
 
-function startTurn(userText: string, restoreDraft: boolean): void {
-  if (phase.value !== "idle" || userText.trim() === "" || !hasKey.value) return;
-  const { items, model, messages } = conversation.value;
-  const history = sentHistory();
-  const user = { ...message("user", userText), bordereau: planFor(userText).bordereau };
+interface TurnContext {
+  items: ContextItem[];
+  messages: ChatMessage[];
+}
+
+const canStart = (userText: string): boolean => phase.value === "idle" && userText.trim() !== "" && hasKey.value;
+
+function startTurn(userText: string, restoreDraft: boolean, context?: TurnContext): void {
+  if (!canStart(userText)) return;
+  const { model } = conversation.value;
+  const { items, messages } = context ?? conversation.value;
+  const history = withoutEmpty(messages);
+  const user = { ...message("user", userText), bordereau: planFor(userText, items, history).bordereau };
   const assistant = { ...message("assistant", ""), model };
   const connection = connectChat();
   const turn: ActiveTurn = {
@@ -129,13 +137,21 @@ export function retry(): void {
   startTurn(lastQuestion.value, false);
 }
 
+function originalItems(items: ContextItem[], original?: ChatMessage): ContextItem[] {
+  if (!original?.bordereau) return items;
+  const sentIds = new Set(original.bordereau.lines.map((line) => line.itemId));
+  return items.map((item) => ({ ...item, included: sentIds.has(item.id) }));
+}
+
 export function regenerate(): void {
-  const { messages } = conversation.value;
+  const { items, messages } = conversation.value;
   const lastUser = messages.map((m) => m.role).lastIndexOf("user");
-  if (phase.value !== "idle" || !hasKey.value || lastUser < 0) return;
-  const question = messages[lastUser]?.text ?? "";
-  removeMessages(messages.slice(lastUser).map((m) => m.id));
-  startTurn(question, false);
+  const original = messages[lastUser];
+  if (!original) return;
+  startTurn(original.text, false, {
+    items: originalItems(items, original),
+    messages: messages.slice(0, lastUser),
+  });
 }
 
 export function cancelTurn(): void {
