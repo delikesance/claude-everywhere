@@ -95,6 +95,11 @@ describe("mounting", () => {
   });
 });
 
+const trusted = <E extends Event>(event: E): E => {
+  Object.defineProperty(event, "isTrusted", { value: true });
+  return event;
+};
+
 describe("selection rules", () => {
   it("ignores selections shorter than three characters", () => {
     select("ab");
@@ -128,7 +133,7 @@ describe("selection rules", () => {
 
   it("shows the toolbar after a valid selection", async () => {
     await mount();
-    document.dispatchEvent(new Event("mouseup"));
+    document.dispatchEvent(trusted(new Event("mouseup")));
     await settle();
     expect(card().querySelector("[role=toolbar]")).not.toBeNull();
   });
@@ -214,16 +219,24 @@ describe("card", () => {
     await mount();
     await openCard();
     button("Expliquer").click();
-    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    window.dispatchEvent(trusted(new KeyboardEvent("keydown", { key: "Escape" })));
     expect(connection.cancel).toHaveBeenCalled();
     expect(connection.close).toHaveBeenCalled();
     expect(card().querySelector("[role=dialog]")).toBeNull();
   });
 
+  it("ignores untrusted events dispatched by the page", async () => {
+    await mount();
+    await openCard();
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    document.body.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+    expect(card().querySelector("[role=dialog]")).not.toBeNull();
+  });
+
   it("closes on an outside click", async () => {
     await mount();
     await openCard();
-    document.body.dispatchEvent(new Event("pointerdown", { bubbles: true, composed: true }));
+    document.body.dispatchEvent(trusted(new Event("pointerdown", { bubbles: true, composed: true })));
     expect(card().querySelector("[role=dialog]")).toBeNull();
   });
 });

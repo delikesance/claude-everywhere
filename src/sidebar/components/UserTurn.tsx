@@ -2,8 +2,7 @@ import { formatChars } from "../../shared/format";
 import { t } from "../../shared/i18n";
 import type { ChatMessage } from "../../shared/types";
 import { UserMessage } from "../../shared/ui";
-
-const TIME_FORMAT: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit" };
+import { formatTime } from "../format";
 
 export function UserTurn({ message }: { message: ChatMessage }) {
   const { bordereau } = message;
@@ -14,8 +13,8 @@ export function UserTurn({ message }: { message: ChatMessage }) {
         <details class="receipt">
           <summary>
             {t("sidebar_receipt", {
-              time: new Date(message.createdAt).toLocaleTimeString([], TIME_FORMAT),
-              chars: formatChars(bordereau.sentChars),
+              time: formatTime(message.createdAt),
+              chars: bordereau.lines.length ? formatChars(bordereau.sentChars) : t("sidebar_receiptNoContext"),
             })}
           </summary>
           {bordereau.lines.map((line) => (

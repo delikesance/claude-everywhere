@@ -61,6 +61,7 @@
   "sidebar_previewUser": "Message",
   "sidebar_privacy": "Nothing is sent without your action. Key stored locally.",
   "sidebar_receipt": "Sent at {time} · {chars}",
+  "sidebar_receiptNoContext": "question only",
   "sidebar_refusalBody": "The model declined to answer this request. Rephrase it if needed.",
   "sidebar_refusalTitle": "No answer.",
   "sidebar_retry": "Retry",

@@ -63,6 +63,24 @@ describe("App", () => {
     expect(root.textContent).toContain("sidebar_emptyTitle");
   });
 
+  it("keeps the turn running when Escape was handled by a dialog or editor", () => {
+    mount();
+    act(() => {
+      draft.value = "Question";
+    });
+    act(() => root.querySelector<HTMLButtonElement>(".btn--primary")?.click());
+    const handled = new KeyboardEvent("keydown", { key: "Escape", cancelable: true });
+    handled.preventDefault();
+    window.dispatchEvent(handled);
+    const dialog = document.body.appendChild(document.createElement("div"));
+    dialog.setAttribute("role", "dialog");
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(fake.cancel).not.toHaveBeenCalled();
+    dialog.remove();
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(fake.cancel).toHaveBeenCalled();
+  });
+
   it("shows the missing-key state and disables the composer", () => {
     settings.value = { ...DEFAULT_SETTINGS, apiKey: null };
     mount();

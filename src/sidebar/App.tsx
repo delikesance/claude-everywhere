@@ -11,7 +11,8 @@ import { hasKey } from "./state/session";
 import { cancelTurn } from "./state/turn";
 
 function cancelOnEscape(event: KeyboardEvent): void {
-  if (event.key === "Escape") cancelTurn();
+  if (event.key !== "Escape" || event.defaultPrevented || document.querySelector('[role="dialog"]')) return;
+  cancelTurn();
 }
 
 export function App() {

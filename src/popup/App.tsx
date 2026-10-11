@@ -18,6 +18,9 @@ const HOME: View = { name: "home" };
 const PAGE_MODE: CaptureMode = "page";
 const LIBRARY_PAGE = "library-ui.html";
 
+const POPUP_STYLE = { width: "320px", padding: 0, gap: 0 };
+const BODY_STYLE = { display: "grid", gap: "var(--s-12)", padding: "var(--s-12)" };
+
 const capture = (handoff: boolean) => sendRequest("capture/run", { mode: PAGE_MODE, handoff });
 
 async function openLibraryPage(): Promise<void> {
@@ -59,12 +62,14 @@ export function App() {
   const back = () => setView(HOME);
 
   return (
-    <div class="popup">
+    <div class="popup" style={POPUP_STYLE}>
       <Header onOpenOptions={() => void browser.runtime.openOptionsPage()} />
-      <ViewBody
-        view={view}
-        actions={{ ask, save, paste, confirm, back, retry: () => run(lastTask.current) }}
-      />
+      <div style={BODY_STYLE}>
+        <ViewBody
+          view={view}
+          actions={{ ask, save, paste, confirm, back, retry: () => run(lastTask.current) }}
+        />
+      </div>
     </div>
   );
 }
