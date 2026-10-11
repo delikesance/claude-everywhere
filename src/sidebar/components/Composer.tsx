@@ -1,11 +1,11 @@
-import { MODEL_META } from "../../api/budget";
-import { MODEL_IDS } from "../../shared/constants";
-import type { ModelId } from "../../shared/constants";
+import { useLayoutEffect, useRef, useState } from "preact/hooks";
 import { t } from "../../shared/i18n";
-import { Button, Icon, Select, Textarea } from "../../shared/ui";
-import { conversation, draft, reading, setModel } from "../state/conversation";
+import { Icon } from "../../shared/ui";
+import { conversation, draft, reading } from "../state/conversation";
 import { hasKey } from "../state/session";
 import { cancelTurn, phase, send } from "../state/turn";
+import { ComposerMenu } from "./ComposerMenu";
+import { LibraryPicker } from "./LibraryPicker";
 
 function onComposerKey(event: KeyboardEvent): void {
   if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
@@ -13,57 +13,62 @@ function onComposerKey(event: KeyboardEvent): void {
   send();
 }
 
-function ModelSelect() {
-  return (
-    <Select
-      aria-label={t("sidebar_modelLabel")}
-      value={conversation.value.model}
-      onChange={(event) => setModel(event.currentTarget.value as ModelId)}
-    >
-      {MODEL_IDS.map((model) => (
-        <option key={model} value={model}>
-          {t(MODEL_META[model].labelKey)}
-        </option>
-      ))}
-    </Select>
-  );
-}
-
 function SendOrStop() {
   if (phase.value !== "idle") {
     return (
-      <button type="button" class="btn btn--secondary btn--compact btn--stop" onClick={cancelTurn}>
+      <button
+        type="button"
+        class="btn btn--secondary btn--icon-only btn--stop"
+        aria-label={t("sidebar_stop")}
+        title={`${t("sidebar_stop")} (${t("sidebar_stopKey")})`}
+        onClick={cancelTurn}
+      >
         <span class="stop-square" />
-        {t("sidebar_stop")} <kbd>{t("sidebar_stopKey")}</kbd>
       </button>
     );
   }
+  const disabled = !hasKey.value || reading.value || draft.value.trim() === "";
   return (
-    <Button variant="primary" compact disabled={!hasKey.value || reading.value || draft.value.trim() === ""} onClick={send}>
-      <Icon name="egress" />
-      {t("sidebar_send")}
-    </Button>
+    <button
+      type="button"
+      class="btn btn--primary btn--icon-only btn--send"
+      aria-label={t("sidebar_send")}
+      aria-disabled={disabled}
+      onClick={disabled ? undefined : send}
+    >
+      <Icon name="arrowUpRight" />
+    </button>
   );
 }
 
 export function Composer() {
+  const [picking, setPicking] = useState(false);
+  const input = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => {
+    const field = input.current;
+    if (!field) return;
+    field.style.height = "auto";
+    field.style.height = `${field.scrollHeight}px`;
+  }, [draft.value]);
+  const placeholder = conversation.value.messages.length === 0 ? "sidebar_placeholder" : "sidebar_replyPlaceholder";
   return (
     <>
-      <Textarea
-        rows={1}
-        aria-label={t("sidebar_messageLabel")}
-        placeholder={t("sidebar_placeholder")}
-        disabled={!hasKey.value}
-        value={draft.value}
-        onInput={(event) => (draft.value = event.currentTarget.value)}
-        onKeyDown={onComposerKey}
-      />
-      <div class="sb-row row">
-        <ModelSelect />
+      <div class="sb-field">
+        <ComposerMenu onPickLibrary={() => setPicking(true)} />
+        <textarea
+          ref={input}
+          class="sb-input"
+          rows={1}
+          aria-label={t("sidebar_messageLabel")}
+          placeholder={t(placeholder)}
+          disabled={!hasKey.value}
+          value={draft.value}
+          onInput={(event) => (draft.value = event.currentTarget.value)}
+          onKeyDown={onComposerKey}
+        />
         <SendOrStop />
       </div>
-      <p class="caption">{t("sidebar_footHint")}</p>
-      <p class="caption">{t("sidebar_privacy")}</p>
+      {picking && <LibraryPicker onClose={() => setPicking(false)} />}
     </>
   );
 }
