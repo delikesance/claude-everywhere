@@ -1,63 +1,38 @@
-import type {
-  Artifact,
-  ArtifactDraft,
-  ArtifactVersion,
-  ArtifactWithContent,
-  ContextItem,
-  Conversation,
-  SourceType,
-} from "../shared/types";
+import type { ArtifactWithContent, ContextItem } from "../shared/types";
+import type { Library } from "./contract";
+import { openLibraryDb } from "./db";
+import { createLibrary } from "./library";
 
-export interface ListQuery {
-  tag?: string;
-  sourceType?: SourceType;
-  sort?: "updated" | "created" | "title";
-}
+export type {
+  ExportFile,
+  ImportReport,
+  Library,
+  ListQuery,
+  SearchHit,
+} from "./contract";
+export { ImportError } from "./import";
 
-export interface SearchHit {
-  artifact: Artifact;
-  score: number;
-  snippets: { field: "title" | "tag" | "text"; before: string; hit: string; after: string }[];
-}
-
-export interface ExportFile {
-  filename: string;
-  mime: string;
-  content: string;
-}
-
-export interface ImportReport {
-  artifacts: number;
-  versions: number;
-  conversations: number;
-  skipped: number;
-}
-
-export interface Library {
-  saveArtifact(draft: ArtifactDraft): Promise<Artifact>;
-  getArtifact(id: string): Promise<ArtifactWithContent | null>;
-  listArtifacts(q?: ListQuery): Promise<Artifact[]>;
-  updateArtifact(id: string, patch: { title?: string; tags?: string[] }): Promise<Artifact>;
-  addVersion(id: string, markdown: string): Promise<ArtifactVersion>;
-  listVersions(id: string): Promise<ArtifactVersion[]>;
-  restoreVersion(id: string, versionId: string): Promise<Artifact>;
-  deleteArtifact(id: string): Promise<void>;
-  search(query: string, limit?: number): Promise<SearchHit[]>;
-  saveConversation(c: Conversation): Promise<void>;
-  getConversation(id: string): Promise<Conversation | null>;
-  listConversations(): Promise<Omit<Conversation, "messages" | "items">[]>;
-  deleteConversation(id: string): Promise<void>;
-  exportMarkdown(ids: string[], bundle: boolean): Promise<ExportFile>;
-  exportJson(): Promise<ExportFile>;
-  importJson(text: string): Promise<ImportReport>;
-  clearAll(): Promise<void>;
-  onChange(cb: () => void): () => void;
-}
+let instance: Promise<Library> | null = null;
 
 export function openLibrary(): Promise<Library> {
-  throw new Error("not implemented");
+  instance ??= openLibraryDb()
+    .then(createLibrary)
+    .catch((error: unknown) => {
+      instance = null;
+      throw error;
+    });
+  return instance;
 }
 
-export function artifactToContextItem(_a: ArtifactWithContent): ContextItem {
-  throw new Error("not implemented");
+export function artifactToContextItem(a: ArtifactWithContent): ContextItem {
+  return {
+    id: `artifact-${a.id}`,
+    kind: "artifact",
+    title: a.title,
+    url: a.url,
+    text: a.markdown,
+    included: true,
+    status: "ready",
+    artifactId: a.id,
+  };
 }
