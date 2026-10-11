@@ -49,7 +49,11 @@ describe("runToolLoop", () => {
     const options = baseOptions(runTurn);
     const result = await runToolLoop(options);
 
-    expect(result).toEqual({ stopReason: "end_turn", usage: { inputTokens: 20, outputTokens: 6 } });
+    expect(result).toEqual({
+      stopReason: "end_turn",
+      usage: { inputTokens: 20, outputTokens: 6 },
+      toolChars: 'echo:{"q":1}'.length,
+    });
     expect(options.onTool).toHaveBeenCalledWith({ name: "echo", input: { q: 1 }, resultChars: 'echo:{"q":1}'.length });
     expect(runTurn.mock.calls[1]?.[0]).toEqual([
       { role: "user", content: "hi" },

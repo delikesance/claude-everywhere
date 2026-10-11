@@ -20,6 +20,7 @@ export interface ToolLoopOptions {
 export interface ToolLoopResult {
   stopReason: Anthropic.StopReason | null;
   usage: { inputTokens: number; outputTokens: number };
+  toolChars: number;
 }
 
 const toolParams = (): Anthropic.Tool[] =>
@@ -29,16 +30,18 @@ async function runCalls(
   content: Anthropic.ContentBlock[],
   tabId: number,
   options: ToolLoopOptions,
-): Promise<Anthropic.ToolResultBlockParam[]> {
+): Promise<{ results: Anthropic.ToolResultBlockParam[]; resultChars: number }> {
   const results: Anthropic.ToolResultBlockParam[] = [];
+  let resultChars = 0;
   for (const block of content) {
     if (block.type !== "tool_use") continue;
     const input = block.input as Record<string, unknown>;
     const result = await runTool(block.name, input, { tabId, signal: options.signal });
     options.onTool({ name: block.name, input, resultChars: result.length });
+    resultChars += result.length;
     results.push({ type: "tool_result", tool_use_id: block.id, content: result });
   }
-  return results;
+  return { results, resultChars };
 }
 
 export async function runToolLoop(options: ToolLoopOptions): Promise<ToolLoopResult> {
@@ -46,15 +49,17 @@ export async function runToolLoop(options: ToolLoopOptions): Promise<ToolLoopRes
   const tools = tabId === undefined ? undefined : toolParams();
   const messages = [...options.messages];
   const usage = { inputTokens: 0, outputTokens: 0 };
+  let toolChars = 0;
   for (let turn = 1; ; turn += 1) {
     signal.throwIfAborted();
     const message = await runTurn(messages, tools);
     usage.inputTokens += message.usage.input_tokens;
     usage.outputTokens += message.usage.output_tokens;
     if (message.stop_reason !== "tool_use" || tabId === undefined || turn >= MAX_TOOL_TURNS) {
-      return { stopReason: message.stop_reason, usage };
+      return { stopReason: message.stop_reason, usage, toolChars };
     }
-    const results = await runCalls(message.content, tabId, options);
-    messages.push({ role: "assistant", content: message.content }, { role: "user", content: results });
+    const calls = await runCalls(message.content, tabId, options);
+    toolChars += calls.resultChars;
+    messages.push({ role: "assistant", content: message.content }, { role: "user", content: calls.results });
   }
 }

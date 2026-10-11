@@ -1,9 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { DEFAULT_MAX_TOKENS } from "../shared/constants";
+import { CHARS_PER_TOKEN, DEFAULT_MAX_TOKENS } from "../shared/constants";
 import type { ChatServerMsg, ChatStart } from "../shared/messages";
 import { getSettings } from "../shared/settings";
 import { AppException } from "../shared/errors";
-import type { ChatMessage, StopReason } from "../shared/types";
+import type { Bordereau, ChatMessage, StopReason } from "../shared/types";
 import { planContext, renderPrompt } from "./budget";
 import { mapSdkError } from "./errors";
 import { streamNative, transcriptPrompt } from "./native";
@@ -76,6 +76,10 @@ function streamTurn(
   return stream.finalMessage();
 }
 
+function withToolChars(bordereau: Bordereau, toolChars: number): Bordereau {
+  return { ...bordereau, toolChars, estimatedTokens: Math.ceil((bordereau.sentChars + toolChars) / CHARS_PER_TOKEN) };
+}
+
 async function runChat(
   req: ChatStart,
   apiKey: string,
@@ -103,7 +107,7 @@ async function runChat(
     requestId: req.requestId,
     stopReason: toStopReason(result.stopReason),
     usage: result.usage,
-    bordereau: plan.bordereau,
+    bordereau: withToolChars(plan.bordereau, result.toolChars),
   };
 }
 

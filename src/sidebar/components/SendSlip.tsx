@@ -73,6 +73,7 @@ export function SendSlip() {
               </div>
             ))}
             <p class="caption">{t("sidebar_slipTokens", { tokens: bordereau.estimatedTokens.toLocaleString("fr-FR") })}</p>
+            {bordereau.toolChars ? <p class="caption">{t("sidebar_slipTools", { chars: formatChars(bordereau.toolChars) })}</p> : null}
             <p class="overline">{t("sidebar_slipDestination")}</p>
             <PromptPreview plan={plan} />
           </div>

@@ -91,6 +91,7 @@
   "sidebar_slipHistoryOne": "{count} message",
   "sidebar_slipHistoryMany": "{count} messages",
   "sidebar_slipTokens": "env. {tokens} jetons",
+  "sidebar_slipTools": "Résultats d'outils : {chars}",
   "sidebar_statusDone": "Réponse terminée · {model}",
   "sidebar_statusInterrupted": "Interrompue",
   "sidebar_statusWaiting": "En attente de la réponse",

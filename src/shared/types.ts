@@ -102,6 +102,7 @@ export interface Bordereau {
   budgetChars: number;
   truncated: boolean;
   estimatedTokens: number;
+  toolChars?: number;
   model: ModelId;
 }
 
