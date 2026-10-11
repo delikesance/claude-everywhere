@@ -43,7 +43,7 @@ export function startExplain(request: ExplainRequest, handlers: ExplainHandlers)
   };
 
   connection.onMessage((message) => {
-    if (finished || message.requestId !== requestId) return;
+    if (finished || message.requestId !== requestId || message.type === "tool") return;
     if (message.type === "delta") {
       answer += message.text;
       handlers.onDelta(answer);
