@@ -35,7 +35,7 @@ const launcher = join(dirs.launcherDir, isWindows ? `${NATIVE_HOST_NAME}.cmd` : 
 writeFileSync(
   launcher,
   isWindows
-    ? `@echo off\r\n"${process.execPath}" "${hostScript}"\r\n`
+    ? `@echo off\r\nset "PATH=%PATH%;%USERPROFILE%\\.local\\bin"\r\n"${process.execPath}" "${hostScript}"\r\n`
     : `#!/bin/sh\nexec "${process.execPath}" "${hostScript}"\n`,
 );
 chmodSync(launcher, 0o755);
