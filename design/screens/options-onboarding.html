@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marginalia — Réglages et accueil</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
+  .doc section { margin-top: var(--s-40); }
+  .mock { display: flex; flex-wrap: wrap; gap: var(--s-32); align-items: flex-start; margin-top: var(--s-16); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-egress" viewBox="0 0 24 24"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+</svg>
+
+<div class="doc">
+<header>
+  <p class="overline"><a href="../index.html">← Système de design</a></p>
+  <h1 class="display">Réglages et accueil</h1>
+  <div role="radiogroup" aria-label="Apparence" class="seg" style="margin-top:var(--s-12)">
+    <button class="seg__cell" role="radio" aria-checked="true" data-theme-set="system">Système</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="light">Clair</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="dark">Sombre</button>
+  </div>
+</header>
+<main>
+
+<section aria-labelledby="h-opt">
+  <h2 id="h-opt">Page de réglages</h2>
+  <div class="mock"><figure><figcaption class="caption frame-caption">Réglages, plein écran</figcaption>
+  <div class="frame" style="width:960px"><div class="page page--rail">
+    <nav class="page__nav" aria-label="Sections"><a href="#s-cle">Clé API</a><a href="#s-modele">Modèle</a><a href="#s-langue">Langue</a><a href="#s-selection">Sélection</a><a href="#s-donnees">Données</a></nav>
+    <div class="stack" style="gap:var(--s-32)">
+      <section class="section" id="s-cle" aria-labelledby="o1"><p class="folio" aria-hidden="true">I</p><h2 id="o1">Clé API</h2>
+        <div class="field"><label class="field__label" for="o-key">Clé Anthropic</label>
+          <div class="row"><input id="o-key" class="input grow" type="password" value="sk-ant-api03-xxxxxxxx" autocomplete="off"><button class="btn btn--secondary">Vérifier</button></div>
+          <span class="help help--ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Clé valide</span>
+          <span class="help">Stockée sur cet appareil. Utilisée uniquement pour appeler api.anthropic.com.</span></div></section>
+      <section class="section" id="s-modele" aria-labelledby="o2"><p class="folio" aria-hidden="true">II</p><h2 id="o2">Modèle par défaut</h2>
+        <div role="radiogroup" aria-label="Modèle" class="seg"><button class="seg__cell" role="radio" aria-checked="false">Rapide</button><button class="seg__cell" role="radio" aria-checked="true">Équilibré</button><button class="seg__cell" role="radio" aria-checked="false">Le plus capable</button></div></section>
+      <section class="section" id="s-langue" aria-labelledby="o3"><p class="folio" aria-hidden="true">III</p><h2 id="o3">Langue des réponses</h2>
+        <div class="field"><label class="field__label" for="o-lang">Langue</label><select id="o-lang" class="select"><option>Comme la page</option><option selected>Français</option><option>English</option></select></div></section>
+      <section class="section" id="s-selection" aria-labelledby="o4"><p class="folio" aria-hidden="true">IV</p><h2 id="o4">Sélection de texte</h2>
+        <span class="switch"><button class="switch__track" role="switch" aria-checked="true" aria-label="Afficher la barre flottante"><span class="switch__thumb"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span></button>Afficher la barre flottante</span>
+        <label class="check" style="margin-top:var(--s-8)"><input type="checkbox" checked><span class="check__box"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span>Ouvrir la réponse en ligne</label></section>
+      <section class="section" id="s-donnees" aria-labelledby="o5"><p class="folio" aria-hidden="true">V</p><h2 id="o5">Données</h2>
+        <p class="reading reading--compact">Tout est stocké localement. Rien ne part sans votre action.</p>
+        <div class="row" style="flex-wrap:wrap"><button class="btn btn--secondary">Exporter la bibliothèque</button><button class="btn btn--danger">Tout effacer…</button></div></section>
+    </div>
+  </div></div></figure></div>
+</section>
+
+<section aria-labelledby="h-onb">
+  <h2 id="h-onb">Accueil en trois étapes</h2>
+  <div class="mock">
+    <figure><figcaption class="caption frame-caption">Étape 1 sur 3 — Principe</figcaption>
+    <div class="frame" style="width:440px"><div class="page" style="padding:var(--s-32)">
+      <p class="overline">Étape 1 sur 3</p><h1 class="display">Lire d'abord.</h1>
+      <p class="reading" style="margin-top:var(--s-12)">Claude Everywhere ne lit rien tout seul. Ce que vous envoyez est <span class="sent">surligné en jaune</span>&#8239;: c'est la seule chose qui quitte votre machine.</p>
+      <div class="row" style="margin-top:var(--s-20)"><span class="grow"></span><button class="btn btn--primary">Continuer</button></div>
+    </div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Étape 2 sur 3 — Clé API</figcaption>
+    <div class="frame" style="width:440px"><div class="page" style="padding:var(--s-32)">
+      <p class="overline">Étape 2 sur 3</p><h1 class="display">Votre clé API</h1>
+      <div class="field" style="margin-top:var(--s-12)"><label class="field__label" for="ob-key">Clé Anthropic</label>
+        <input id="ob-key" class="input" type="password" aria-invalid="true" aria-describedby="ob-e" value="sk-ant-12">
+        <span id="ob-e" class="help help--error"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>Cette clé a été refusée (401). Vérifiez-la dans la console Anthropic.</span>
+        <span class="help">Stockée sur cet appareil uniquement.</span></div>
+      <div class="row" style="margin-top:var(--s-20)"><button class="btn btn--quiet">Retour</button><span class="grow"></span><button class="btn btn--primary">Vérifier et enregistrer</button></div>
+    </div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Étape 3 sur 3 — Prêt</figcaption>
+    <div class="frame" style="width:440px"><div class="page" style="padding:var(--s-32)">
+      <p class="overline">Étape 3 sur 3</p><h1 class="display">C'est prêt.</h1>
+      <p class="help help--ok" style="margin-top:var(--s-8)"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Clé valide</p>
+      <p class="reading" style="margin-top:var(--s-12)">Sélectionnez un passage dans une page, ou ouvrez le panneau avec <kbd>Ctrl</kbd>+<kbd>Maj</kbd>+<kbd>Y</kbd>.</p>
+      <div class="row" style="margin-top:var(--s-20)"><button class="btn btn--quiet">Retour</button><span class="grow"></span><button class="btn btn--primary">Ouvrir le panneau</button></div>
+    </div></div></figure>
+  </div>
+</section>
+</main>
+</div>
+<script>
+document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => {
+  b.dataset.themeSet === 'system' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.dataset.theme = b.dataset.themeSet;
+  document.querySelectorAll('[data-theme-set]').forEach(x => x.setAttribute('aria-checked', x === b));
+}));
+</script>
+</body>
+</html>
