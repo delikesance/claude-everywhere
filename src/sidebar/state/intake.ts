@@ -68,12 +68,22 @@ export async function intakePending(): Promise<void> {
   if (page) addItem(pageToItem(page));
 }
 
+async function loadArtifactItem(id: string): Promise<ContextItem | null> {
+  const artifact = await (await openLibrary()).getArtifact(id);
+  return artifact ? artifactToContextItem(artifact) : null;
+}
+
+export async function addArtifact(id: string): Promise<void> {
+  const item = await loadArtifactItem(id);
+  if (item && !conversation.value.items.some((existing) => existing.id === item.id)) addItem(item);
+}
+
 export async function attachArtifact(id: string): Promise<void> {
   await browser.storage.session.remove(PENDING_ATTACH_KEY);
-  const artifact = await (await openLibrary()).getArtifact(id);
-  if (!artifact) return;
+  const item = await loadArtifactItem(id);
+  if (!item) return;
   if (conversation.value.messages.length > 0) resetConversation();
-  attachItem(artifactToContextItem(artifact));
+  attachItem(item);
 }
 
 async function readPendingAttach(): Promise<void> {

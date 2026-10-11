@@ -19,12 +19,6 @@ const library = vi.hoisted(() => ({ saveConversation: vi.fn(async () => {}) }));
 
 vi.mock("../../shared/messaging", () => ({ connectChat: () => fake }));
 vi.mock("../../library", () => ({ openLibrary: async () => library }));
-vi.mock("../../api/budget", () => ({
-  planContext: vi.fn((items: { included: boolean }[]) => ({
-    bordereau: { lines: [], sentChars: items.length, totalChars: items.length, truncated: false },
-    blocks: [],
-  })),
-}));
 
 const { conversation, draft, resetConversation } = await import("./conversation");
 const { settings } = await import("./session");
@@ -126,6 +120,17 @@ describe("turn state machine", () => {
     settings.value = { ...DEFAULT_SETTINGS, apiKey: null };
     turn.send();
     expect(fake.start).toHaveBeenCalledTimes(1);
+  });
+
+  it("regenerate replaces the last answer by a new turn on the same question", () => {
+    reply({ type: "delta", text: "ok" });
+    reply({ type: "done", stopReason: "end_turn", usage: { inputTokens: 1, outputTokens: 1 }, bordereau });
+    turn.regenerate();
+    expect(fake.start).toHaveBeenCalledTimes(2);
+    const second = fake.start.mock.calls[1]?.[0] as { userText: string; history: unknown[] };
+    expect(second.userText).toBe("Bonjour");
+    expect(second.history).toHaveLength(0);
+    expect(conversation.value.messages).toHaveLength(2);
   });
 
   it("continue sends a follow-up turn keeping history", () => {

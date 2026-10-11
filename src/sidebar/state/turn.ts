@@ -5,7 +5,7 @@ import { t } from "../../shared/i18n";
 import type { ApiError, ChatMessage } from "../../shared/types";
 import { conversation, draft, removeMessages, updateMessage } from "./conversation";
 import { persistConversation } from "./persist";
-import { planFor } from "./plan";
+import { planFor, sentHistory } from "./plan";
 import { hasKey, settings } from "./session";
 
 export type TurnNotice =
@@ -90,7 +90,7 @@ function handle(turn: ActiveTurn, msg: ChatServerMsg): void {
 function startTurn(userText: string, restoreDraft: boolean): void {
   if (phase.value !== "idle" || userText.trim() === "" || !hasKey.value) return;
   const { items, model, messages } = conversation.value;
-  const history = messages.filter((m) => m.text !== "");
+  const history = sentHistory();
   const user = { ...message("user", userText), bordereau: planFor(userText).bordereau };
   const assistant = { ...message("assistant", ""), model };
   const connection = connectChat();
@@ -127,6 +127,15 @@ export const continueAnswer = (): void => startTurn(t("sidebar_continuePrompt"),
 export function retry(): void {
   if (draft.value === lastQuestion.value) draft.value = "";
   startTurn(lastQuestion.value, false);
+}
+
+export function regenerate(): void {
+  const { messages } = conversation.value;
+  const lastUser = messages.map((m) => m.role).lastIndexOf("user");
+  if (phase.value !== "idle" || !hasKey.value || lastUser < 0) return;
+  const question = messages[lastUser]?.text ?? "";
+  removeMessages(messages.slice(lastUser).map((m) => m.id));
+  startTurn(question, false);
 }
 
 export function cancelTurn(): void {

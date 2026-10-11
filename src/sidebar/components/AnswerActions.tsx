@@ -8,7 +8,7 @@ function artifactTitle(markdown: string): string {
   return firstLine.replace(/^#+\s*/, "").slice(0, 80) || t("sidebar_untitled");
 }
 
-export function AnswerActions({ markdown }: { markdown: string }) {
+export function AnswerActions({ markdown, onRegenerate }: { markdown: string; onRegenerate?: (() => void) | undefined }) {
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -33,6 +33,12 @@ export function AnswerActions({ markdown }: { markdown: string }) {
         <Icon name="bookmarkPlus" />
         {saved ? t("sidebar_saved") : t("sidebar_save")} <span class="badge badge--local">{t("sidebar_badgeLocal")}</span>
       </Button>
+      {onRegenerate && (
+        <Button variant="quiet" compact onClick={onRegenerate}>
+          <Icon name="rotateCw" />
+          {t("sidebar_regenerate")}
+        </Button>
+      )}
     </>
   );
 }
