@@ -22,12 +22,11 @@ const FEEDBACK: Record<KeyOutcome, Feedback> = {
 
 interface ApiKeyFieldProps {
   storedKey: string | null;
-  submitLabel?: string;
   onOutcome: (outcome: KeyOutcome) => void;
   onClear?: () => void;
 }
 
-export function ApiKeyField({ storedKey, submitLabel = t("options_keyValidate"), onOutcome, onClear }: ApiKeyFieldProps) {
+export function ApiKeyField({ storedKey, onOutcome, onClear }: ApiKeyFieldProps) {
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [outcome, setOutcome] = useState<KeyOutcome | null>(null);
@@ -62,7 +61,7 @@ export function ApiKeyField({ storedKey, submitLabel = t("options_keyValidate"),
               onInput={(event) => setDraft(event.currentTarget.value)}
             />
             <Button type="submit" disabled={busy}>
-              {busy ? t("options_keyValidating") : submitLabel}
+              {busy ? t("options_keyValidating") : t("options_keyValidate")}
             </Button>
           </div>
         )}

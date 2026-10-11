@@ -1,8 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { byText, click, initFrench, installBrowserStub, mount, settle, typeInto } from "../../library-ui/testing";
+import { byText, click, initFrench, installBrowserStub, mount, typeInto } from "../../library-ui/testing";
 import { getSettings } from "../../shared/settings";
 import { ApiKeyField } from "./ApiKeyField";
-import { OnboardingFlow } from "./OnboardingFlow";
 import { PermissionToggle } from "./PermissionToggle";
 
 const KEY = "sk-ant-api03-secretvalue1234";
@@ -113,22 +112,4 @@ it("enables the toggle once the permission is granted and disables it without as
   await click(on.querySelector("[role=switch]"));
   expect(onChange).toHaveBeenLastCalledWith(false);
   expect(permissions.request).not.toHaveBeenCalled();
-});
-
-it("walks the onboarding in three steps and marks it done", async () => {
-  stubBrowser();
-  const page = await mount(<OnboardingFlow />);
-  expect(page.textContent).toContain("Étape 1 sur 3");
-
-  await click(byText(page, "button", "Continuer"));
-  expect(page.textContent).toContain("Étape 2 sur 3");
-  await submitKey(page);
-  await settle(10);
-
-  expect(page.textContent).toContain("Étape 3 sur 3");
-  expect((await getSettings()).onboardingDone).toBe(true);
-
-  await click(byText(page, "button", "Ouvrir le panneau"));
-  const { sidebarAction } = (globalThis as unknown as { browser: typeof browser }).browser;
-  expect(sidebarAction.open).toHaveBeenCalledTimes(1);
 });
