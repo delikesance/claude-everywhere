@@ -6,7 +6,7 @@ import type { Harness } from "./harness";
 import { enableAllSites, startSession, storeApiKey } from "./session";
 import { addFromPage, ask, openSidebarBeside, waitForDone } from "./sidebar";
 import type { PageUnderTest } from "./sidebar";
-import { closeOtherTabs, find, runInPage, t } from "./ui";
+import { closeOtherTabs, find, runInPage, t, waitForScript } from "./ui";
 
 let harness: Harness;
 let page: PageUnderTest;
@@ -44,6 +44,7 @@ async function sidebarWithArticle(addPage = true): Promise<void> {
 async function openMenu(): Promise<void> {
   await (await find(harness.driver, MENU_TRIGGER)).click();
   await find(harness.driver, '[role="menu"]');
+  await waitForScript(harness.driver, `document.activeElement?.getAttribute("role") === "menuitem"`);
 }
 
 async function pressInMenu(...keys: string[]): Promise<void> {
