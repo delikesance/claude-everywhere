@@ -54,7 +54,7 @@ export function openCard(surface: Surface, selection: PageSelection, config: Ove
 
   const explain = () => {
     view.clearNotice();
-    view.setExplainEnabled(false);
+    view.setRetryVisible(false);
     view.setResultActionsVisible(false);
     view.setWriting(true);
     abort = startExplain(
@@ -67,13 +67,12 @@ export function openCard(surface: Surface, selection: PageSelection, config: Ove
         onDone() {
           view.setWriting(false);
           view.setAnswer(answer, false);
-          view.setExplainEnabled(true);
           view.setResultActionsVisible(true);
         },
         onError(error) {
           view.setWriting(false);
-          view.setExplainEnabled(true);
           if (error.kind === "aborted") return;
+          view.setRetryVisible(true);
           view.showNotice("error", errorText(error));
         },
       },
@@ -89,6 +88,7 @@ export function openCard(surface: Surface, selection: PageSelection, config: Ove
   });
 
   if (config.hasKey) {
+    explain();
     const { bordereau } = planContext([item], prompt, config.defaultModel);
     view.setSentChars(bordereau.sentChars);
     if (bordereau.truncated) {
@@ -96,7 +96,6 @@ export function openCard(surface: Surface, selection: PageSelection, config: Ove
     }
   } else {
     view.showNotice("warning", t("overlay_noKeyBody"), t("overlay_noKeyTitle"));
-    view.setExplainEnabled(false);
   }
 
   placeNear(view.element, selection.rect, CARD_WIDTH_PX);
