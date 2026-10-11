@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marginalia — Surcouche sur la sélection</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
+  .mock { display: flex; flex-wrap: wrap; gap: var(--s-32); align-items: flex-start; margin-top: var(--s-16); }
+  .host { position: relative; background: var(--bg); padding: var(--s-24); }
+  .host .fake-article { padding: 0; background: transparent; }
+  .overlay-card { position: relative; }
+  .overlay-card__head { display: flex; align-items: center; gap: var(--s-8); padding: var(--s-8) var(--s-12) 0 var(--s-16); }
+  .overlay-card__head .grow { font: 600 var(--fs-caption)/var(--lh-caption) var(--font-sans); }
+  .overlay-card__answer { padding: var(--s-12) var(--s-16); overflow: auto; }
+</style>
+<script src="../theme.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-egress" viewBox="0 0 24 24"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+<symbol id="i-bookmark-plus" viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/><path d="M12 7v6M9 10h6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+<symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+</svg>
+
+<div class="doc">
+<header>
+  <p class="overline"><a href="../index.html">← Système de design</a></p>
+  <h1 class="display">Surcouche sur la sélection</h1>
+  <p class="reading reading--compact muted" style="margin-top:var(--s-8)">Sur la page hôte, une seule action : « Demander ». La réponse arrive dans une carte ; « Continuer dans le panneau » lui donne la suite.</p>
+  <div role="radiogroup" aria-label="Apparence" class="seg" style="margin-top:var(--s-12)">
+    <button class="seg__cell" role="radio" aria-checked="true" data-theme-set="system">Système</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="light">Clair</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="dark">Sombre</button>
+  </div>
+</header>
+<main>
+
+<section aria-labelledby="h-ov">
+  <h2 id="h-ov">Demander, puis la carte</h2>
+  <div class="mock">
+
+    <figure><figcaption class="caption frame-caption">Sélection : barre « Demander »</figcaption>
+    <div class="frame host" style="width:420px"><div class="fake-article">
+      <p class="reading">La réforme communale entre en vigueur à l'automne. <mark>Les communes de moins de 3&#8239;500 habitants</mark> recevront une aide forfaitaire.</p>
+      <div class="toolbar" role="toolbar" aria-label="Actions sur la sélection" style="margin-top:var(--s-8)"><button class="btn btn--primary btn--compact">Demander</button></div>
+    </div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Carte en cours : points et texte lisible</figcaption>
+    <div class="frame host" style="width:420px;height:300px"><div class="overlay-card" role="dialog" aria-label="Réponse">
+      <div class="overlay-card__head"><span class="grow">Demande sur la sélection</span><button class="icon-btn icon-btn--sm" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <p class="overlay-card__quote sent mono">Les communes de moins de 3 500 habitants…</p>
+      <p class="caption mono" style="padding:0 var(--s-16)">Part : cette sélection, 214 car.</p>
+      <div class="overlay-card__answer" role="status"><p class="reading reading--compact"><span class="anim-dots" aria-hidden="true"><span></span><span></span><span></span></span> Réponse en cours</p></div>
+      <div class="overlay-card__foot"><button class="btn btn--primary btn--compact" disabled>Continuer dans le panneau</button><button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copier</button><button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-bookmark-plus"/></svg>Garder</button></div>
+    </div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Carte terminée</figcaption>
+    <div class="frame host" style="width:420px;height:340px"><div class="overlay-card" role="dialog" aria-label="Réponse">
+      <div class="overlay-card__head"><span class="grow">Demande sur la sélection</span><button class="icon-btn icon-btn--sm" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <p class="overlay-card__quote sent mono">Les communes de moins de 3 500 habitants…</p>
+      <p class="caption mono" style="padding:0 var(--s-16)">Part : cette sélection, 214 car.</p>
+      <div class="overlay-card__answer"><p class="reading reading--compact"><span class="numeral" aria-hidden="true">1</span> Elles reçoivent une aide forfaitaire, versée dès la première année, sans démarche.</p></div>
+      <div class="overlay-card__foot"><button class="btn btn--primary btn--compact">Continuer dans le panneau</button><button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copier</button><button class="btn btn--quiet btn--compact" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Gardé</button></div>
+    </div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Erreur : clé manquante, renvoi vers le panneau</figcaption>
+    <div class="frame host" style="width:420px;height:300px"><div class="overlay-card" role="dialog" aria-label="Réponse">
+      <div class="overlay-card__head"><span class="grow">Demande sur la sélection</span><button class="icon-btn icon-btn--sm" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <div class="overlay-card__answer"><div class="notice notice--error" role="alert"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-circle-alert"/></svg></span><div><p class="notice__title">Une clé, et c'est parti.</p><p class="notice__body">Ajoutez une clé dans le panneau pour répondre.</p><div class="notice__actions"><button class="btn btn--secondary btn--compact">Ouvrir le panneau</button></div></div></div></div>
+    </div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Sélection tronquée</figcaption>
+    <div class="frame host" style="width:420px;height:360px"><div class="overlay-card" role="dialog" aria-label="Réponse">
+      <div class="overlay-card__head"><span class="grow">Demande sur la sélection</span><button class="icon-btn icon-btn--sm" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <p class="overlay-card__quote sent mono">Les communes de moins de 3 500 habitants…</p>
+      <p class="caption mono" style="padding:0 var(--s-16)">Part : cette sélection, 8&#8239;000 car. sur 9&#8239;412</p>
+      <div class="overlay-card__answer"><div class="notice notice--warning" role="status"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><div><p class="notice__title">Sélection tronquée&#8239;: 8&#8239;000 car. envoyés sur 9&#8239;412</p></div></div></div>
+      <div class="overlay-card__foot"><button class="btn btn--primary btn--compact">Continuer dans le panneau</button><button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copier</button></div>
+    </div></div></figure>
+
+  </div>
+</section>
+</main>
+</div>
+</body>
+</html>
