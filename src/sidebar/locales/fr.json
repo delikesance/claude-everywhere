@@ -91,5 +91,10 @@
   "sidebar_stop": "Arrêter",
   "sidebar_stopKey": "Échap",
   "sidebar_untitled": "Sans titre",
-  "sidebar_yourMessage": "Votre message"
+  "sidebar_yourMessage": "Votre message",
+  "sidebar_keep": "Garder",
+  "sidebar_kept": "✓ Gardé",
+  "sidebar_tabChangedTitle": "Nouvel onglet : {title}. Lire cette page à la place ?",
+  "sidebar_readPage": "Lire",
+  "sidebar_keepPreviousPage": "Garder l'ancienne"
 }

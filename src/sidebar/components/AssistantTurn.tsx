@@ -1,11 +1,11 @@
 import { t } from "../../shared/i18n";
 import type { MessageKey } from "../../shared/i18n";
 import type { ChatMessage } from "../../shared/types";
-import { AssistantMessage, Markdown } from "../../shared/ui";
+import { AssistantMessage, Button, Icon, Markdown } from "../../shared/ui";
 import { MODEL_META } from "../../api/budget";
 import type { Phase } from "../state/turn";
-import { AnswerActions } from "./AnswerActions";
 import { useFrameValue } from "./hooks";
+import { CopyButton, KeepButton } from "./TurnActions";
 
 export interface AssistantTurnProps {
   message: ChatMessage;
@@ -42,7 +42,18 @@ export function AssistantTurn({ message, number, phase, onRegenerate }: Assistan
           {statusText(message, phase)}
           {live && <span class="ellipsis" aria-hidden="true" />}
         </span>
-        {!live && message.text !== "" && <AnswerActions markdown={message.text} onRegenerate={onRegenerate} />}
+        {!live && message.text !== "" && (
+          <>
+            <KeepButton markdown={message.text} />
+            <CopyButton markdown={message.text} />
+            {onRegenerate && (
+              <Button variant="quiet" compact onClick={onRegenerate}>
+                <Icon name="rotateCw" />
+                {t("sidebar_regenerate")}
+              </Button>
+            )}
+          </>
+        )}
       </div>
     </AssistantMessage>
   );
