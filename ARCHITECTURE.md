@@ -258,7 +258,7 @@ Scripts (`package.json`): `build` = `node scripts/build.mjs` -> `dist/` (prod, `
 | Unit | settings merge/redact, i18n `t` fallback fr, build `i18n.mjs` failure cases | `src/shared/*.test.ts`, `scripts/*.test.ts` |
 | Integration | background router with `webextension` mock: `capture/run`, `chat` Port protocol (one terminal message, disconnect aborts), commands/menus open sidebar synchronously | `src/background/*.test.ts` |
 | Integration | sidebar/popup/library-ui/options components (jsdom): chip states, slip numbers, error notices, streaming render, a11y roles | `src/<ui>/*.test.tsx` |
-| Integration | overlay in jsdom: closed shadow root, `popover=manual`, no framework, mount guard, Esc closes | `src/overlay/*.test.ts` |
+| Integration | overlay in happy-dom: closed shadow root, `popover=manual`, no framework, mount guard, Esc closes | `src/overlay/*.test.ts` |
 | Static | `web-ext lint` on `dist/`; `audit-permissions.mjs` (manifest permissions equal the D-006 allowlist, CSP equals D-007, no `<all_urls>` static, no `content_scripts`, `dist/overlay.js` contains no `x-api-key`/SDK marker, no remote URL other than API origin, no `eval`/`new Function`) | `scripts/` |
 | E2E | selenium + geckodriver headless, `installAddon(dist-test xpi, true)`, uuid from `extensions.webextensions.uuids`; mock API on 127.0.0.1: J1 (valid/invalid key), J2 (stream, stop, 429 with retry-after), J3 (selection on fixture page, activeTab path), J4 (save fixture page, restricted `about:` state), J5 (search, attach, export download); `permissions.request` prompts are pre-granted via test build host permission | `tests/e2e/*.spec.ts` |
 
