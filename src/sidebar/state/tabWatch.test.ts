@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { watchActiveTab } from "./tabWatch";
+import { changedTab, watchActiveTab, watchTabChanges } from "./tabWatch";
 
 type Listener = (...args: never[]) => unknown;
 
@@ -70,6 +70,17 @@ describe("watchActiveTab", () => {
     await activated!({ tabId: 9 });
 
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("exposes the switched-to tab as the changed tab", async () => {
+    tabs.get.mockResolvedValue({ id: 5, title: "Le Monde", url: "https://lemonde.fr/b" });
+    watchTabChanges();
+
+    const [activated] = [...onActivated.listeners] as Array<(info: { tabId: number }) => Promise<void>>;
+    await activated!({ tabId: 5 });
+
+    expect(changedTab.value).toEqual({ title: "Le Monde", url: "https://lemonde.fr/b" });
+    changedTab.value = null;
   });
 
   it("removes both listeners when stopped", () => {

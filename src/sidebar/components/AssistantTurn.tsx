@@ -5,6 +5,7 @@ import { AssistantMessage, Button, Icon, Markdown } from "../../shared/ui";
 import { MODEL_META } from "../../api/budget";
 import type { Phase } from "../state/turn";
 import { useFrameValue } from "./hooks";
+import { FollowUps } from "./FollowUps";
 import { CopyButton, KeepButton } from "./TurnActions";
 
 export interface AssistantTurnProps {
@@ -12,7 +13,10 @@ export interface AssistantTurnProps {
   number: number;
   phase: Phase | null;
   onRegenerate?: (() => void) | undefined;
+  onFollowUp?: ((text: string) => void) | undefined;
 }
+
+const FOLLOW_UP_KEYS = ["sidebar_followUpDetail", "sidebar_followUpCompare"] as const;
 
 const LIVE_STATUS: Record<Phase, MessageKey | null> = {
   idle: null,
@@ -28,19 +32,25 @@ function statusText(message: ChatMessage, live: Phase | null): string {
   return t("sidebar_statusDone", { model });
 }
 
-export function AssistantTurn({ message, number, phase, onRegenerate }: AssistantTurnProps) {
+export function AssistantTurn({ message, number, phase, onRegenerate, onFollowUp }: AssistantTurnProps) {
   const live = phase !== null && phase !== "idle";
   const shown = useFrameValue(message.text);
   return (
     <AssistantMessage label={t("sidebar_answerLabel", { number })} number={number}>
       <div class="reading" aria-busy={live}>
         <Markdown source={live ? shown : message.text} />
-        {phase === "streaming" && <span class="caret" aria-hidden="true" />}
+        {phase === "waiting" && (
+          <span class="anim-dots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+        )}
+        {phase === "streaming" && <span class="caret anim-caret" aria-hidden="true" />}
       </div>
       <div class="msg-footer">
         <span class={live ? "status-tag" : "caption"} role="status">
           {statusText(message, phase)}
-          {live && <span class="ellipsis" aria-hidden="true" />}
         </span>
         {!live && message.text !== "" && (
           <>
@@ -55,6 +65,9 @@ export function AssistantTurn({ message, number, phase, onRegenerate }: Assistan
           </>
         )}
       </div>
+      {!live && message.text !== "" && onFollowUp && (
+        <FollowUps suggestions={FOLLOW_UP_KEYS.map((key) => t(key))} onPick={onFollowUp} />
+      )}
     </AssistantMessage>
   );
 }

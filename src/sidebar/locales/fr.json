@@ -101,6 +101,9 @@
   "sidebar_keep": "Garder",
   "sidebar_kept": "✓ Gardé",
   "sidebar_tabChangedTitle": "Nouvel onglet : {title}. Lire cette page à la place ?",
+  "sidebar_tabChangedGeneric": "Nouvel onglet détecté. Lire cette page à la place ?",
   "sidebar_readPage": "Lire",
-  "sidebar_keepPreviousPage": "Garder l'ancienne"
+  "sidebar_keepPreviousPage": "Garder l'ancienne",
+  "sidebar_followUpDetail": "Détaille le dernier point",
+  "sidebar_followUpCompare": "Compare avec une autre source"
 }

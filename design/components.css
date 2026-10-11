@@ -179,6 +179,13 @@ kbd { font: 500 var(--fs-caption)/var(--lh-caption) var(--font-mono); background
   transition: background-color var(--t-1) var(--ease-standard);
 }
 .suggestion:hover { background: var(--raised); }
+.followups { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-4); }
+.followup {
+  padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer;
+  font: 400 var(--fs-caption)/var(--lh-caption) var(--font-sans); text-align: left;
+  text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 2px;
+}
+.followup:hover { color: var(--text); }
 
 .tag { font: 400 var(--fs-caption)/var(--lh-caption) var(--font-sans); font-variant-caps: all-small-caps; letter-spacing: 0.04em; color: var(--text); display: inline-flex; align-items: center; }
 .tag::before { content: "#"; color: var(--accent); margin-right: 1px; }

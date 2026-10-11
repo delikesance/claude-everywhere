@@ -3,7 +3,7 @@
   "shared_charsUnit": "{count} car.",
   "shared_close": "Fermer",
   "shared_cmdExplain": "Expliquer la sélection",
-  "shared_cmdPopup": "Ouvrir le menu de l'extension",
+  "shared_cmdPopup": "Ouvrir/fermer le panneau",
   "shared_cmdSave": "Enregistrer cette page",
   "shared_cmdSidebar": "Ouvrir ou fermer le panneau",
   "shared_extDescription": "Posez vos questions à Claude sur n'importe quelle page, en voyant exactement ce qui part.",

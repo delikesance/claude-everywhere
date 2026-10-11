@@ -3,7 +3,7 @@
   "shared_charsUnit": "{count} chars",
   "shared_close": "Close",
   "shared_cmdExplain": "Explain the selection",
-  "shared_cmdPopup": "Open the extension menu",
+  "shared_cmdPopup": "Open/close the panel",
   "shared_cmdSave": "Save this page",
   "shared_cmdSidebar": "Open or close the panel",
   "shared_extDescription": "Ask Claude about any page, and see exactly what is sent.",

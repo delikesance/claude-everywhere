@@ -34,6 +34,7 @@ export const ICON_SHAPES = {
   circleAlert: [["circle", { cx: "12", cy: "12", r: "10" }], path("M12 8v4M12 16h.01")],
   arrowUpRight: [path("M7 7h10v10M7 17 17 7")],
   arrowDown: [path("M12 5v14m7-7-7 7-7-7")],
+  history: [path("M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"), path("M3 3v5h5"), path("M12 7v5l4 2")],
 } as const satisfies Record<string, readonly Shape[]>;
 
 export type IconName = keyof typeof ICON_SHAPES;

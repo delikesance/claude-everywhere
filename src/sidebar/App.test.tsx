@@ -164,6 +164,14 @@ describe("App", () => {
     await vi.waitFor(() => expect(conversation.value.items[0]).toMatchObject({ artifactId: "a1", title: "Note" }));
   });
 
+  it("opens the history from the header icon button", async () => {
+    library.listConversations.mockResolvedValue([]);
+    mount();
+    await act(async () => root.querySelector<HTMLButtonElement>('button[aria-label="sidebar_history"]')?.click());
+    expect(view.value).toBe("history");
+    view.value = "chat";
+  });
+
   it("asks for confirmation before deleting a conversation", async () => {
     conversations.value = [{ id: "c1", title: "Old", createdAt: 0, updatedAt: 0, model: "claude-sonnet-5-5" }];
     view.value = "history";
@@ -209,6 +217,47 @@ describe("App", () => {
       settings.value.answerLanguage,
     );
     expect(root.querySelector(".preview")?.textContent).toContain(prompt.user);
+  });
+
+  it("offers to read a newly activated tab and captures it on Read", async () => {
+    const { sendRequest } = await import("../shared/messaging");
+    const { changedTab } = await import("./state/tabWatch");
+    changedTab.value = { title: "Le Monde", url: "https://lemonde.fr" };
+    mount();
+    expect(root.textContent).toContain("sidebar_tabChangedTitle");
+    act(() => buttonByText("sidebar_readPage")?.click());
+    expect(changedTab.value).toBeNull();
+    expect(sendRequest).toHaveBeenCalledWith("capture/run", { mode: "page", handoff: false });
+  });
+
+  it("uses the generic wording when the tab title is unknown", async () => {
+    const { changedTab } = await import("./state/tabWatch");
+    changedTab.value = { title: "", url: "" };
+    mount();
+    expect(root.textContent).toContain("sidebar_tabChangedGeneric");
+    act(() => buttonByText("sidebar_keepPreviousPage")?.click());
+    expect(changedTab.value).toBeNull();
+  });
+
+  it("sends a follow-up picked under the last finished answer", () => {
+    conversation.value = {
+      ...conversation.value,
+      messages: [
+        { id: "u", role: "user", text: "Question", createdAt: 0 },
+        { id: "m", role: "assistant", text: "Réponse", createdAt: 0, stopReason: "end_turn" },
+      ],
+    };
+    mount();
+    click(".followup");
+    expect(fake.start).toHaveBeenCalledWith(expect.objectContaining({ userText: "sidebar_followUpDetail" }));
+  });
+
+  it("shows the dots while waiting and the caret while streaming", () => {
+    const message: ChatMessage = { id: "m", role: "assistant", text: "", createdAt: 0 };
+    act(() => render(<AssistantTurn message={message} number={1} phase="waiting" />, root));
+    expect(root.querySelector(".anim-dots")).not.toBeNull();
+    act(() => render(<AssistantTurn message={{ ...message, text: "Bon" }} number={1} phase="streaming" />, root));
+    expect(root.querySelector(".anim-caret")).not.toBeNull();
   });
 
   it("renders a hostile answer without script or handler nodes", () => {

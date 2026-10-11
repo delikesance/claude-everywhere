@@ -1,6 +1,16 @@
+import { signal } from "@preact/signals";
+
 export interface WatchedTab {
   title: string;
   url: string;
+}
+
+export const changedTab = signal<WatchedTab | null>(null);
+
+export function watchTabChanges(): void {
+  watchActiveTab((tab) => {
+    changedTab.value = tab;
+  });
 }
 
 export function watchActiveTab(onChange: (tab: WatchedTab) => void): () => void {

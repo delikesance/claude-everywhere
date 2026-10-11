@@ -11,7 +11,7 @@ export function TabChangeNotice({ title, onRead, onKeep }: TabChangeNoticeProps)
   return (
     <div class="notice--drop">
       <Notice
-        title={t("sidebar_tabChangedTitle", { title })}
+        title={title ? t("sidebar_tabChangedTitle", { title }) : t("sidebar_tabChangedGeneric")}
         actions={
           <>
             <Button variant="primary" compact onClick={onRead}>
