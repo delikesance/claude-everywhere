@@ -172,6 +172,15 @@ describe("App", () => {
     view.value = "chat";
   });
 
+  it("titles the header with the conversation title or the new-conversation label", () => {
+    mount();
+    expect(root.querySelector(".sb-title__text")?.textContent).toBe("sidebar_newConversation");
+    act(() => {
+      conversation.value = { ...conversation.value, title: "Résumé du marché" };
+    });
+    expect(root.querySelector(".sb-title__text")?.textContent).toBe("Résumé du marché");
+  });
+
   it("asks for confirmation before deleting a conversation", async () => {
     conversations.value = [{ id: "c1", title: "Old", createdAt: 0, updatedAt: 0, model: "claude-sonnet-5-5" }];
     view.value = "history";
@@ -228,6 +237,15 @@ describe("App", () => {
     act(() => buttonByText("sidebar_readPage")?.click());
     expect(changedTab.value).toBeNull();
     expect(sendRequest).toHaveBeenCalledWith("capture/run", { mode: "page", handoff: false });
+  });
+
+  it("shows the tab notice over the conversation, never in the footer", async () => {
+    const { changedTab } = await import("./state/tabWatch");
+    changedTab.value = { title: "Le Monde", url: "https://lemonde.fr" };
+    mount();
+    expect(root.querySelector(".sb-body > .tab-notice")?.getAttribute("role")).toBe("status");
+    expect(root.querySelector(".sb-foot .tab-notice")).toBeNull();
+    changedTab.value = null;
   });
 
   it("uses the generic wording when the tab title is unknown", async () => {
