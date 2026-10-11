@@ -56,6 +56,13 @@ describe("video_transcript", () => {
     expect(text).toBe("[00:00] Tom & Jerry 'hi'\n[00:31] Next <part>");
   });
 
+  it("falls back to the XML track when the json3 body is malformed", async () => {
+    openPage();
+    vi.mocked(fetchInTab).mockResolvedValueOnce("{not json").mockResolvedValueOnce(TIMEDTEXT_XML);
+    const text = await videoTranscript.run({ fromSec: 0, toSec: 40 }, ctx);
+    expect(text).toBe("[00:00] Tom & Jerry 'hi'\n[00:31] Next <part>");
+  });
+
   it("says no transcript exists and gives the video state instead of inventing content", async () => {
     openPage({ player: { ...PLAYER_RESPONSE, captions: undefined } });
     const text = await videoTranscript.run({ fromSec: 0, toSec: 60 }, ctx);

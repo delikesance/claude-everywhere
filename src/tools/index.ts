@@ -6,8 +6,13 @@ export * from "./types";
 
 export const allTools: readonly ToolDef[] = [...pageTools, ...youtubeTools];
 
+const HIGH_SURROGATE = /[\uD800-\uDBFF]/;
+
 function truncate(text: string): string {
-  return text.length <= MAX_TOOL_RESULT_CHARS ? text : `${text.slice(0, MAX_TOOL_RESULT_CHARS)}\n[truncated]`;
+  if (text.length <= MAX_TOOL_RESULT_CHARS) return text;
+  const lastKept = text.charAt(MAX_TOOL_RESULT_CHARS - 1);
+  const end = HIGH_SURROGATE.test(lastKept) ? MAX_TOOL_RESULT_CHARS - 1 : MAX_TOOL_RESULT_CHARS;
+  return `${text.slice(0, end)}\n[truncated]`;
 }
 
 export async function runTool(name: string, input: Record<string, unknown>, ctx: ToolContext): Promise<string> {

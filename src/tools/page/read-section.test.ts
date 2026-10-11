@@ -36,5 +36,12 @@ describe("sectionHtmlInPage", () => {
 
   it("returns null for an unknown id", () => {
     expect(sectionHtmlInPage("s9", document)).toBeNull();
+    expect(sectionHtmlInPage("s0", document)).toBeNull();
+  });
+
+  it("returns a very large section whole", () => {
+    const body = "word ".repeat(50_000);
+    document.body.innerHTML = `<h2>Big</h2><p>${body}</p><h2>Next</h2>`;
+    expect(htmlToMarkdown(sectionHtmlInPage("s1", document) ?? "")).toContain(body.trim());
   });
 });

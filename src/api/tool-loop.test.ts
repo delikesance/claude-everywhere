@@ -13,6 +13,14 @@ vi.mock("../tools/page", () => ({
       inputSchema: { type: "object", properties: {} },
       run: async (input: Record<string, unknown>) => `echo:${JSON.stringify(input)}`,
     },
+    {
+      name: "boom",
+      description: "Always fails",
+      inputSchema: { type: "object", properties: {} },
+      run: async () => {
+        throw new Error("boom");
+      },
+    },
   ],
 }));
 
@@ -67,6 +75,7 @@ describe("runToolLoop", () => {
     await runToolLoop(baseOptions(withTab));
     expect(withTab.mock.calls[0]?.[1]).toEqual([
       expect.objectContaining({ name: "echo", input_schema: { type: "object", properties: {} } }),
+      expect.objectContaining({ name: "boom" }),
     ]);
 
     const withoutTab = fakeTurns(turnMessage("end_turn", []));
@@ -104,5 +113,52 @@ describe("runToolLoop", () => {
       content: [{ type: "tool_result", tool_use_id: "id-missing", content: "Error: unknown tool missing" }],
     });
     expect(options.onTool).toHaveBeenCalledWith({ name: "missing", input: {}, resultChars: "Error: unknown tool missing".length });
+  });
+
+  it("does not run tools when a tool turn is cut by max_tokens", async () => {
+    const runTurn = fakeTurns(turnMessage("max_tokens", [textBlock, toolUse("echo")]));
+    const options = baseOptions(runTurn);
+    const result = await runToolLoop(options);
+    expect(result).toEqual({ stopReason: "max_tokens", usage: { inputTokens: 10, outputTokens: 3 }, toolChars: 0 });
+    expect(options.onTool).not.toHaveBeenCalled();
+    expect(runTurn).toHaveBeenCalledTimes(1);
+  });
+
+  it("feeds a failing tool's error back to the model and keeps looping", async () => {
+    const runTurn = fakeTurns(turnMessage("tool_use", [toolUse("boom")]), turnMessage("end_turn", []));
+    await runToolLoop(baseOptions(runTurn));
+    expect(runTurn.mock.calls[1]?.[0].at(-1)).toEqual({
+      role: "user",
+      content: [{ type: "tool_result", tool_use_id: "id-boom", content: "Error: boom" }],
+    });
+  });
+
+  it("runs every tool_use block of a turn in order", async () => {
+    const runTurn = fakeTurns(
+      turnMessage("tool_use", [toolUse("echo", { a: 1 }), toolUse("boom"), toolUse("echo", { b: 2 })]),
+      turnMessage("end_turn", []),
+    );
+    const options = baseOptions(runTurn);
+    const result = await runToolLoop(options);
+    const first = 'echo:{"a":1}';
+    const second = 'echo:{"b":2}';
+    expect(runTurn.mock.calls[1]?.[0].at(-1)).toEqual({
+      role: "user",
+      content: [
+        { type: "tool_result", tool_use_id: "id-echo", content: first },
+        { type: "tool_result", tool_use_id: "id-boom", content: "Error: boom" },
+        { type: "tool_result", tool_use_id: "id-echo", content: second },
+      ],
+    });
+    expect(result.toolChars).toBe(first.length + "Error: boom".length + second.length);
+    expect(options.onTool).toHaveBeenCalledTimes(3);
+  });
+
+  it("rejects before the first turn when the signal is already aborted", async () => {
+    const controller = new AbortController();
+    controller.abort();
+    const runTurn = fakeTurns(turnMessage("end_turn", []));
+    await expect(runToolLoop(baseOptions(runTurn, { signal: controller.signal }))).rejects.toMatchObject({ name: "AbortError" });
+    expect(runTurn).not.toHaveBeenCalled();
   });
 });

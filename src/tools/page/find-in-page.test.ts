@@ -1,5 +1,10 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { findInPagePage } from "./find-in-page";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { findInPagePage, findInPageTool, MAX_HITS } from "./find-in-page";
+import { runInTab } from "./run-in-tab";
+
+vi.mock("./run-in-tab", () => ({ runInTab: vi.fn(async () => []) }));
+
+const ctx = { tabId: 7, signal: new AbortController().signal };
 
 describe("findInPagePage", () => {
   beforeEach(() => {
@@ -27,5 +32,29 @@ describe("findInPagePage", () => {
 
   it("returns no hits when the text is absent", () => {
     expect(findInPagePage("zebra", 10, document)).toEqual([]);
+  });
+
+  it("treats regex metacharacters as plain text", () => {
+    document.body.innerHTML = "<p>price (a.c*) [x]+</p>";
+    expect(findInPagePage("(a.c*)", 10, document)).toHaveLength(1);
+    expect(findInPagePage(".*", 10, document)).toEqual([]);
+  });
+});
+
+describe("findInPageTool.run", () => {
+  it("rejects an empty query before touching the page", async () => {
+    await expect(findInPageTool.run({ query: "" }, ctx)).rejects.toThrow("query is required");
+    expect(runInTab).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [undefined, 10],
+    [0, 1],
+    [-4, 1],
+    [999, MAX_HITS],
+    [NaN, 10],
+  ])("clamps maxResults %j to %j", async (maxResults, expected) => {
+    await findInPageTool.run({ query: "q", maxResults }, ctx);
+    expect(runInTab).toHaveBeenLastCalledWith(7, findInPagePage, ["q", expected]);
   });
 });

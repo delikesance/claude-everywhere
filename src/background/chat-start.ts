@@ -11,7 +11,7 @@ const isArrayOf = (value: unknown, check: (entry: Raw) => boolean): boolean =>
 const isItem = (item: Raw): boolean =>
   isString(item["id"]) && isString(item["title"]) && isString(item["text"]) && typeof item["included"] === "boolean";
 const isHistoryMessage = (m: Raw): boolean => (m["role"] === "user" || m["role"] === "assistant") && isString(m["text"]);
-const isOptionalTabId = (value: unknown): boolean => value === undefined || Number.isInteger(value);
+const isOptionalTabId = (value: unknown): boolean => value === undefined || (Number.isInteger(value) && (value as number) > 0);
 
 function clampMaxTokens(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value)) return DEFAULT_MAX_TOKENS;

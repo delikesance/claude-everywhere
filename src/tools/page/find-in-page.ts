@@ -57,7 +57,7 @@ export const findInPageTool: ToolDef = {
     const query = String(input.query ?? "");
     if (!query) throw new Error("query is required");
     const requested = Number(input.maxResults ?? 10);
-    const maxResults = Math.min(Math.max(1, Math.floor(requested) || 10), MAX_HITS);
+    const maxResults = Number.isNaN(requested) ? 10 : Math.min(Math.max(1, Math.floor(requested)), MAX_HITS);
     return formatHits(query, await runInTab(ctx.tabId, findInPagePage, [query, maxResults]));
   },
 };
