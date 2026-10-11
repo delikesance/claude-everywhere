@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { By, until } from "selenium-webdriver";
+import { By, error as webdriverError, until } from "selenium-webdriver";
 import type { WebDriver, WebElement } from "selenium-webdriver";
 import type { Harness } from "./harness";
 
@@ -19,7 +19,11 @@ export function find(driver: WebDriver, css: string, timeout = WAIT_MS): Promise
 export async function findByText(driver: WebDriver, css: string, text: string, timeout = WAIT_MS): Promise<WebElement> {
   const matches = async () => {
     for (const element of await driver.findElements(By.css(css))) {
-      if (((await element.getAttribute("textContent")) ?? "").includes(text)) return element;
+      const content = await element.getAttribute("textContent").catch((error: unknown) => {
+        if (error instanceof webdriverError.StaleElementReferenceError) return null;
+        throw error;
+      });
+      if (content?.includes(text)) return element;
     }
     return null;
   };
