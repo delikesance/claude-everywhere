@@ -9,6 +9,7 @@ vi.mock("../shared/i18n", () => ({ initI18n: vi.fn(async () => undefined), t: (k
 import { BADGE_DURATION_MS } from "./badge";
 import { onCommand } from "./commands";
 import { createMenus, onMenuClicked } from "./menus";
+import { onToolbarClicked } from "./toolbar";
 
 const tab = { id: 7, url: "https://example.org/a" } as never;
 const click = (menuItemId: string) => onMenuClicked({ menuItemId } as never, tab);
@@ -61,6 +62,28 @@ describe("commands and menus", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("toggles the sidebar from the toolbar button and hands over the page when it opens", async () => {
+    await onToolbarClicked(tab);
+    expect(fake.sidebarAction.toggle).toHaveBeenCalledTimes(1);
+    expect(mocks.extractTab).toHaveBeenCalledWith(7, "page");
+    expect(fake.storage.session.set).toHaveBeenCalled();
+  });
+
+  it("only toggles the sidebar when the click closes it", async () => {
+    fake.sidebarAction.isOpen.mockResolvedValueOnce(false);
+    await onToolbarClicked(tab);
+    expect(fake.sidebarAction.toggle).toHaveBeenCalledTimes(1);
+    expect(mocks.extractTab).not.toHaveBeenCalled();
+  });
+
+  it("opens the sidebar on a protected page without storing a capture", async () => {
+    mocks.extractTab.mockRejectedValue(new Error("restricted"));
+    await onToolbarClicked(tab);
+    expect(fake.sidebarAction.toggle).toHaveBeenCalledTimes(1);
+    expect(fake.storage.session.set).not.toHaveBeenCalled();
+    expect(fake.action.setBadgeText).toHaveBeenCalledWith({ text: "!", tabId: 7 });
   });
 
   it("uses the pdf extractor for pdf tabs", async () => {

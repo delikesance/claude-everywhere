@@ -1,6 +1,7 @@
 import { extractPdf, extractTab } from "../extraction";
 import type { CaptureMode } from "../shared/messages";
 import type { ExtractedPage } from "../shared/types";
+import { withErrorBadge } from "./badge";
 import { storePendingCapture } from "./handoff";
 
 export interface CaptureRequest {
@@ -20,6 +21,10 @@ export async function runCapture({ mode, tabId, handoff }: CaptureRequest): Prom
   const page = await extractTab(await resolveTabId(tabId), mode);
   if (handoff) await storePendingCapture(page);
   return page;
+}
+
+export function handOffPage(tab: browser.tabs.Tab | undefined): Promise<void> {
+  return withErrorBadge(tab?.id, async () => void (await runCapture({ mode: "page", tabId: tab?.id, handoff: true })));
 }
 
 function isPdfUrl(url: string | undefined): url is string {

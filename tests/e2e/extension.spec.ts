@@ -3,7 +3,7 @@ import { startHarness } from "./harness";
 import type { Harness } from "./harness";
 import { enableAllSites, startSession, storeApiKey } from "./session";
 import { addFromPage, ask, openSidebarBeside, waitForDone } from "./sidebar";
-import { closeOtherTabs, find, findByText, jsClick, openExtensionPage, openTab, runInPage, t, pageTabId, waitForScript, whilePageIsActive } from "./ui";
+import { closeOtherTabs, findByText, runInPage, t } from "./ui";
 
 let harness: Harness;
 
@@ -54,25 +54,6 @@ it("reads an open PDF into the sidebar and sends its text", async () => {
 it("reports an http PDF on another origin as unreadable", async () => {
   const pdf = await send({ type: "pdf/extract", url: harness.fixture("sample.pdf") });
   expect(pdf).toMatchObject({ ok: false, error: { kind: "permission" } });
-});
-
-it("falls back to the paste path on a page the browser keeps private", async () => {
-  const { driver } = harness;
-  await openTab(driver, PRIVILEGED_URL);
-  await openExtensionPage(harness, "popup.html", "button");
-  const save = await findByText(driver, "button", t("popup_save"));
-  await whilePageIsActive(driver, await pageTabId(driver), async () => {
-    await jsClick(driver, save);
-    await waitForScript(driver, `!document.body.textContent.includes(arguments[0])`, t("popup_working"));
-  });
-
-  await findByText(driver, ".notice", t("popup_restrictedTitle"));
-  await (await find(driver, "#paste-text")).sendKeys("Texte collé à la main");
-  await (await findByText(driver, "button", t("popup_pasteUse"))).click();
-  await findByText(driver, ".popup", t("popup_previewTitle"));
-  await (await find(driver, "form button[type=submit]")).click();
-  await findByText(driver, ".popup", t("popup_savedTitle"));
-  expect(harness.mock.requests).toEqual([]);
 });
 
 it("marks a private page as unreadable in the sidebar", async () => {

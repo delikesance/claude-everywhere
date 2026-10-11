@@ -49,7 +49,7 @@ export function buildManifest({ version, testOrigin }) {
       gecko_android: { strict_min_version: "142.0" },
     },
     background: { scripts: ["background.js"], type: "module" },
-    action: { default_title: msg("shared_actionTitle"), default_popup: "popup.html", default_icon: ICONS },
+    action: { default_title: msg("shared_actionTitle"), default_icon: ICONS },
     sidebar_action: {
       default_title: msg("shared_sidebarTitle"),
       default_panel: "sidebar.html",

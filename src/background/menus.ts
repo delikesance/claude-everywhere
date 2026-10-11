@@ -1,8 +1,7 @@
 import { initI18n, t } from "../shared/i18n";
 import type { MessageKey } from "../shared/i18n";
 import { getSettings } from "../shared/settings";
-import { withErrorBadge } from "./badge";
-import { runCapture } from "./capture";
+import { handOffPage } from "./capture";
 import { explainSelection } from "./overlay-inject";
 import { savePage } from "./save-page";
 
@@ -32,7 +31,7 @@ export async function createMenus(): Promise<void> {
 
 function askAboutPage(tab: browser.tabs.Tab | undefined): void {
   void browser.sidebarAction.open();
-  void withErrorBadge(tab?.id, async () => void (await runCapture({ mode: "page", tabId: tab?.id, handoff: true })));
+  void handOffPage(tab);
 }
 
 export function onMenuClicked(info: browser.menus.OnClickData, tab: browser.tabs.Tab | undefined): void {

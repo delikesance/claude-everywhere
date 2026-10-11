@@ -20,7 +20,7 @@ vi.mock("../library", () => ({ openLibrary: async () => ({ saveArtifact: mocks.s
 import { STORAGE_KEYS } from "../shared/constants";
 import { routeMessage } from "./router";
 
-const extensionPage = { id: EXTENSION_ID, url: `${EXTENSION_URL}popup.html` };
+const extensionPage = { id: EXTENSION_ID, url: `${EXTENSION_URL}sidebar.html` };
 const contentScript = { id: EXTENSION_ID, tab: { id: 3 }, url: "https://example.org/" } as never;
 const draft = { title: "T", url: null, sourceType: "selection", tags: [], markdown: "m" };
 
