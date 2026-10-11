@@ -10,10 +10,12 @@ import { PrivacySection } from "./PrivacySection";
 import { Section } from "./Section";
 import { ShortcutsSection } from "./ShortcutsSection";
 import { ApiKeyField } from "./ApiKeyField";
+import { BackendSelector } from "./BackendSelector";
+import { NativeHostCheck } from "./NativeHostCheck";
 import { useSettings } from "./useSettings";
 
 const SECTIONS: { id: string; folio: string; titleKey: MessageKey }[] = [
-  { id: "key", folio: "I", titleKey: "options_keyTitle" },
+  { id: "key", folio: "I", titleKey: "options_backendSection" },
   { id: "model", folio: "II", titleKey: "options_defaultModel" },
   { id: "language", folio: "III", titleKey: "options_languageTitle" },
   { id: "sites", folio: "IV", titleKey: "options_sitesTitle" },
@@ -43,11 +45,16 @@ export function OptionsPage() {
       <main class="stack">
         <h1 class="display">{t("options_pageTitle")}</h1>
         <Section {...sectionProps("key")}>
-          <ApiKeyField
-            storedKey={settings.apiKey}
-            onOutcome={() => void refresh()}
-            onClear={() => void update({ apiKey: null })}
-          />
+          <BackendSelector value={settings.backend} onChange={(backend) => void update({ backend })} />
+          {settings.backend === "api-key" ? (
+            <ApiKeyField
+              storedKey={settings.apiKey}
+              onOutcome={() => void refresh()}
+              onClear={() => void update({ apiKey: null })}
+            />
+          ) : (
+            <NativeHostCheck />
+          )}
         </Section>
         <Section {...sectionProps("model")}>
           <Seg

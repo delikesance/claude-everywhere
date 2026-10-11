@@ -307,3 +307,20 @@ L'historique d'un artefact est plafonné à 20 versions : au-delà, les plus anc
 **Raison**
 
 - Borne le stockage tout en gardant assez de recul pour revenir en arrière.
+
+## D-019 Réponses via Claude Code (hôte de messagerie native)
+
+**Choix**
+
+Un réglage `backend` (`claude-code` ou `api-key`, défaut `api-key`) choisit le chemin de réponse. En mode `claude-code`, le fond n'appelle pas l'API : il ouvre un hôte de messagerie native (`claude_everywhere`, protocole standard : longueur de 4 octets little-endian puis JSON, sur stdio) qui lance `claude -p --output-format stream-json --include-partial-messages` avec `ANTHROPIC_API_KEY` retiré de l'environnement, pour utiliser la connexion du compte Claude Code. Les deltas de texte sont relayés au panneau ; l'annulation tue le processus enfant.
+
+**Alternatives écartées**
+
+- Appeler l'API avec le jeton OAuth de Claude Code : non documenté et contraire aux conditions d'usage.
+- Intégrer un SDK dans l'extension : la clé ou le jeton sortiraient du processus du navigateur.
+- Serveur distant qui relaie le compte : ajoute un tiers qui voit les contenus.
+
+**Raison**
+
+- Permet d'utiliser un abonnement Claude sans clé de la Console, avec une voie officielle (le CLI `claude` connecté par l'utilisateur).
+- Compromis acceptés : installation locale obligatoire (`npm run install:native-host`) ; Firefox de bureau uniquement (Firefox Android ne gère pas la messagerie native) ; les conditions d'usage de l'abonnement restent celles de Claude Code, à vérifier par l'utilisateur ; le contenu envoyé transite par le CLI local.

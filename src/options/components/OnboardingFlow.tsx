@@ -3,6 +3,8 @@ import { t } from "../../shared/i18n";
 import { Button, Notice } from "../../shared/ui";
 import { patchSettings } from "../../shared/settings";
 import { ApiKeyField } from "./ApiKeyField";
+import { BackendSelector } from "./BackendSelector";
+import type { Backend } from "./BackendSelector";
 import { isStored } from "./submitKey";
 import type { KeyOutcome } from "./submitKey";
 
@@ -28,17 +30,27 @@ function ActionFailed() {
 
 function KeyStep({ onStored }: { onStored: () => void }) {
   const [failed, setFailed] = useState(false);
-  const finish = (outcome: KeyOutcome) => {
-    if (!isStored(outcome)) return;
+  const [backend, setBackend] = useState<Backend>("api-key");
+  const complete = () => {
     setFailed(false);
-    patchSettings({ onboardingDone: true }).then(onStored, () => setFailed(true));
+    patchSettings({ backend, onboardingDone: true }).then(onStored, () => setFailed(true));
+  };
+  const finish = (outcome: KeyOutcome) => {
+    if (isStored(outcome)) complete();
   };
   return (
     <>
       <h1 class="display" tabIndex={-1} data-step-heading>
         {t("options_onboardingKeyTitle")}
       </h1>
-      <ApiKeyField storedKey={null} submitLabel={t("options_onboardingSubmit")} onOutcome={finish} />
+      <BackendSelector value={backend} onChange={setBackend} />
+      {backend === "api-key" ? (
+        <ApiKeyField storedKey={null} submitLabel={t("options_onboardingSubmit")} onOutcome={finish} />
+      ) : (
+        <Button variant="primary" onClick={complete}>
+          {t("options_onboardingContinue")}
+        </Button>
+      )}
       {failed && <ActionFailed />}
     </>
   );
