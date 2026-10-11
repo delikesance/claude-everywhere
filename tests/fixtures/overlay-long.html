@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Long article pour la surcouche</title>
+    <style>
+      body { font: 16px/1.6 serif; margin: 0; padding: 0 24px; }
+      p { margin: 0 0 24px; }
+      .edge-right { margin-left: 62vw; width: 34vw; }
+    </style>
+  </head>
+  <body>
+    <main id="story">
+      <p id="top">En haut de page, une phrase assez longue pour être sélectionnée au ras du bord supérieur de la fenêtre.</p>
+    </main>
+    <p id="right" class="edge-right">Une phrase étroite placée tout à droite pour tester le bord droit de la fenêtre.</p>
+    <script>
+      const story = document.getElementById("story");
+      for (let i = 1; i <= 80; i++) {
+        const paragraph = document.createElement("p");
+        paragraph.textContent = `Paragraphe ${i} : le texte de remplissage sert à faire défiler la page assez longtemps.`;
+        story.append(paragraph);
+      }
+      const bottom = document.createElement("p");
+      bottom.id = "bottom";
+      bottom.textContent = "En bas de page, une phrase assez longue pour être sélectionnée au ras du bord inférieur.";
+      story.append(bottom);
+    </script>
+  </body>
+</html>
