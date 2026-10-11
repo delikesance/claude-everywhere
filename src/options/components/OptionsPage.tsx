@@ -1,51 +1,25 @@
-import { MODEL_META } from "../../api/budget";
-import { MODEL_IDS } from "../../shared/constants";
 import { t } from "../../shared/i18n";
-import type { MessageKey } from "../../shared/i18n";
-import { Seg, Skeleton, ThemeToggle } from "../../shared/ui";
-import { DataSection } from "./DataSection";
-import { LocaleSelect } from "./LocaleSelect";
-import { PermissionToggle } from "./PermissionToggle";
-import { PrivacySection } from "./PrivacySection";
-import { Section } from "./Section";
-import { ShortcutsSection } from "./ShortcutsSection";
+import { Skeleton, ThemeToggle } from "../../shared/ui";
 import { ApiKeyField } from "./ApiKeyField";
 import { BackendSelector } from "./BackendSelector";
+import { DataSection } from "./DataSection";
+import { LocaleSelect } from "./LocaleSelect";
+import { ModelSelect } from "./ModelSelect";
 import { NativeHostCheck } from "./NativeHostCheck";
+import { PermissionToggle } from "./PermissionToggle";
+import { Section } from "./Section";
+import { ShortcutsSection } from "./ShortcutsSection";
 import { useSettings } from "./useSettings";
-
-const SECTIONS: { id: string; folio: string; titleKey: MessageKey }[] = [
-  { id: "key", folio: "I", titleKey: "options_backendSection" },
-  { id: "model", folio: "II", titleKey: "options_defaultModel" },
-  { id: "language", folio: "III", titleKey: "options_languageTitle" },
-  { id: "sites", folio: "IV", titleKey: "options_sitesTitle" },
-  { id: "shortcuts", folio: "V", titleKey: "options_shortcutsTitle" },
-  { id: "data", folio: "VI", titleKey: "options_dataTitle" },
-  { id: "privacy", folio: "VII", titleKey: "options_privacyTitle" },
-  { id: "native", folio: "VIII", titleKey: "options_backendSection" },
-];
-
-function sectionProps(id: string) {
-  const section = SECTIONS.find((candidate) => candidate.id === id)!;
-  return { id, folio: section.folio, title: t(section.titleKey) };
-}
 
 export function OptionsPage() {
   const { settings, update, refresh } = useSettings();
   if (!settings) return <Skeleton lines={6} />;
 
   return (
-    <div class="page page--rail">
-      <nav class="page__nav" aria-label={t("options_navLabel")}>
-        {SECTIONS.map((section) => (
-          <a key={section.id} href={`#${section.id}`}>
-            {t(section.titleKey)}
-          </a>
-        ))}
-      </nav>
+    <div class="page">
       <main class="stack">
         <h1 class="display">{t("options_pageTitle")}</h1>
-        <Section {...sectionProps("key")}>
+        <Section id="key" folio="01" title={t("options_keySection")}>
           <BackendSelector value={settings.backend} onChange={(backend) => void update({ backend })} />
           {settings.backend === "api-key" && (
             <ApiKeyField
@@ -55,15 +29,10 @@ export function OptionsPage() {
             />
           )}
         </Section>
-        <Section {...sectionProps("model")}>
-          <Seg
-            label={t("options_defaultModel")}
-            value={settings.defaultModel}
-            options={MODEL_IDS.map((id) => ({ value: id, label: t(MODEL_META[id].labelKey) }))}
-            onChange={(defaultModel) => void update({ defaultModel })}
-          />
+        <Section id="model" folio="02" title={t("options_defaultModel")}>
+          <ModelSelect value={settings.defaultModel} onChange={(defaultModel) => void update({ defaultModel })} />
         </Section>
-        <Section {...sectionProps("language")}>
+        <Section id="language" folio="03" title={t("options_languageTitle")}>
           <LocaleSelect
             id="answer-language"
             label={t("options_answerLanguage")}
@@ -82,7 +51,7 @@ export function OptionsPage() {
         </Section>
         <details class="advanced">
           <summary>{t("options_advancedTitle")}</summary>
-          <Section {...sectionProps("sites")}>
+          <Section id="sites" folio="04" title={t("options_sitesTitle")}>
             <PermissionToggle
               label={t("options_overlayAllSites")}
               checked={settings.overlayAllSites}
@@ -94,18 +63,16 @@ export function OptionsPage() {
               onChange={(sidebarReadsActiveTab) => update({ sidebarReadsActiveTab })}
             />
           </Section>
-          <Section {...sectionProps("shortcuts")}>
+          <Section id="shortcuts" folio="05" title={t("options_shortcutsTitle")}>
             <ShortcutsSection />
           </Section>
-          <Section {...sectionProps("data")}>
+          <Section id="data" folio="06" title={t("options_dataTitle")}>
             <DataSection />
           </Section>
-          <Section {...sectionProps("privacy")}>
-            <PrivacySection />
-          </Section>
-          <Section {...sectionProps("native")}>
+          <Section id="native" folio="07" title={t("options_nativeTitle")}>
             <NativeHostCheck />
           </Section>
+          <p class="caption">{t("options_privacyStatement")}</p>
         </details>
       </main>
     </div>

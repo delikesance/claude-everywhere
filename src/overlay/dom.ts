@@ -35,8 +35,11 @@ function keepSelection(button: HTMLButtonElement): void {
   button.addEventListener("mousedown", (event) => event.preventDefault());
 }
 
-export function textButton(label: string, iconName: IconName, onClick: () => void): HTMLButtonElement {
-  const button = el("button", "btn btn--quiet btn--compact", icon(iconName), label);
+export type ButtonVariant = "primary" | "secondary" | "quiet";
+
+export function actionButton(label: string, variant: ButtonVariant, onClick: () => void, iconName?: IconName): HTMLButtonElement {
+  const leading = iconName ? [icon(iconName)] : [];
+  const button = el("button", `btn btn--${variant} btn--compact`, ...leading, label);
   button.type = "button";
   button.addEventListener("click", onClick);
   keepSelection(button);

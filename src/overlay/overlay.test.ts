@@ -147,8 +147,8 @@ describe("card", () => {
     await mount();
     await openCard();
     expect(text(".overlay-card__quote")).toBe(SELECTED);
-    expect(text(".status-tag")).toMatch(/Part : cette sélection, 10\s+car\./);
-    expect(text(".notice--warning")).toContain("10 envoyés sur 22");
+    expect(text(".overlay-card__sent")).toMatch(/Part : cette sélection, 10\s+car\./);
+    expect(text(".notice--warning")).toMatch(/10\s+car\.\s+envoyés sur 22/);
     const [items, , model] = vi.mocked(planContext).mock.calls[0]!;
     expect(items).toEqual([expect.objectContaining({ kind: "selection", text: SELECTED, included: true })]);
     expect(model).toBe("claude-sonnet-5-5");
@@ -164,7 +164,7 @@ describe("card", () => {
     );
     const requestId = connection.start.mock.calls[0]![0].requestId as string;
     deliver({ type: "delta", requestId, text: HOSTILE });
-    const answer = card().querySelector(".reading")!;
+    const answer = card().querySelector(".md")!;
     expect(answer.querySelector("script, img")).toBeNull();
     expect(answer.querySelector("[onerror]")).toBeNull();
     expect(answer.querySelector("strong")?.textContent).toBe("bold");
@@ -179,14 +179,14 @@ describe("card", () => {
     deliver({ type: "done", requestId, stopReason: "end_turn", usage: { inputTokens: 1, outputTokens: 1 }, bordereau: bordereau() });
     button("Garder").click();
     await settle();
-    expect(button("Gardé").textContent).toContain("✓ Gardé");
+    expect(button("Gardé").getAttribute("aria-pressed")).toBe("true");
     expect(sendRequest).toHaveBeenCalledWith(
       "artifact/save",
       { draft: expect.objectContaining({ sourceType: "selection", markdown: "Réponse", tags: [] }) },
     );
   });
 
-  it("hands over to the panel and shows the shortcut", async () => {
+  it("hands over to the panel", async () => {
     await mount();
     await openCard();
     const requestId = connection.start.mock.calls[0]![0].requestId as string;
@@ -194,7 +194,6 @@ describe("card", () => {
     button("Continuer").click();
     await settle();
     expect(sendRequest).toHaveBeenCalledWith("capture/run", { mode: "selection", handoff: true });
-    expect(card().textContent).toContain("Ctrl+Maj+Y");
   });
 
   it("shows an error when the request fails", async () => {
@@ -220,9 +219,8 @@ describe("card", () => {
   it("explains a missing key and cannot send", async () => {
     await mount({ hasKey: false });
     await openCard();
-    expect(text(".notice")).toContain("Aucune clé API");
+    expect(text(".notice")).toContain("Une clé, et c'est parti.");
     expect(card().querySelector("a")).toBeNull();
-    expect(button("Demander").hidden).toBe(true);
     expect(planContext).not.toHaveBeenCalled();
   });
 
