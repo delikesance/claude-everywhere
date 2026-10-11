@@ -8,9 +8,9 @@
 <link rel="stylesheet" href="../components.css">
 <style>
   .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
-  .doc section { margin-top: var(--s-40); }
   .mock { display: flex; flex-wrap: wrap; gap: var(--s-32); align-items: flex-start; margin-top: var(--s-16); }
 </style>
+<script src="../theme.js" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -53,6 +53,20 @@
       </ul>
     </div>
   </div></div></figure></div>
+  <div class="mock">
+    <figure><figcaption class="caption frame-caption">Bibliothèque vide, aucune entrée encore</figcaption>
+    <div class="frame" style="width:520px"><div class="lib__main">
+      <div class="sb-empty"><h2>La bibliothèque est vide.</h2><p class="caption" style="margin-top:var(--s-4)">Aucune entrée encore. Enregistrez une réponse depuis le panneau latéral, elle apparaîtra ici.</p><span class="badge badge--local" style="margin-top:var(--s-12)"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Stocké sur cet appareil</span></div>
+    </div></div></figure>
+    <figure><figcaption class="caption frame-caption">Chargement de la liste</figcaption>
+    <div class="frame" style="width:520px"><div class="lib__main" role="status" aria-busy="true">
+      <p class="caption">Chargement de la bibliothèque…</p>
+      <ul style="list-style:none;padding:0" aria-hidden="true">
+        <li class="lib__row"><span class="pilcrow">¶</span><div class="grow"><div class="ghost" style="width:60%;height:16px"></div><div class="ghost" style="width:80%"></div></div></li>
+        <li class="lib__row"><span class="pilcrow">¶</span><div class="grow"><div class="ghost" style="width:45%;height:16px"></div><div class="ghost" style="width:70%"></div></div></li>
+        <li class="lib__row"><span class="pilcrow">¶</span><div class="grow"><div class="ghost" style="width:55%;height:16px"></div><div class="ghost" style="width:65%"></div></div></li>
+      </ul></div></div></figure>
+  </div>
 </section>
 
 <section aria-labelledby="h-search">
@@ -98,11 +112,5 @@
 </section>
 </main>
 </div>
-<script>
-document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => {
-  b.dataset.themeSet === 'system' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.dataset.theme = b.dataset.themeSet;
-  document.querySelectorAll('[data-theme-set]').forEach(x => x.setAttribute('aria-checked', x === b));
-}));
-</script>
 </body>
 </html>

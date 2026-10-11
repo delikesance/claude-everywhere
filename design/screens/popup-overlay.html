@@ -9,8 +9,8 @@
 <style>
   .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
   .mock { display: flex; flex-wrap: wrap; gap: var(--s-32); align-items: flex-start; margin-top: var(--s-16); }
-  .doc section { margin-top: var(--s-40); }
 </style>
+<script src="../theme.js" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -19,7 +19,10 @@
 <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
 <symbol id="i-bookmark-plus" viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/><path d="M12 7v6M9 10h6"/></symbol>
 <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></symbol>
-<symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+<symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol>
+<symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+<symbol id="i-lock"viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
 </svg>
 
 <div class="doc">
@@ -60,6 +63,15 @@
         <p class="overline">Résumer la page</p>
         <p class="reading reading--compact">La réforme entre en vigueur à l'automne, avec une phase d'essai dans six régions. L'État finance la moitié du coût<span class="caret" aria-hidden="true"></span></p>
         <div class="row"><span class="status-tag" role="status">Rédaction<span class="ellipsis" aria-hidden="true"></span></span><span class="grow"></span><button class="btn btn--secondary btn--compact btn--stop"><span class="stop-square"></span>Arrêter <kbd>Échap</kbd></button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Sans clé API</figcaption>
+    <div class="frame" style="width:320px"><div class="popup">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg></button></div>
+      <div class="stack" style="padding:var(--s-12);gap:var(--s-12)">
+        <div class="notice" role="status"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></span><div><p class="notice__title">Aucune clé API enregistrée.</p><p class="notice__body">Ajoutez votre clé pour envoyer une page à l'API Anthropic. Elle reste stockée sur cet appareil.</p></div></div>
+        <button class="btn btn--primary">Ajouter une clé API</button>
+        <button class="btn btn--secondary" aria-disabled="true">Résumer la page</button>
       </div></div></div></figure>
 
     <figure><figcaption class="caption frame-caption">Page protégée</figcaption>
@@ -106,15 +118,49 @@
         </div>
       </div>
     </article></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Carte de réponse terminée</figcaption>
+    <div class="frame" style="width:520px"><article class="fake-article">
+      <p>Depuis trente ans, les populations d'insectes pollinisateurs reculent dans toute l'Europe. <span class="sent">Les chercheurs attribuent ce recul à la perte d'habitats et à l'usage des pesticides.</span></p>
+      <div class="overlay-card" role="dialog" aria-label="Réponse" style="margin-top:var(--s-8)">
+        <p class="overlay-card__quote sent">Les chercheurs attribuent ce recul à la perte d'habitats…</p>
+        <div class="overlay-card__body"><p class="reading reading--compact">Deux causes principales&#8239;: la disparition des milieux naturels et les pesticides. Le climat vient en troisième position.</p></div>
+        <div class="overlay-card__foot">
+          <span class="caption">Équilibré · 3,1&#8239;s</span>
+          <span class="grow"></span>
+          <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copier</button>
+          <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-bookmark-plus"/></svg>Enregistrer</button>
+          <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg>Panneau</button>
+          <button class="icon-btn icon-btn--sm" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+      </div>
+    </article></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Carte en erreur&#8239;: clé manquante</figcaption>
+    <div class="frame" style="width:520px"><article class="fake-article">
+      <p>Depuis trente ans, les populations d'insectes pollinisateurs reculent dans toute l'Europe. <span class="sent">Les chercheurs attribuent ce recul à la perte d'habitats et à l'usage des pesticides.</span></p>
+      <div class="overlay-card" role="dialog" aria-label="Réponse" style="margin-top:var(--s-8)">
+        <p class="overlay-card__quote sent">Les chercheurs attribuent ce recul à la perte d'habitats…</p>
+        <div class="overlay-card__body"><div class="notice notice--error" role="alert"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-circle-alert"/></svg></span><div><p class="notice__title">Aucune clé API</p><p class="notice__body">Rien n'a été envoyé. Ajoutez votre clé dans les réglages.</p><div class="notice__actions"><button class="btn btn--secondary btn--compact">Ouvrir les réglages</button></div></div></div></div>
+        <div class="overlay-card__foot"><span class="grow"></span><button class="icon-btn icon-btn--sm" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      </div>
+    </article></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Carte&#8239;: page trop longue, tronquée</figcaption>
+    <div class="frame" style="width:520px"><article class="fake-article">
+      <p>Depuis trente ans, les populations d'insectes pollinisateurs reculent dans toute l'Europe. Les chercheurs attribuent ce recul à la perte d'habitats et à l'usage des pesticides.</p>
+      <div class="overlay-card" role="dialog" aria-label="Réponse" style="margin-top:var(--s-8)">
+        <p class="overlay-card__quote sent">Résumer la page</p>
+        <div class="overlay-card__body">
+          <div class="notice notice--warning" role="status"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><div><p class="notice__title">Page tronquée&#8239;: 48&#8239;000 car. envoyés sur 112&#8239;340</p><p class="notice__body">Les 64&#8239;340 derniers caractères ne partent pas.</p></div></div>
+          <p class="reading reading--compact" style="margin-top:var(--s-12)">Le début du texte présente la réforme et son calendrier.</p>
+        </div>
+        <div class="overlay-card__foot"><span class="grow"></span><button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copier</button><button class="icon-btn icon-btn--sm" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      </div>
+    </article></div></figure>
   </div>
 </section>
 </main>
 </div>
-<script>
-document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => {
-  b.dataset.themeSet === 'system' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.dataset.theme = b.dataset.themeSet;
-  document.querySelectorAll('[data-theme-set]').forEach(x => x.setAttribute('aria-checked', x === b));
-}));
-</script>
 </body>
 </html>

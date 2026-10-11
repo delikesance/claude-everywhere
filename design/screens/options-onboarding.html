@@ -8,9 +8,9 @@
 <link rel="stylesheet" href="../components.css">
 <style>
   .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
-  .doc section { margin-top: var(--s-40); }
   .mock { display: flex; flex-wrap: wrap; gap: var(--s-32); align-items: flex-start; margin-top: var(--s-16); }
 </style>
+<script src="../theme.js" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -88,11 +88,5 @@
 </section>
 </main>
 </div>
-<script>
-document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => {
-  b.dataset.themeSet === 'system' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.dataset.theme = b.dataset.themeSet;
-  document.querySelectorAll('[data-theme-set]').forEach(x => x.setAttribute('aria-checked', x === b));
-}));
-</script>
 </body>
 </html>
