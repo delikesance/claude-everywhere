@@ -1,0 +1,156 @@
+/* Marginalia v1.0 - design tokens. Tokens only: no selectors other than :root. */
+:root {
+  color-scheme: light;
+
+  /* Colour - Papier */
+  --bg: #F6F1E7;
+  --surface: #FBF8F1;
+  --raised: #FFFDF8;
+  --sunken: #EEE7D9;
+  --border: #D9D0BF;
+  --border-strong: #877C69;
+  --text: #1F1B16;
+  --muted: #5E564A;
+  --accent: #A33A1E;
+  --accent-hover: #7E2A14;
+  --on-accent: #FFFDF8;
+  --primary: #1F1B16;
+  --primary-hover: #3A342B;
+  --on-primary: #F6F1E7;
+  --disabled-bg: #D9D0BF;
+  --success: #2C6A3E;
+  --warning: #855600;
+  --danger: #8A1B52;
+  --danger-hover: #741545;
+  --on-danger: #FFFDF8;
+  --danger-tint: #F6E0EA;
+  --focus: #1D4E8F;
+  --sent-bg: #F2E3A6;
+  --sent-edge: #7A6A1F;
+  --selection-bg: #CFDDF0;
+  --scrim: rgba(31, 27, 22, 0.32);
+
+  /* Shadows */
+  --shadow-1: 0 1px 0 rgba(31, 27, 22, 0.06), 0 4px 12px rgba(31, 27, 22, 0.10);
+  --shadow-2: 0 0 0 1px rgba(31, 27, 22, 0.14), 0 8px 24px rgba(31, 27, 22, 0.18), 0 2px 4px rgba(31, 27, 22, 0.08);
+
+  /* Font stacks */
+  --font-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Type scale: size / line (rem = px / 16) */
+  --fs-display: 1.75rem;   --lh-display: 2.125rem;
+  --fs-h1: 1.375rem;       --lh-h1: 1.75rem;
+  --fs-h2: 1.125rem;       --lh-h2: 1.5rem;
+  --fs-h3: 0.9375rem;      --lh-h3: 1.25rem;
+  --fs-row-title: 1.0625rem; --lh-row-title: 1.5rem;
+  --fs-reading: 1rem;      --lh-reading: 1.625rem;
+  --fs-reading-compact: 0.9375rem; --lh-reading-compact: 1.4375rem;
+  --fs-ui: 0.875rem;       --lh-ui: 1.25rem;
+  --fs-label: 0.8125rem;   --lh-label: 1.125rem;
+  --fs-caption: 0.75rem;   --lh-caption: 1rem;
+  --fs-mono: 0.78125rem;   --lh-mono: 1.125rem;
+  --fs-numeral: 0.6875rem; --lh-numeral: 1rem;
+  --measure: 62ch;
+
+  /* Spacing (rem = px / 16) */
+  --s-2: 0.125rem;
+  --s-4: 0.25rem;
+  --s-8: 0.5rem;
+  --s-12: 0.75rem;
+  --s-16: 1rem;
+  --s-20: 1.25rem;
+  --s-24: 1.5rem;
+  --s-32: 2rem;
+  --s-40: 2.5rem;
+  --s-56: 3.5rem;
+  --s-72: 4.5rem;
+
+  /* Radii */
+  --r-0: 0;
+  --r-1: 2px;
+  --r-2: 4px;
+  --r-pill: 999px;
+
+  /* Layers */
+  --z-sticky: 1;
+  --z-menu: 10;
+  --z-dialog: 20;
+
+  /* Motion */
+  --t-1: 80ms;
+  --t-2: 120ms;
+  --t-3: 180ms;
+  --t-4: 260ms;
+  --t-5: 320ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-standard: cubic-bezier(0.3, 0, 0.2, 1);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171512;
+  --surface: #1E1B17;
+  --raised: #27231E;
+  --sunken: #100E0C;
+  --border: #3A352D;
+  --border-strong: #857B6B;
+  --text: #ECE5D8;
+  --muted: #A89F90;
+  --accent: #EC8163;
+  --accent-hover: #F4A088;
+  --on-accent: #1A0E0A;
+  --primary: #ECE5D8;
+  --primary-hover: #F7F2E8;
+  --on-primary: #171512;
+  --disabled-bg: #3A352D;
+  --success: #7FBF8E;
+  --warning: #E0B255;
+  --danger: #F28DB5;
+  --danger-hover: #F7A6C6;
+  --on-danger: #171512;
+  --danger-tint: #301B26;
+  --focus: #9CC3F5;
+  --sent-bg: #3A300E;
+  --sent-edge: #C2A53C;
+  --selection-bg: #27456E;
+  --scrim: rgba(0, 0, 0, 0.55);
+  --shadow-1: 0 0 0 1px #3A352D, 0 6px 16px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 0 0 1px #857B6B, 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #171512;
+    --surface: #1E1B17;
+    --raised: #27231E;
+    --sunken: #100E0C;
+    --border: #3A352D;
+    --border-strong: #857B6B;
+    --text: #ECE5D8;
+    --muted: #A89F90;
+    --accent: #EC8163;
+    --accent-hover: #F4A088;
+    --on-accent: #1A0E0A;
+    --primary: #ECE5D8;
+    --primary-hover: #F7F2E8;
+    --on-primary: #171512;
+    --disabled-bg: #3A352D;
+    --success: #7FBF8E;
+    --warning: #E0B255;
+    --danger: #F28DB5;
+    --danger-hover: #F7A6C6;
+    --on-danger: #171512;
+    --danger-tint: #301B26;
+    --focus: #9CC3F5;
+    --sent-bg: #3A300E;
+    --sent-edge: #C2A53C;
+    --selection-bg: #27456E;
+    --scrim: rgba(0, 0, 0, 0.55);
+    --shadow-1: 0 0 0 1px #3A352D, 0 6px 16px rgba(0, 0, 0, 0.5);
+    --shadow-2: 0 0 0 1px #857B6B, 0 12px 32px rgba(0, 0, 0, 0.6);
+  }
+}

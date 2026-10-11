@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marginalia — Fenêtre rapide et surcouche de sélection</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
+  .mock { display: flex; flex-wrap: wrap; gap: var(--s-32); align-items: flex-start; margin-top: var(--s-16); }
+  .doc section { margin-top: var(--s-40); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-egress" viewBox="0 0 24 24"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+<symbol id="i-bookmark-plus" viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/><path d="M12 7v6M9 10h6"/></symbol>
+<symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+</svg>
+
+<div class="doc">
+<header>
+  <p class="overline"><a href="../index.html">← Système de design</a></p>
+  <h1 class="display">Fenêtre rapide et surcouche de sélection</h1>
+  <div role="radiogroup" aria-label="Apparence" class="seg" style="margin-top:var(--s-12)">
+    <button class="seg__cell" role="radio" aria-checked="true" data-theme-set="system">Système</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="light">Clair</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="dark">Sombre</button>
+  </div>
+</header>
+<main>
+
+<section aria-labelledby="h-popup">
+  <h2 id="h-popup">Fenêtre rapide — 320 px</h2>
+  <div class="mock">
+    <figure><figcaption class="caption frame-caption">Page lisible, résumé en cours</figcaption>
+    <div class="frame" style="width:320px"><div class="popup">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg></button></div>
+      <div class="stack" style="padding:var(--s-12);gap:var(--s-12)">
+        <p class="overline">Sur cette page</p>
+        <div class="toc" role="list">
+          <div class="toc__row" role="listitem"><span class="toc__label">Résumer la page</span><span class="toc__leader" aria-hidden="true"></span><span class="mono">4&#8239;812 car.</span></div>
+          <div class="toc__row" role="listitem"><span class="toc__label">Points clés</span><span class="toc__leader" aria-hidden="true"></span><span class="mono">4&#8239;812 car.</span></div>
+          <div class="toc__row" role="listitem"><span class="toc__label">Traduire en anglais</span><span class="toc__leader" aria-hidden="true"></span><span class="mono">4&#8239;812 car.</span></div>
+          <div class="toc__row" role="listitem"><span class="toc__label">Expliquer simplement</span><span class="toc__leader" aria-hidden="true"></span><span class="mono">4&#8239;812 car.</span></div>
+        </div>
+        <button class="btn btn--primary"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Résumer la page</button>
+        <p class="caption">Envoie le texte de la page à l'API Anthropic. <a href="#h-popup">Voir ce qui part</a></p>
+        <button class="btn btn--secondary">Ouvrir le panneau latéral</button>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Réponse affichée dans la fenêtre</figcaption>
+    <div class="frame" style="width:320px"><div class="popup">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg></button></div>
+      <div class="stack" style="padding:var(--s-12);gap:var(--s-12)">
+        <p class="overline">Résumer la page</p>
+        <p class="reading reading--compact">La réforme entre en vigueur à l'automne, avec une phase d'essai dans six régions. L'État finance la moitié du coût<span class="caret" aria-hidden="true"></span></p>
+        <div class="row"><span class="status-tag" role="status">Rédaction<span class="ellipsis" aria-hidden="true"></span></span><span class="grow"></span><button class="btn btn--secondary btn--compact btn--stop"><span class="stop-square"></span>Arrêter <kbd>Échap</kbd></button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Page protégée</figcaption>
+    <div class="frame" style="width:320px"><div class="popup">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg></button></div>
+      <div class="stack" style="padding:var(--s-12);gap:var(--s-12)">
+        <span class="chip chip--unreadable"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Page illisible</span>
+        <p class="caption">Firefox ne nous laisse pas lire cette page. Ouvrez le panneau pour poser une question sans contexte.</p>
+        <button class="btn btn--primary">Ouvrir le panneau latéral</button>
+      </div></div></div></figure>
+  </div>
+</section>
+
+<section aria-labelledby="h-ov">
+  <h2 id="h-ov">Surcouche de sélection</h2>
+  <p class="caption">Rendue dans un shadow root fermé, unités en px, piles système, <code>popover="manual"</code>. Elle suit le thème du système, pas celui de la page hôte.</p>
+  <div class="mock">
+    <figure><figcaption class="caption frame-caption">Barre flottante au-dessus du texte sélectionné</figcaption>
+    <div class="frame" style="width:520px"><article class="fake-article" style="position:relative">
+      <h3>Le déclin des abeilles sauvages</h3>
+      <p>Depuis trente ans, les populations d'insectes pollinisateurs reculent dans toute l'Europe. <span style="background:var(--selection-bg);color:var(--text)">Les chercheurs attribuent ce recul à la perte d'habitats et à l'usage des pesticides.</span> D'autres facteurs, comme le climat, jouent un rôle moindre.</p>
+      <div class="toolbar" role="toolbar" aria-label="Actions sur la sélection" style="position:absolute;top:92px;left:70px">
+        <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Expliquer</button>
+        <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Résumer</button>
+        <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Traduire</button>
+        <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Demander…</button>
+      </div>
+    </article></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Carte de réponse en ligne</figcaption>
+    <div class="frame" style="width:520px"><article class="fake-article">
+      <h3>Le déclin des abeilles sauvages</h3>
+      <p>Depuis trente ans, les populations d'insectes pollinisateurs reculent dans toute l'Europe. <span class="sent">Les chercheurs attribuent ce recul à la perte d'habitats et à l'usage des pesticides.</span> D'autres facteurs, comme le climat, jouent un rôle moindre.</p>
+      <div class="overlay-card" role="dialog" aria-label="Réponse" style="margin-top:var(--s-8)">
+        <p class="overlay-card__quote sent">Les chercheurs attribuent ce recul à la perte d'habitats…</p>
+        <div class="overlay-card__body"><p class="reading reading--compact">Deux causes principales&#8239;: la disparition des milieux naturels et les pesticides. Le climat vient en troisième position.<span class="caret" aria-hidden="true"></span></p></div>
+        <div class="overlay-card__foot">
+          <span class="status-tag" role="status">Rédaction<span class="ellipsis" aria-hidden="true"></span></span>
+          <span class="grow"></span>
+          <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copier</button>
+          <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-bookmark-plus"/></svg>Enregistrer</button>
+          <button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-panel"/></svg>Panneau</button>
+          <button class="icon-btn icon-btn--sm" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </div>
+      </div>
+    </article></div></figure>
+  </div>
+</section>
+</main>
+</div>
+<script>
+document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => {
+  b.dataset.themeSet === 'system' ? document.documentElement.removeAttribute('data-theme') : document.documentElement.dataset.theme = b.dataset.themeSet;
+  document.querySelectorAll('[data-theme-set]').forEach(x => x.setAttribute('aria-checked', x === b));
+}));
+</script>
+</body>
+</html>
