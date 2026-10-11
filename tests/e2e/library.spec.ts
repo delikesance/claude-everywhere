@@ -6,7 +6,7 @@ import { startHarness } from "./harness";
 import type { Harness } from "./harness";
 import { enableAllSites, startSession, storeApiKey } from "./session";
 import { ask, waitForDone } from "./sidebar";
-import { find, findByText, jsClick, openExtensionPage, openTab, t, pageTabId, waitForScript, whilePageIsActive } from "./ui";
+import { find, findByText, openExtensionPage, runInPage, t } from "./ui";
 
 let harness: Harness;
 
@@ -31,24 +31,14 @@ async function downloaded(filename: string): Promise<string> {
   return readFileSync(join(harness.downloadsDir, filename), "utf8");
 }
 
-async function savePageFromPopup(): Promise<void> {
-  const { driver } = harness;
-  const url = harness.fixture("article.html");
-  await openTab(driver, url);
-  await openExtensionPage(harness, "popup.html", "button");
-  const save = await findByText(driver, "button", t("popup_save"));
-  await whilePageIsActive(driver, await pageTabId(driver), async () => {
-    await jsClick(driver, save);
-    await waitForScript(driver, `!document.body.textContent.includes(arguments[0])`, t("popup_working"));
-  });
-  await findByText(driver, ".popup", t("popup_previewTitle"));
-  await (await find(driver, "form button[type=submit]")).click();
-  await findByText(driver, ".popup", t("popup_savedTitle"));
+async function savePage(): Promise<void> {
+  const draft = { title: ARTICLE_TITLE, url: null, sourceType: "note", tags: [], markdown: ARTICLE_TEXT };
+  await runInPage(harness.driver, `await browser.runtime.sendMessage({ type: "artifact/save", draft: arguments[0] });`, draft);
 }
 
 it("saves a page, finds it by search, attaches it to a new conversation, and exports it", async () => {
   const { driver } = harness;
-  await savePageFromPopup();
+  await savePage();
   const sidebar = await openExtensionPage(harness, "sidebar.html", "textarea");
   const library = await openExtensionPage(harness, "library-ui.html", ".lib");
 

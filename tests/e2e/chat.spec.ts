@@ -32,7 +32,7 @@ async function sidebarWithArticle(): Promise<void> {
 }
 
 it("sends nothing until the user acts", async () => {
-  for (const extensionPage of ["sidebar.html", "popup.html", "library-ui.html", "options.html"]) {
+  for (const extensionPage of ["sidebar.html", "library-ui.html", "options.html"]) {
     await openExtensionPage(harness, extensionPage, "#root > *");
   }
   await harness.driver.get(harness.fixture("article.html"));

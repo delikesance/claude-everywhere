@@ -42,9 +42,6 @@ for (const theme of THEMES) {
     await find(harness.driver, `html[data-theme=${theme}]`);
     await shoot("options", theme);
 
-    await showPage("popup.html", "button");
-    await shoot("popup", theme);
-
     await showPage("library-ui.html", ".row-title a");
     await shoot("library", theme);
 
