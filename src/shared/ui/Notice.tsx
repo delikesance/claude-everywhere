@@ -14,19 +14,28 @@ const TONE_ICON: Record<NoticeTone, IconName> = {
 
 export interface NoticeProps {
   tone?: NoticeTone;
-  title: string;
+  icon?: IconName;
+  role?: "status" | "alert" | undefined;
+  title?: string;
   children?: ComponentChildren;
   actions?: ComponentChildren;
 }
 
-export function Notice({ tone = "info", title, children, actions }: NoticeProps) {
+export function Notice({
+  tone = "info",
+  icon = TONE_ICON[tone],
+  role = tone === "error" ? "alert" : "status",
+  title,
+  children,
+  actions,
+}: NoticeProps) {
   return (
-    <div class={cx("notice", tone !== "info" && `notice--${tone}`)} role={tone === "error" ? "alert" : "status"}>
+    <div class={cx("notice", tone !== "info" && `notice--${tone}`)} role={role}>
       <span class="notice__icon">
-        <Icon name={TONE_ICON[tone]} />
+        <Icon name={icon} />
       </span>
       <div>
-        <p class="notice__title">{title}</p>
+        {title && <p class="notice__title">{title}</p>}
         {children && <p class="notice__body">{children}</p>}
         {actions && <div class="notice__actions">{actions}</div>}
       </div>

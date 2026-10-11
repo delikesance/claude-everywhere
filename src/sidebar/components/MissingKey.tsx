@@ -3,7 +3,7 @@ import { submitKey, type KeyOutcome } from "../../options/components/submitKey";
 import { t } from "../../shared/i18n";
 import { patchSettings } from "../../shared/settings";
 import type { MessageKey } from "../../shared/i18n";
-import { Button, Icon } from "../../shared/ui";
+import { Button } from "../../shared/ui";
 import { Field, Input, type HelpTone } from "../../shared/ui/Field";
 
 const KEY_HELP_URL = "https://console.anthropic.com/settings/keys";
@@ -34,6 +34,7 @@ export function MissingKey() {
       <h2 id="key-setup-title" class="key-setup__title">
         {t("sidebar_key_title")}
       </h2>
+      <p class="key-setup__intro">{t("sidebar_key_intro")}</p>
       <Field id="key-setup-input" label={t("sidebar_key_label")} {...(outcome ? feedbackFor(outcome) : {})}>
         {(control) => (
           <Input
@@ -53,7 +54,6 @@ export function MissingKey() {
       </Button>
       <a class="key-setup__help" href={KEY_HELP_URL} target="_blank" rel="noreferrer">
         {t("sidebar_key_where")}
-        <Icon name="arrowUpRight" />
       </a>
       <div class="key-setup__divider" role="separator">
         {t("sidebar_key_or")}
