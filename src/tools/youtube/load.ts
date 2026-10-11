@@ -15,9 +15,18 @@ export async function loadVideo(tabId: number): Promise<LoadedVideo> {
   return { page, video };
 }
 
-// json3 is preferred; YouTube sometimes answers it with an empty body, so the raw (XML) track is the fallback.
+function parseJson3Body(body: string): Cue[] {
+  try {
+    return parseCaptionJson3(JSON.parse(body));
+  } catch {
+    return [];
+  }
+}
+
+// json3 is preferred; YouTube sometimes answers it with an empty or malformed body, so the raw (XML) track is the fallback.
 export async function loadCues(tabId: number, baseUrl: string): Promise<Cue[]> {
   const json3 = await fetchInTab(tabId, withFormat(baseUrl, "json3"));
-  if (json3.trim()) return parseCaptionJson3(JSON.parse(json3));
+  const cues = json3.trim() ? parseJson3Body(json3) : [];
+  if (cues.length > 0) return cues;
   return parseCaptionXml(await fetchInTab(tabId, baseUrl));
 }
