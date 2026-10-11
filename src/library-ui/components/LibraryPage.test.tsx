@@ -65,6 +65,18 @@ it("attaches the selection to the context and opens the sidebar in the click", a
   expect(sidebarAction.open).toHaveBeenCalledTimes(1);
 });
 
+it("reopens an entry in the conversation when its title is clicked", async () => {
+  const library = fakeLibrary({ listArtifacts: vi.fn(async () => [artifact]) });
+  const page = await mount(<LibraryPage library={library} />);
+  await settle();
+
+  await click(byText(page, "button", "Notes sur Rust"));
+
+  const { storage, sidebarAction } = (globalThis as unknown as { browser: typeof browser }).browser;
+  expect(storage.session.set).toHaveBeenCalledWith({ pendingAttach: ["a1"] });
+  expect(sidebarAction.open).toHaveBeenCalledTimes(1);
+});
+
 it("downloads the selected artifacts as a bundle through a blob URL", async () => {
   const exportMarkdown = vi.fn(async () => ({ filename: "lot.md", mime: "text/markdown", content: "# x" }));
   const createObjectURL = vi.fn(() => "blob:x");

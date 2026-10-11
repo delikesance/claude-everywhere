@@ -1,10 +1,8 @@
 import type { SearchHit } from "../../library";
-import { formatChars } from "../../shared/format";
 import { t } from "../../shared/i18n";
-import { Icon } from "../../shared/ui";
+import { Button, Icon } from "../../shared/ui";
 import type { Artifact } from "../../shared/types";
 import { formatDate, hostOf } from "../format";
-import { detailHref } from "../route";
 import { Snippet } from "./Snippet";
 
 interface ArtifactRowProps {
@@ -12,10 +10,11 @@ interface ArtifactRowProps {
   snippets?: SearchHit["snippets"] | undefined;
   selected: boolean;
   onToggle: (id: string) => void;
+  onOpen: (id: string) => void;
 }
 
-export function ArtifactRow({ artifact, snippets, selected, onToggle }: ArtifactRowProps) {
-  const meta = [hostOf(artifact.url), formatDate(artifact.updatedAt), formatChars(artifact.charCount)];
+export function ArtifactRow({ artifact, snippets, selected, onToggle, onOpen }: ArtifactRowProps) {
+  const meta = [hostOf(artifact.url), formatDate(artifact.updatedAt)];
   return (
     <li class="lib__row">
       <label class="check">
@@ -31,21 +30,24 @@ export function ArtifactRow({ artifact, snippets, selected, onToggle }: Artifact
       </label>
       <div class="grow">
         <p class="row-title">
-          <a href={detailHref(artifact.id)}>{artifact.title}</a>
+          <Button variant="quiet" onClick={() => onOpen(artifact.id)}>
+            {artifact.title}
+          </Button>
         </p>
         {snippets?.length ? (
           snippets.map((snippet, index) => <Snippet key={index} snippet={snippet} />)
         ) : (
-          <p class="caption">
-            {meta.filter(Boolean).join(" · ")}
-            {artifact.tags.map((tag) => (
-              <span key={tag}>
-                {" "}
-                <span class="tag">{tag}</span>
-              </span>
-            ))}
-          </p>
+          <p>{artifact.excerpt}</p>
         )}
+        <p class="caption">
+          {meta.filter(Boolean).join(" · ")}
+          {artifact.tags.map((tag) => (
+            <span key={tag}>
+              {" "}
+              <span class="tag">{tag}</span>
+            </span>
+          ))}
+        </p>
       </div>
     </li>
   );
