@@ -18,7 +18,7 @@ export interface CardView {
   setSentChars(count: number | null): void;
   setAnswer(markdown: string, streaming: boolean): void;
   setWriting(writing: boolean): void;
-  setExplainEnabled(enabled: boolean): void;
+  setRetryVisible(visible: boolean): void;
   setResultActionsVisible(visible: boolean): void;
   setCopied(): void;
   setSaved(): void;
@@ -51,22 +51,24 @@ export function buildCard(quote: string, actions: CardActions): CardView {
   const status = el("span", "status-tag");
   status.setAttribute("role", "status");
   status.hidden = true;
-  const explain = textButton(t("overlay_explain"), "egress", actions.explain);
+  const retry = textButton(t("overlay_ask"), "egress", actions.explain);
+  retry.hidden = true;
   const copy = textButton(t("overlay_copy"), "copy", actions.copy);
   const save = textButton(t("overlay_save"), "bookmarkPlus", actions.save);
   const panel = textButton(t("overlay_panel"), "arrowUpRight", actions.panel);
+  panel.classList.replace("btn--quiet", "btn--primary");
   const resultActions = [copy, save, panel];
   const foot = el(
     "div",
     "overlay-card__foot",
     status,
     el("span", "grow"),
-    explain,
+    retry,
     ...resultActions,
     closeButton(t("shared_close"), actions.close),
   );
 
-  const element = el("div", "overlay-card", quoteBox, body, foot);
+  const element = el("div", "overlay-card anim-pop", quoteBox, body, foot);
   element.setAttribute("role", "dialog");
   element.setAttribute("aria-label", t("overlay_dialogLabel"));
   element.tabIndex = -1;
@@ -88,8 +90,8 @@ export function buildCard(quote: string, actions: CardActions): CardView {
       answer.setAttribute("aria-busy", String(writing));
       if (writing && !answer.hasChildNodes()) answer.append(el("span", "ellipsis", t("overlay_writing").replace("…", "")));
     },
-    setExplainEnabled(enabled) {
-      explain.disabled = !enabled;
+    setRetryVisible(visible) {
+      retry.hidden = !visible;
     },
     setResultActionsVisible,
     setCopied: () => relabel(copy, t("overlay_copied")),

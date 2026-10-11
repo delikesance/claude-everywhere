@@ -147,18 +147,18 @@ describe("card", () => {
     await mount();
     await openCard();
     expect(text(".overlay-card__quote")).toBe(SELECTED);
-    expect(text(".status-tag")).toMatch(/Envoyé : 10\s+car\./);
+    expect(text(".status-tag")).toMatch(/Part : cette sélection, 10\s+car\./);
     expect(text(".notice--warning")).toContain("10 envoyés sur 22");
     const [items, , model] = vi.mocked(planContext).mock.calls[0]!;
     expect(items).toEqual([expect.objectContaining({ kind: "selection", text: SELECTED, included: true })]);
     expect(model).toBe("claude-sonnet-5-5");
     expect(card().querySelector("[role=dialog]")?.getAttribute("aria-label")).toBe("Réponse");
+    expect(card().querySelector(".anim-pop")).not.toBeNull();
   });
 
   it("streams a sanitised answer", async () => {
     await mount();
     await openCard();
-    button("Expliquer").click();
     expect(connection.start).toHaveBeenCalledWith(
       expect.objectContaining({ model: "claude-sonnet-5-5", history: [], items: [expect.objectContaining({ text: SELECTED })] }),
     );
@@ -174,12 +174,12 @@ describe("card", () => {
   it("saves the answer as a selection artifact", async () => {
     await mount();
     await openCard();
-    button("Expliquer").click();
     const requestId = connection.start.mock.calls[0]![0].requestId as string;
     deliver({ type: "delta", requestId, text: "Réponse" });
     deliver({ type: "done", requestId, stopReason: "end_turn", usage: { inputTokens: 1, outputTokens: 1 }, bordereau: bordereau() });
-    button("Enregistrer").click();
+    button("Garder").click();
     await settle();
+    expect(button("Gardé").textContent).toContain("✓ Gardé");
     expect(sendRequest).toHaveBeenCalledWith(
       "artifact/save",
       { draft: expect.objectContaining({ sourceType: "selection", markdown: "Réponse", tags: [] }) },
@@ -189,10 +189,9 @@ describe("card", () => {
   it("hands over to the panel and shows the shortcut", async () => {
     await mount();
     await openCard();
-    button("Expliquer").click();
     const requestId = connection.start.mock.calls[0]![0].requestId as string;
     deliver({ type: "done", requestId, stopReason: "end_turn", usage: { inputTokens: 1, outputTokens: 1 }, bordereau: bordereau() });
-    button("Poursuivre").click();
+    button("Continuer").click();
     await settle();
     expect(sendRequest).toHaveBeenCalledWith("capture/run", { mode: "selection", handoff: true });
     expect(card().textContent).toContain("Ctrl+Maj+Y");
@@ -201,7 +200,6 @@ describe("card", () => {
   it("shows an error when the request fails", async () => {
     await mount();
     await openCard();
-    button("Expliquer").click();
     const requestId = connection.start.mock.calls[0]![0].requestId as string;
     deliver({ type: "error", requestId, error: { kind: "auth" } });
     expect(text(".notice--error")).toContain("refusée");
@@ -211,7 +209,6 @@ describe("card", () => {
   it("ends the card with a network error when the port drops mid-answer", async () => {
     await mount();
     await openCard();
-    button("Expliquer").click();
     const requestId = connection.start.mock.calls[0]![0].requestId as string;
     deliver({ type: "delta", requestId, text: "Partiel" });
     disconnect();
@@ -225,14 +222,13 @@ describe("card", () => {
     await openCard();
     expect(text(".notice")).toContain("Aucune clé API");
     expect(card().querySelector("a")).toBeNull();
-    expect(button("Expliquer").disabled).toBe(true);
+    expect(button("Demander").hidden).toBe(true);
     expect(planContext).not.toHaveBeenCalled();
   });
 
   it("closes on Escape and aborts the Port", async () => {
     await mount();
     await openCard();
-    button("Expliquer").click();
     window.dispatchEvent(trusted(new KeyboardEvent("keydown", { key: "Escape" })));
     expect(connection.cancel).toHaveBeenCalled();
     expect(connection.close).toHaveBeenCalled();
