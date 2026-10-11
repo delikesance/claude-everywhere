@@ -1,3 +1,4 @@
-import { render } from "preact";
+import { bootPage } from "../library-ui/boot";
+import { OnboardingFlow } from "./components/OnboardingFlow";
 
-render(<main>Onboarding</main>, document.getElementById("root")!);
+void bootPage(<OnboardingFlow />);

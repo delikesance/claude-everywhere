@@ -1,4 +1,8 @@
-export const MODEL_IDS = ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"] as const;
+export const MODEL_IDS = [
+  "claude-haiku-5-5",
+  "claude-sonnet-5-5",
+  "claude-opus-5-5",
+] as const;
 export type ModelId = (typeof MODEL_IDS)[number];
 export const DEFAULT_MODEL: ModelId = "claude-sonnet-5-5";
 export const DEFAULT_MAX_TOKENS = 4096;

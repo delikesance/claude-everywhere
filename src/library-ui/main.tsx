@@ -1,3 +1,4 @@
-import { render } from "preact";
+import { App } from "./App";
+import { bootPage } from "./boot";
 
-render(<main>Library</main>, document.getElementById("root")!);
+void bootPage(<App />);
