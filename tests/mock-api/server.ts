@@ -143,6 +143,19 @@ const PDF_FIXTURE_PREFIX = "/fixtures/";
 const FIXTURES_DIR = join(import.meta.dirname, "../fixtures");
 
 /** Lets an end-to-end test read a document from the single non-API origin the test CSP allows; never recorded. */
+const WATCH_PAGE = join(import.meta.dirname, "../fixtures/youtube-watch.html");
+const JSON3_CAPTIONS = { events: [{ tStartMs: 0, segs: [{ utf8: "Bonjour" }] }, { tStartMs: 4000, segs: [{ utf8: "le " }, { utf8: "monde" }] }] };
+const XML_CAPTIONS = '<?xml version="1.0" encoding="utf-8"?><transcript><text start="0" dur="4">Bonjour &amp; bienvenue</text><text start="4" dur="3">le monde</text></transcript>';
+
+function sendWatchPage(res: ServerResponse): void {
+  res.writeHead(200, { "content-type": "text/html; charset=utf-8" }).end(readFileSync(WATCH_PAGE));
+}
+
+function sendTimedText(res: ServerResponse, format: string | null): void {
+  if (format === "json3") return void res.writeHead(200, { ...CORS_HEADERS, "content-type": "application/json" }).end(JSON.stringify(JSON3_CAPTIONS));
+  res.writeHead(200, { ...CORS_HEADERS, "content-type": "text/xml; charset=utf-8" }).end(XML_CAPTIONS);
+}
+
 function sendPdfFixture(res: ServerResponse, name: string): void {
   try {
     res.writeHead(200, { "content-type": "application/pdf", ...CORS_HEADERS }).end(readFileSync(join(FIXTURES_DIR, basename(name))));
@@ -162,6 +175,8 @@ export function startMockApi(port = 0): Promise<MockApi> {
       return sendJson(res, 200, {});
     }
     if (req.method === "GET" && url.startsWith(PDF_FIXTURE_PREFIX)) return sendPdfFixture(res, url.slice(PDF_FIXTURE_PREFIX.length));
+    if (req.method === "GET" && url.startsWith("/watch?")) return sendWatchPage(res);
+    if (req.method === "GET" && url.startsWith("/api/timedtext")) return sendTimedText(res, new URL(url, "http://mock").searchParams.get("fmt"));
     const record: RecordedRequest = { method: req.method ?? "", url, headers: req.headers, body: parseJson(await readBody(req)) };
     requests.push(record);
     if (req.method === "POST" && url.startsWith("/v1/messages")) return handleMessages(res, record);
