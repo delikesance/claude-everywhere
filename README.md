@@ -2,9 +2,9 @@
 
 Extension Firefox (Manifest V3) : posez une question à Claude sur la page que vous lisez, gardez les réponses utiles dans une bibliothèque locale.
 
-| Panneau latéral | Fenêtre rapide | Bibliothèque | Réglages |
-| --- | --- | --- | --- |
-| ![Panneau latéral](docs/screenshots/sidebar-light.png) | ![Fenêtre rapide](docs/screenshots/popup-light.png) | ![Bibliothèque](docs/screenshots/library-light.png) | ![Réglages](docs/screenshots/options-light.png) |
+| Panneau latéral | Bibliothèque | Réglages |
+| --- | --- | --- |
+| ![Panneau latéral](docs/screenshots/sidebar-light.png) | ![Bibliothèque](docs/screenshots/library-light.png) | ![Réglages](docs/screenshots/options-light.png) |
 
 Les variantes sombres sont dans `docs/screenshots/*-dark.png`.
 

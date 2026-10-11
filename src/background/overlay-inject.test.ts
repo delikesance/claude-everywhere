@@ -56,11 +56,9 @@ describe("persistent overlay registration", () => {
     expect(fake.scripting.registerContentScripts).toHaveBeenCalledTimes(1);
   });
 
-  it("opens onboarding on first install only", async () => {
-    await onInstalled({ reason: "update" });
+  it("opens no tab on install and creates the context menus", async () => {
+    await onInstalled();
     expect(fake.tabs.create).not.toHaveBeenCalled();
-    await onInstalled({ reason: "install" });
-    expect(fake.tabs.create).toHaveBeenCalledWith({ url: "moz-extension://uuid/onboarding.html" });
     expect(fake.contextMenus.create).toHaveBeenCalled();
   });
 });

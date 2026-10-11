@@ -6,7 +6,6 @@ export const PAGE_ENTRIES = [
   { in: "sidebar/main.tsx", out: "sidebar", html: "sidebar/index.html" },
   { in: "library-ui/main.tsx", out: "library-ui", html: "library-ui/index.html" },
   { in: "options/main.tsx", out: "options", html: "options/options.html" },
-  { in: "options/onboarding.tsx", out: "onboarding", html: "options/onboarding.html" },
 ];
 
 export const SCRIPT_ENTRIES = [

@@ -16,7 +16,6 @@ export interface Settings {
   theme: Theme;
   overlayAllSites: boolean;
   sidebarReadsActiveTab: boolean;
-  onboardingDone: boolean;
 }
 
 export type SourceType = "page" | "selection" | "pdf" | "note";
