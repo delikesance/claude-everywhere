@@ -4,6 +4,22 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## [Non publié]
 
+## [0.2.0] - 2026-10-11
+
+### Ajouté
+
+- Outils en lecture seule pour Claude (clé d'API, 6 tours au plus, résultats plafonnés à 8 000 caractères) : plan de la page, lecture d'une section, recherche dans la page.
+- Adaptateur YouTube : état de la vidéo (titre, chapitres, temps courant) et transcription entre deux instants, avec repli explicite sans sous-titres.
+- Le panneau affiche les outils utilisés ; le bordereau compte les caractères renvoyés par les outils.
+- Tests de bout en bout des outils (pages, YouTube, limites) : 97 tests dans Firefox.
+
+### Corrigé
+
+- Le panneau envoie l'onglet actif même quand la page n'était pas active à l'envoi.
+- Annuler en pleine boucle d'outils affiche « Interrompu par vous ».
+- La trace d'outils est restaurée depuis l'historique.
+- Troncature des résultats sans couper un caractère Unicode ; validation de l'identifiant d'onglet ; sous-titres mal formés.
+
 ## [0.1.5] - 2026-10-11
 
 ### Ajouté
