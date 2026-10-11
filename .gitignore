@@ -1,4 +1,8 @@
 .claudework/
+.claude/worktrees/
 node_modules/
 dist/
+dist-test/
 web-ext-artifacts/
+artifacts/
+src/shared/generated/

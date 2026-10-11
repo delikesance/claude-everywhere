@@ -1,0 +1,45 @@
+{
+  "name": "claude-everywhere",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Firefox extension: ask Claude about the page you read, keep the useful answers.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:test": "node scripts/build.mjs --test",
+    "typecheck": "node scripts/i18n.mjs && tsc --noEmit",
+    "lint": "web-ext lint -s dist",
+    "audit": "node scripts/audit-permissions.mjs dist",
+    "test": "vitest run",
+    "test:e2e": "npm run build:test && vitest run --config vitest.e2e.config.ts",
+    "package": "npm run build && web-ext build -s dist -a artifacts --overwrite-dest"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.133.0",
+    "@mozilla/readability": "0.6.0",
+    "@preact/signals": "2.11.3",
+    "dompurify": "3.4.16",
+    "esbuild": "0.28.2",
+    "idb": "8.0.4",
+    "marked": "18.1.0",
+    "pdfjs-dist": "6.4.299",
+    "preact": "11.0.1",
+    "turndown": "7.2.4"
+  },
+  "devDependencies": {
+    "@types/firefox-webext-browser": "143.0.1",
+    "@types/node": "26.6.5",
+    "@types/selenium-webdriver": "4.35.7",
+    "@types/turndown": "5.0.6",
+    "fake-indexeddb": "6.2.5",
+    "geckodriver": "8.0.0",
+    "jsdom": "30.1.2",
+    "selenium-webdriver": "4.51.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.3",
+    "web-ext": "10.7.0"
+  }
+}

@@ -118,6 +118,7 @@ Permissions : `storage`, `activeTab`, `scripting`, `contextMenus` (alias `menus`
 
 - Moindre privilège, chaque permission justifiée par une fonction visible ; l'élargissement est volontaire, réversible et demandé au moment du besoin.
 - La déclaration de collecte reflète le comportement réel, cohérent avec D-012.
+- Précision issue de `web-ext lint` : `data_collection_permissions` exige Firefox Android 142 ; `browser_specific_settings.gecko_android.strict_min_version` vaut donc « 142.0 » (bureau inchangé à 140). `contextMenus` est accepté tel quel par le linter.
 
 ## D-007 Politique de sécurité du contenu
 
@@ -241,6 +242,7 @@ Rien ne quitte la machine sans action explicite de l'utilisateur ; chaque envoi 
 **Raison**
 
 - Chaque module possède ses chaînes sans conflit ; les deux langues restent synchronisées par construction.
+- Précision d'implémentation : le préfixe est le nom du dossier avec `-` remplacé par `_`, suivi de `_` (`shared_`, `library_ui_`), car les noms de messages.json n'admettent pas le point.
 
 ## D-015 Commandes
 
@@ -254,13 +256,14 @@ Rien ne quitte la machine sans action explicite de l'utilisateur ; chaque envoi 
 
 **Raison**
 
+- Précision : les raccourcis suggérés sont Alt+Shift+C (fenêtre rapide), Alt+Shift+E (expliquer la sélection) et Alt+Shift+S (enregistrer la page).
 - Respecte la contrainte de Firefox ; la surcouche affiche le raccourci à la place.
 
 ## D-016 Tests
 
 **Choix**
 
-vitest avec happy-dom ou jsdom pour l'unitaire et l'intégration (fake-indexeddb, simulacre `webextension`) ; E2E avec `selenium-webdriver` et `geckodriver` sur Firefox sans interface, `driver.installAddon(xpi, true)`, pages d'extension ouvertes en onglet via `moz-extension://<uuid>/` (uuid lu dans la préférence `extensions.webextensions.uuids`) ; serveur local simulant l'API Messages (SSE) utilisé par un build TEST (`dist-test/`, permission d'hôte et CSP locales en plus). `web-ext lint` et le script d'audit des permissions ne s'exécutent que sur le build de PRODUCTION (`dist/`).
+vitest avec jsdom (happy-dom écarté : DOMPurify n'y assainit pas correctement) pour l'unitaire et l'intégration (fake-indexeddb, simulacre `webextension`) ; E2E avec `selenium-webdriver` et `geckodriver` sur Firefox sans interface, `driver.installAddon(xpi, true)`, pages d'extension ouvertes en onglet via `moz-extension://<uuid>/` (uuid lu dans la préférence `extensions.webextensions.uuids`) ; serveur local simulant l'API Messages (SSE) utilisé par un build TEST (`dist-test/`, permission d'hôte et CSP locales en plus). `web-ext lint` et le script d'audit des permissions ne s'exécutent que sur le build de PRODUCTION (`dist/`).
 
 **Alternatives écartées**
 
