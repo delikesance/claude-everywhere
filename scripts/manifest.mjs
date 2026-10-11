@@ -1,5 +1,6 @@
 const msg = (key) => `__MSG_${key}__`;
 
+export const GECKO_ID = "claude-everywhere@angelo.clauin";
 const API_HOST = "https://api.anthropic.com";
 const ICONS = { 48: "icons/icon-48.svg", 96: "icons/icon-96.svg" };
 const SIDEBAR_ICON = "icons/sidebar.svg";
@@ -41,7 +42,7 @@ export function buildManifest({ version, testOrigin }) {
     icons: ICONS,
     browser_specific_settings: {
       gecko: {
-        id: "claude-everywhere@angelo.clauin",
+        id: GECKO_ID,
         strict_min_version: "140.0",
         data_collection_permissions: { required: ["websiteContent"] },
       },

@@ -15,7 +15,8 @@
     "audit": "node scripts/audit-permissions.mjs dist",
     "test": "vitest run",
     "test:e2e": "npm run build:test && vitest run --config vitest.e2e.config.ts",
-    "package": "npm run build && node scripts/package.mjs"
+    "package": "npm run build && node scripts/package.mjs",
+    "install:native-host": "node scripts/install-native-host.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.133.0",

@@ -20,5 +20,5 @@
     "noEmit": true,
     "types": ["firefox-webext-browser", "node"]
   },
-  "include": ["src", "scripts", "tests"]
+  "include": ["src", "scripts", "tests", "native-host"]
 }
