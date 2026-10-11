@@ -40,6 +40,21 @@ describe("sliceTranscript", () => {
   it("returns an empty string when no cue falls in the range", () => {
     expect(sliceTranscript(CUES, 100, 200)).toBe("");
   });
+
+  it("returns an empty string when fromSec is after toSec", () => {
+    expect(sliceTranscript(CUES, 60, 10)).toBe("");
+  });
+});
+
+describe("parser edge cases", () => {
+  it("keeps an out-of-range numeric entity as literal text instead of throwing", () => {
+    expect(parseCaptionXml('<text start="1">a &#99999999; b</text>')).toEqual([{ startSec: 1, text: "a &#99999999; b" }]);
+  });
+
+  it("returns no cues for a json3 document without events", () => {
+    expect(parseCaptionJson3({})).toEqual([]);
+    expect(parseCaptionJson3(null)).toEqual([]);
+  });
 });
 
 describe("withFormat", () => {
