@@ -180,6 +180,15 @@ describe("turn state machine", () => {
     expect(conversation.value.messages[0]?.bordereau?.lines.map((l) => l.itemId)).toEqual(["a"]);
   });
 
+  it("stores each tool call on the assistant message in order", () => {
+    fake.emit({ type: "tool", requestId: sentId(), name: "page_read", input: { a: 1 }, resultChars: 10 });
+    fake.emit({ type: "tool", requestId: sentId(), name: "yt_transcript", input: {}, resultChars: 20 });
+    expect(last().toolCalls?.map((c) => [c.name, c.resultChars])).toEqual([
+      ["page_read", 10],
+      ["yt_transcript", 20],
+    ]);
+  });
+
   it("continue sends a follow-up turn keeping history", () => {
     reply({ type: "delta", text: "ok" });
     reply({ type: "done", stopReason: "max_tokens", usage: { inputTokens: 1, outputTokens: 1 }, bordereau });

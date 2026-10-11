@@ -190,6 +190,15 @@ kbd { font: 500 var(--fs-caption)/var(--lh-caption) var(--font-mono); background
 }
 .followup:hover { color: var(--text); }
 
+.tool-trace ul { list-style: none; margin: var(--s-8) 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.tool-trace li {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s-8);
+  padding: var(--s-8) var(--s-12); border: 1px solid var(--border); border-radius: 10px; background: var(--surface);
+  font: 400 var(--fs-label)/var(--lh-label) var(--font-sans); color: var(--text);
+}
+.tool-trace__name { font-family: var(--font-mono); min-width: 0; overflow-wrap: anywhere; }
+.tool-trace li > .muted { white-space: nowrap; }
+
 .tag { font: 400 var(--fs-caption)/var(--lh-caption) var(--font-sans); font-variant-caps: all-small-caps; letter-spacing: 0.04em; color: var(--text); display: inline-flex; align-items: center; }
 .tag::before { content: "#"; color: var(--accent); margin-right: 1px; }
 .tag__x { width: 24px; height: 24px; display: grid; place-items: center; border: 0; background: transparent; color: var(--muted); cursor: pointer; }
