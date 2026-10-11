@@ -1,4 +1,5 @@
 import { t } from "../../shared/i18n";
+import { Icon } from "../../shared/ui";
 
 export interface FollowUpsProps {
   suggestions: string[];
@@ -9,7 +10,10 @@ export function FollowUps({ suggestions, onPick }: FollowUpsProps) {
   if (suggestions.length === 0) return null;
   return (
     <div class="followups">
-      <span class="followups__label">{t("sidebar_followUpsLabel")}</span>
+      <span class="followups__label">
+        <Icon name="spark" />
+        {t("sidebar_followUpsLabel")}
+      </span>
       {suggestions.map((text, index) => (
         <button
           key={index}

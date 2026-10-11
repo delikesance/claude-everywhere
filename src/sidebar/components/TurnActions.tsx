@@ -15,7 +15,7 @@ export function CopyButton({ markdown }: { markdown: string }) {
     setCopied(true);
   };
   return (
-    <Button variant="quiet" compact onClick={() => void copy()}>
+    <Button variant="secondary" compact onClick={() => void copy()}>
       <Icon name="copy" />
       {copied ? t("sidebar_copied") : t("sidebar_copy")}
     </Button>
@@ -25,15 +25,16 @@ export function CopyButton({ markdown }: { markdown: string }) {
 export function KeepButton({ markdown }: { markdown: string }) {
   const [kept, setKept] = useState(false);
   const keep = async () => {
+    if (kept) return;
     await sendRequest("artifact/save", {
       draft: { title: draftTitle(markdown), url: null, sourceType: "note", tags: [], markdown },
     });
     setKept(true);
   };
   return (
-    <Button variant="quiet" compact disabled={kept} onClick={() => void keep()}>
-      {!kept && <Icon name="bookmarkPlus" />}
+    <button type="button" class="btn btn--secondary btn--compact" aria-pressed={kept} onClick={() => void keep()}>
+      <Icon name={kept ? "check" : "bookmarkPlus"} />
       {kept ? t("sidebar_kept") : t("sidebar_keep")}
-    </Button>
+    </button>
   );
 }
