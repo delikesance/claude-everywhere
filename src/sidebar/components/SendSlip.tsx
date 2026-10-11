@@ -4,7 +4,7 @@ import { t } from "../../shared/i18n";
 import type { Bordereau } from "../../shared/types";
 import { Icon } from "../../shared/ui";
 import { draft } from "../state/conversation";
-import { currentPlan, currentPrompt } from "../state/plan";
+import { currentPlan, currentPrompt, sentHistory } from "../state/plan";
 import type { ContextPlan } from "../../api/budget";
 import { LongDocumentNotice } from "./LongDocumentNotice";
 
@@ -31,9 +31,16 @@ function PromptPreview({ plan }: { plan: ContextPlan }) {
   );
 }
 
+function historyLabel(): string[] {
+  const count = sentHistory().length;
+  if (count === 0) return [];
+  return [t(count === 1 ? "sidebar_slipHistoryOne" : "sidebar_slipHistoryMany", { count })];
+}
+
 function pillLabel(bordereau: Bordereau): string {
   if (bordereau.lines.length > 0) {
-    return t("sidebar_slipPart", { items: bordereau.lines.map((line) => line.title).join(" + ") });
+    const items = [...bordereau.lines.map((line) => line.title), ...historyLabel()].join(" + ");
+    return t("sidebar_slipPart", { items });
   }
   return t(draft.value === "" ? "sidebar_slipEmpty" : "sidebar_slipMessageOnly");
 }

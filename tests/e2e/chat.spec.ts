@@ -110,3 +110,10 @@ it("renders model markdown with no active script, handler or javascript: link", 
   expect(rendered.jsLinks).toBe(0);
   expect(rendered.html).toContain("https://example.org/ok");
 });
+
+it("counts the earlier messages in the pill once the conversation has history", async () => {
+  await sidebarWithArticle();
+  await ask(harness, "Première question ?");
+  await waitForDone(harness);
+  await findByText(harness.driver, ".sb-pill", t("sidebar_slipHistoryMany", { count: 2 }));
+});

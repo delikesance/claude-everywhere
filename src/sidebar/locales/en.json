@@ -88,6 +88,8 @@
   "sidebar_slipEmpty": "Sent: nothing for now",
   "sidebar_slipMessageOnly": "Sent: your message only",
   "sidebar_slipPart": "Sent: {items}",
+  "sidebar_slipHistoryOne": "{count} message",
+  "sidebar_slipHistoryMany": "{count} messages",
   "sidebar_slipTokens": "approx. {tokens} tokens",
   "sidebar_statusDone": "Answer complete · {model}",
   "sidebar_statusInterrupted": "Stopped",

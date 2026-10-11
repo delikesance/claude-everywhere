@@ -1,5 +1,6 @@
 const BADGE_OK_TEXT = "OK";
 const BADGE_ERROR_TEXT = "!";
+const BADGE_READ_TEXT = "Lu";
 const BADGE_CLEAR_TEXT = "";
 export const BADGE_DURATION_MS = 3000;
 
@@ -13,6 +14,7 @@ async function flash(text: string, tabId: number | undefined): Promise<void> {
 }
 
 export const flashSuccess = (tabId?: number) => flash(BADGE_OK_TEXT, tabId);
+export const flashRead = (tabId?: number) => flash(BADGE_READ_TEXT, tabId);
 export const flashError = (tabId?: number) => flash(BADGE_ERROR_TEXT, tabId);
 
 export async function withErrorBadge(tabId: number | undefined, task: () => Promise<void>): Promise<void> {

@@ -88,6 +88,8 @@
   "sidebar_slipEmpty": "Part : rien pour l'instant",
   "sidebar_slipMessageOnly": "Part : votre message seulement",
   "sidebar_slipPart": "Part : {items}",
+  "sidebar_slipHistoryOne": "{count} message",
+  "sidebar_slipHistoryMany": "{count} messages",
   "sidebar_slipTokens": "env. {tokens} jetons",
   "sidebar_statusDone": "Réponse terminée · {model}",
   "sidebar_statusInterrupted": "Interrompue",
