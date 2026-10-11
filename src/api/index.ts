@@ -7,6 +7,7 @@ import type { ChatMessage, StopReason } from "../shared/types";
 import { planContext, renderPrompt } from "./budget";
 import { mapSdkError } from "./errors";
 import { streamNative, transcriptPrompt } from "./native";
+import { runToolLoop } from "./tool-loop";
 
 export { mapSdkError } from "./errors";
 export { pingNative } from "./native";
@@ -64,6 +65,17 @@ async function runNativeChat(req: ChatStart, signal: AbortSignal, on: (m: ChatSe
   );
 }
 
+function streamTurn(
+  client: Anthropic,
+  params: Anthropic.MessageCreateParams,
+  signal: AbortSignal,
+  onText: (text: string) => void,
+): Promise<Anthropic.Message> {
+  const stream = client.messages.stream(params, { signal });
+  stream.on("text", onText);
+  return stream.finalMessage();
+}
+
 async function runChat(
   req: ChatStart,
   apiKey: string,
@@ -71,22 +83,26 @@ async function runChat(
   on: (m: ChatServerMsg) => void,
 ): Promise<ChatServerMsg> {
   const { maxTokens, plan, system, user } = prepare(req);
-  const stream = createClient(apiKey).messages.stream(
-    {
-      model: req.model,
-      max_tokens: maxTokens,
-      system,
-      messages: [...historyMessages(req.history), { role: "user", content: user }],
-    },
-    { signal },
-  );
-  stream.on("text", (text) => on({ type: "delta", requestId: req.requestId, text }));
-  const message = await stream.finalMessage();
+  const client = createClient(apiKey);
+  const result = await runToolLoop({
+    messages: [...historyMessages(req.history), { role: "user", content: user }],
+    tabId: req.tabId,
+    signal,
+    runTurn: (messages, tools) =>
+      streamTurn(
+        client,
+        { model: req.model, max_tokens: maxTokens, system, messages, ...(tools && { tools }) },
+        signal,
+        (text) => on({ type: "delta", requestId: req.requestId, text }),
+      ),
+    onTool: ({ name, input, resultChars }) =>
+      on({ type: "tool", requestId: req.requestId, name, input, resultChars }),
+  });
   return {
     type: "done",
     requestId: req.requestId,
-    stopReason: toStopReason(message.stop_reason),
-    usage: { inputTokens: message.usage.input_tokens, outputTokens: message.usage.output_tokens },
+    stopReason: toStopReason(result.stopReason),
+    usage: result.usage,
     bordereau: plan.bordereau,
   };
 }

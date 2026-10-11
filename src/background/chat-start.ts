@@ -11,6 +11,7 @@ const isArrayOf = (value: unknown, check: (entry: Raw) => boolean): boolean =>
 const isItem = (item: Raw): boolean =>
   isString(item["id"]) && isString(item["title"]) && isString(item["text"]) && typeof item["included"] === "boolean";
 const isHistoryMessage = (m: Raw): boolean => (m["role"] === "user" || m["role"] === "assistant") && isString(m["text"]);
+const isOptionalTabId = (value: unknown): boolean => value === undefined || Number.isInteger(value);
 
 function clampMaxTokens(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value)) return DEFAULT_MAX_TOKENS;
@@ -24,6 +25,7 @@ export function parseChatStart(raw: Raw): ChatStart | null {
     isArrayOf(items, isItem) &&
     isArrayOf(history, isHistoryMessage) &&
     isString(userText) &&
-    (answerLanguage === "auto" || answerLanguage === "fr" || answerLanguage === "en");
+    (answerLanguage === "auto" || answerLanguage === "fr" || answerLanguage === "en") &&
+    isOptionalTabId(raw["tabId"]);
   return valid ? ({ ...raw, maxTokens: clampMaxTokens(raw["maxTokens"]) } as unknown as ChatStart) : null;
 }
