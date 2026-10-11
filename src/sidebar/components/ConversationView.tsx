@@ -8,7 +8,7 @@ import { TurnNoticeView } from "./TurnNoticeView";
 import { UserTurn } from "./UserTurn";
 
 const SCROLL_DOWN_STYLE = { position: "sticky", bottom: "var(--s-8)", justifySelf: "end" } as const;
-const SUGGESTIONS_STYLE = { display: "grid", gap: "var(--s-8)", justifyItems: "start" } as const;
+const SUGGESTIONS_STYLE = { display: "grid", gap: "var(--s-8)" } as const;
 const SUGGESTION_KEYS = ["sidebar_suggestSummary", "sidebar_suggestSimple", "sidebar_suggestFigures"] as const;
 
 function ask(text: string): void {
@@ -27,7 +27,7 @@ function Suggestion({ textKey, index }: { textKey: (typeof SUGGESTION_KEYS)[numb
 function EmptyMargin() {
   return (
     <div class="sb-empty anim-rise" style="--i:0">
-      <h2>{t("sidebar_askPage")}</h2>
+      <h1>{t("sidebar_askPage")}</h1>
       <div style={SUGGESTIONS_STYLE}>
         {SUGGESTION_KEYS.map((textKey, index) => (
           <Suggestion key={textKey} textKey={textKey} index={index + 1} />

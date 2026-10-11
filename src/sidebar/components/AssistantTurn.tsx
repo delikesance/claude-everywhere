@@ -39,17 +39,17 @@ export function AssistantTurn({ message, number, phase, onRegenerate, onFollowUp
     <AssistantMessage label={t("sidebar_answerLabel", { number })} number={number}>
       <div class="reading" aria-busy={live}>
         <Markdown source={live ? shown : message.text} />
-        {phase === "waiting" && (
-          <span class="anim-dots" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-        )}
         {phase === "streaming" && <span class="caret anim-caret" aria-hidden="true" />}
       </div>
       <div class="msg-footer">
         <span class={live ? "status-tag" : "caption"} role="status">
+          {live && (
+            <span class="anim-dots" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+          )}
           {statusText(message, phase)}
         </span>
         {!live && message.text !== "" && (

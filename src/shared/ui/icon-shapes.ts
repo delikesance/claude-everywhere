@@ -26,6 +26,7 @@ export const ICON_SHAPES = {
   rotateCw: [path("M21 12a9 9 0 1 1-9-9c2.5 0 4.9 1 6.7 2.7L21 8"), path("M21 3v5h-5")],
   lock: [["rect", { x: "3", y: "11", width: "18", height: "11", rx: "2" }], path("M7 11V7a5 5 0 0 1 10 0v4")],
   check: [path("M20 6 9 17l-5-5")],
+  spark: [path("M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18")],
   info: [["circle", { cx: "12", cy: "12", r: "10" }], path("M12 16v-4M12 8h.01")],
   triangleAlert: [
     path("m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"),
