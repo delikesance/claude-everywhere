@@ -135,7 +135,7 @@ describe("App", () => {
     mount();
     expect(root.querySelector(".notice--warning")).toBeNull();
     act(() => addItem({ ...item("b", true), text: "x".repeat(HUGE_TEXT_CHARS) }));
-    expect(root.querySelector(".notice--warning")?.textContent).toContain("sidebar_truncatedTitle");
+    expect(root.querySelector(".notice--warning")?.textContent).toContain("sidebar_longDocBody");
   });
 
   it("counts the history in the budget so the preview equals what is sent", () => {
@@ -158,10 +158,21 @@ describe("App", () => {
     library.listArtifacts.mockResolvedValue([{ id: "a1", title: "Note" }]);
     library.getArtifact.mockResolvedValue({ id: "a1", title: "Note", url: null, markdown: "md" });
     await mount();
+    click('button[aria-haspopup="menu"]');
     act(() => buttonByText("sidebar_addLibrary")?.click());
     await vi.waitFor(() => expect(buttonByText("Note")).toBeDefined());
     await act(async () => buttonByText("Note")?.click());
     await vi.waitFor(() => expect(conversation.value.items[0]).toMatchObject({ artifactId: "a1", title: "Note" }));
+  });
+
+  it("closes the add menu on Escape and returns focus to its trigger", () => {
+    mount();
+    click('button[aria-haspopup="menu"]');
+    act(() => {
+      root.querySelector<HTMLElement>('[role="menuitem"]')?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    });
+    expect(root.querySelector('[role="menu"]')).toBeNull();
+    expect(document.activeElement).toBe(root.querySelector('button[aria-haspopup="menu"]'));
   });
 
   it("opens the history from the header icon button", async () => {

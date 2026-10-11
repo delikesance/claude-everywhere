@@ -1,14 +1,5 @@
 import type { ComponentChildren } from "preact";
 
-export function UserMessage({ label, children }: { label: string; children: ComponentChildren }) {
-  return (
-    <article class="msg-user" aria-label={label}>
-      <p class="overline">{label}</p>
-      {children}
-    </article>
-  );
-}
-
 export interface AssistantMessageProps {
   label: string;
   number: number;

@@ -32,8 +32,8 @@ export function App() {
       {view.value === "chat" && (
         <div class="sb-foot">
           {!hasKey.value && <MissingKey />}
-          <SendSlip />
           <ContextBar />
+          <SendSlip />
           <Composer />
         </div>
       )}

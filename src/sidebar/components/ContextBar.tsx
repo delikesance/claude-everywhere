@@ -1,12 +1,9 @@
-import { useState } from "preact/hooks";
 import { formatChars } from "../../shared/format";
 import { t } from "../../shared/i18n";
 import type { BordereauLine, ContextItem } from "../../shared/types";
-import { Button, Chip, cx } from "../../shared/ui";
-import { capture } from "../state/intake";
+import { Chip, cx } from "../../shared/ui";
 import { conversation, removeItem, toggleItem } from "../state/conversation";
 import { currentPlan } from "../state/plan";
-import { LibraryPicker } from "./LibraryPicker";
 import { ProtectedNotice } from "./ProtectedNotice";
 
 function ReadingChip() {
@@ -38,7 +35,6 @@ function ContextChip({ item, line }: { item: ContextItem; line: BordereauLine | 
 }
 
 export function ContextBar() {
-  const [picking, setPicking] = useState(false);
   const { items } = conversation.value;
   const lines = new Map(currentPlan.value.bordereau.lines.map((line) => [line.itemId, line]));
   const protectedPage = items.some((item) => item.status === "unreadable");
@@ -53,18 +49,6 @@ export function ContextBar() {
           ))}
         </div>
       )}
-      <div class="sb-row row">
-        <Button variant="quiet" compact onClick={() => void capture("page")}>
-          {t("sidebar_addPage")}
-        </Button>
-        <Button variant="quiet" compact onClick={() => void capture("selection")}>
-          {t("sidebar_addSelection")}
-        </Button>
-        <Button variant="quiet" compact onClick={() => setPicking(true)}>
-          {t("sidebar_addLibrary")}
-        </Button>
-      </div>
-      {picking && <LibraryPicker onClose={() => setPicking(false)} />}
     </>
   );
 }

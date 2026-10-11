@@ -1,10 +1,12 @@
 import { useState } from "preact/hooks";
 import { formatChars } from "../../shared/format";
 import { t } from "../../shared/i18n";
-import { Notice, Slip } from "../../shared/ui";
+import type { Bordereau } from "../../shared/types";
+import { Icon } from "../../shared/ui";
 import { draft } from "../state/conversation";
 import { currentPlan, currentPrompt } from "../state/plan";
 import type { ContextPlan } from "../../api/budget";
+import { LongDocumentNotice } from "./LongDocumentNotice";
 
 function PromptPreview({ plan }: { plan: ContextPlan }) {
   const [open, setOpen] = useState(false);
@@ -29,30 +31,46 @@ function PromptPreview({ plan }: { plan: ContextPlan }) {
   );
 }
 
+function pillLabel(bordereau: Bordereau): string {
+  if (bordereau.lines.length > 0) {
+    return t("sidebar_slipPart", { items: bordereau.lines.map((line) => line.title).join(" + ") });
+  }
+  return t(draft.value === "" ? "sidebar_slipEmpty" : "sidebar_slipMessageOnly");
+}
+
 export function SendSlip() {
+  const [open, setOpen] = useState(false);
   const plan = currentPlan.value;
   const { bordereau } = plan;
   if (bordereau.lines.length === 0) {
-    return <p class="slip caption">{draft.value === "" ? t("sidebar_slipEmpty") : t("sidebar_slipMessageOnly")}</p>;
+    return (
+      <p class="slip caption">
+        <span class="sb-pill clamp-1">{pillLabel(bordereau)}</span>
+      </p>
+    );
   }
   return (
     <>
-      {bordereau.truncated && (
-        <Notice
-          tone="warning"
-          title={t("sidebar_truncatedTitle", {
-            sent: formatChars(bordereau.sentChars),
-            total: formatChars(bordereau.totalChars),
-          })}
-        >
-          {t("sidebar_truncatedBody")}
-        </Notice>
-      )}
-      <Slip bordereau={bordereau}>
-        <p class="caption">{t("sidebar_slipTokens", { tokens: bordereau.estimatedTokens.toLocaleString("fr-FR") })}</p>
-        <p class="overline">{t("sidebar_slipDestination")}</p>
-        <PromptPreview plan={plan} />
-      </Slip>
+      <LongDocumentNotice />
+      <div class="slip">
+        <button type="button" class="slip__toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
+          <span class="sb-pill clamp-1">{pillLabel(bordereau)}</span>
+          <Icon name="chevronDown" />
+        </button>
+        <div class="slip__body" data-open={open ? "true" : "false"}>
+          <div class="slip__inner">
+            {bordereau.lines.map((line) => (
+              <div class="slip__line sent" key={line.itemId}>
+                <span class="grow">{line.title}</span>
+                <span>{formatChars(line.sentChars)}</span>
+              </div>
+            ))}
+            <p class="caption">{t("sidebar_slipTokens", { tokens: bordereau.estimatedTokens.toLocaleString("fr-FR") })}</p>
+            <p class="overline">{t("sidebar_slipDestination")}</p>
+            <PromptPreview plan={plan} />
+          </div>
+        </div>
+      </div>
     </>
   );
 }

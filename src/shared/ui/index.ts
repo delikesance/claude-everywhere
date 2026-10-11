@@ -6,7 +6,7 @@ export { Field, Input, Select, Textarea } from "./Field";
 export { Icon } from "./Icon";
 export type { IconName } from "./icon-shapes";
 export { Markdown } from "./Markdown";
-export { AssistantMessage, UserMessage } from "./Messages";
+export { AssistantMessage } from "./Messages";
 export { Notice } from "./Notice";
 export { Seg } from "./Seg";
 export { Skeleton } from "./Skeleton";
