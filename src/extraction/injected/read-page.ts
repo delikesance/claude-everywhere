@@ -1,13 +1,10 @@
 import { Readability } from "@mozilla/readability";
-import TurndownService from "turndown";
 import type { ExtractedPage, ExtractionErrorData } from "../../shared/types";
 import { MIN_ARTICLE_CHARS } from "../constants";
 import { errorData } from "../error";
+import { htmlToMarkdown } from "../markdown";
 import { makePage } from "../make-page";
 import { documentFields } from "./document-fields";
-
-const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced", bulletListMarker: "-" });
-turndown.remove(["script", "style", "noscript", "iframe"]);
 
 function readArticle(doc: Document) {
   const article = new Readability(doc.cloneNode(true) as Document).parse();
@@ -25,7 +22,7 @@ export function readPage(doc: Document): ExtractedPage | ExtractionErrorData {
       title: doc.title.trim() || article.title || fields.url,
       siteName: article.siteName ?? null,
       sourceType: "page",
-      markdown: turndown.turndown(article.html).trim(),
+      markdown: htmlToMarkdown(article.html),
     });
   }
   const text = doc.body?.innerText.trim() ?? "";
