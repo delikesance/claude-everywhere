@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Vidéo sans sous-titres - YouTube</title>
+  </head>
+  <body>
+    <video controls muted></video>
+    <script>
+      window.ytInitialPlayerResponse = {
+        videoDetails: {
+          videoId: "e2eNoCaption",
+          title: "Vidéo sans sous-titres",
+          author: "Chaîne de test",
+          shortDescription: "Une description sans sous-titres.",
+          lengthSeconds: "212",
+        },
+        captions: { playerCaptionsTracklistRenderer: { captionTracks: [] } },
+        playerOverlays: {
+          playerOverlayRenderer: {
+            decoratedPlayerBarRenderer: {
+              decoratedPlayerBarRenderer: {
+                playerBar: {
+                  multiMarkersPlayerBarRenderer: {
+                    markersMap: [
+                      {
+                        value: {
+                          chapters: [
+                            { chapterRenderer: { title: { simpleText: "Intro" }, timeRangeStartMillis: 0 } },
+                            { chapterRenderer: { title: { simpleText: "Ownership" }, timeRangeStartMillis: 62000 } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </body>
+</html>
