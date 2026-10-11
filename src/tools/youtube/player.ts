@@ -62,7 +62,7 @@ function parseTracks(raw: unknown): CaptionTrack[] {
     .filter((track) => track.baseUrl !== "");
 }
 
-const baseLanguage = (languageCode: string): string => languageCode.split("-")[0].toLowerCase();
+const baseLanguage = (languageCode: string): string => (languageCode.split("-")[0] ?? "").toLowerCase();
 
 export function pickTrack(tracks: CaptionTrack[], pageLang: string): CaptionTrack | undefined {
   const language = baseLanguage(pageLang);

@@ -37,7 +37,7 @@ function attribute(attributes: string, name: string): string {
 }
 
 export function parseCaptionXml(xml: string): Cue[] {
-  return [...xml.matchAll(TEXT_ELEMENT)].flatMap(([, attributes, body]) => {
+  return [...xml.matchAll(TEXT_ELEMENT)].flatMap(([, attributes = "", body = ""]) => {
     const text = collapseSpaces(decodeEntities(body.replace(MARKUP, "")));
     if (!text) return [];
     return [{ startSec: toNumber(attribute(attributes, "start")), text }];

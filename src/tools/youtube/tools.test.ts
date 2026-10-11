@@ -3,11 +3,10 @@ import { fetchInTab, readVideoPage } from "./browser-page";
 import { JSON3_CAPTIONS } from "./fixtures/json3";
 import { PLAYER_RESPONSE } from "./fixtures/player-response";
 import { TIMEDTEXT_XML } from "./fixtures/timedtext";
-import { youtubeTools } from "./tools";
+import { videoState, videoTranscript } from "./tools";
 
 vi.mock("./browser-page", () => ({ readVideoPage: vi.fn(), fetchInTab: vi.fn() }));
 
-const [videoState, videoTranscript] = youtubeTools;
 const ctx = { tabId: 7, signal: new AbortController().signal };
 const WATCH_URL = "https://www.youtube.com/watch?v=abc123XYZ00";
 
@@ -46,8 +45,7 @@ describe("video_transcript", () => {
     openPage();
     vi.mocked(fetchInTab).mockResolvedValueOnce(JSON.stringify(JSON3_CAPTIONS));
     const text = await videoTranscript.run({ fromSec: 0, toSec: 60 }, ctx);
-    expect(vi.mocked(fetchInTab).mock.calls[0][1]).toContain("lang=fr");
-    expect(vi.mocked(fetchInTab).mock.calls[0][1]).toContain("fmt=json3");
+    expect(fetchInTab).toHaveBeenCalledWith(7, expect.stringMatching(/lang=fr.*fmt=json3/));
     expect(text).toBe("[00:00] Bonjour a tous\n[00:31] Le pret");
   });
 

@@ -30,7 +30,7 @@ function readRange(input: Record<string, unknown>): { fromSec: number; toSec: nu
   return { fromSec, toSec };
 }
 
-const videoState: ToolDef = {
+export const videoState: ToolDef = {
   name: "video_state",
   description:
     "Describe the open YouTube video: title, channel, duration, current playback time, chapters, captions availability and description.",
@@ -41,7 +41,7 @@ const videoState: ToolDef = {
   },
 };
 
-const videoTranscript: ToolDef = {
+export const videoTranscript: ToolDef = {
   name: "video_transcript",
   description: "Read the captions of the open YouTube video between two instants given in seconds, with mm:ss markers.",
   inputSchema: {
