@@ -4,6 +4,8 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 
 ## [Non publié]
 
+## [0.1.3] - 2026-10-11
+
 ### Ajouté
 
 - Réglage « Répondre via » : Claude Code (local, utilise votre compte Claude, Firefox de bureau, via `npm run install:native-host`) ou clé API. Test de connexion de l'hôte natif.
