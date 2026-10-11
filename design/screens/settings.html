@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marginalia — Réglages</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
+  .frame-page { width: 560px; }
+  .details-advanced summary { cursor: pointer; font: 500 var(--fs-label)/var(--lh-label) var(--font-sans); min-height: 32px; display: flex; align-items: center; }
+  .details-advanced[open] > .section { margin-top: var(--s-12); }
+</style>
+<script src="../theme.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+</svg>
+
+<div class="doc">
+<header>
+  <p class="overline"><a href="../index.html">← Système de design</a></p>
+  <h1 class="display">Réglages</h1>
+  <div role="radiogroup" aria-label="Apparence" class="seg" style="margin-top:var(--s-12)">
+    <button class="seg__cell" role="radio" aria-checked="true" data-theme-set="system">Système</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="light">Clair</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="dark">Sombre</button>
+  </div>
+</header>
+<main>
+
+<section aria-labelledby="h-set">
+  <h2 id="h-set">Une page courte</h2>
+  <div class="mock"><figure><figcaption class="caption frame-caption">Essentiels d'abord, avancé replié</figcaption>
+  <div class="frame frame-page"><div class="page" style="padding:var(--s-24)">
+
+    <section class="section" aria-labelledby="s1">
+      <p class="folio" aria-hidden="true">01</p>
+      <h3 id="s1">Clé et moteur</h3>
+      <div class="field"><label class="field__label" for="set-key">Clé API</label><input id="set-key" class="input" type="password" value="sk-ant-api03-xxxxxxxx" aria-describedby="set-key-help"><span id="set-key-help" class="help help--ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Valide</span></div>
+      <div role="radiogroup" aria-label="Moteur" class="seg" style="justify-self:start"><button class="seg__cell" role="radio" aria-checked="true">Clé API</button><button class="seg__cell" role="radio" aria-checked="false">Claude Code</button></div>
+    </section>
+
+    <section class="section" aria-labelledby="s2">
+      <p class="folio" aria-hidden="true">02</p>
+      <h3 id="s2">Modèle</h3>
+      <div class="field" style="width:260px"><label class="field__label" for="set-model">Modèle</label><div class="input-group"><select id="set-model" class="select"><option>Équilibré</option><option>Rapide</option><option>Le plus capable</option></select></div></div>
+    </section>
+
+    <section class="section" aria-labelledby="s3">
+      <p class="folio" aria-hidden="true">03</p>
+      <h3 id="s3">Langue et thème</h3>
+      <div class="row">
+        <div role="radiogroup" aria-label="Langue" class="seg"><button class="seg__cell" role="radio" aria-checked="true">Français</button><button class="seg__cell" role="radio" aria-checked="false">English</button></div>
+        <div role="radiogroup" aria-label="Thème" class="seg"><button class="seg__cell" role="radio" aria-checked="true">Système</button><button class="seg__cell" role="radio" aria-checked="false">Clair</button><button class="seg__cell" role="radio" aria-checked="false">Sombre</button></div>
+      </div>
+    </section>
+
+    <details class="details-advanced">
+      <summary>Avancé</summary>
+      <section class="section" aria-labelledby="s4">
+        <p class="folio" aria-hidden="true">04</p>
+        <h3 id="s4">Avancé</h3>
+        <div class="field" style="width:260px"><label class="field__label" for="set-url">Adresse de l'API</label><input id="set-url" class="input" value="https://api.anthropic.com"></div>
+        <span class="switch"><button class="switch__track" role="switch" aria-checked="false" aria-label="Barre de sélection"><span class="switch__thumb"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span></button>Barre de sélection</span>
+        <p class="caption">Rien n'est envoyé sans votre action. La clé reste sur cet appareil.</p>
+      </section>
+    </details>
+
+  </div></div></figure></div>
+</section>
+</main>
+</div>
+</body>
+</html>

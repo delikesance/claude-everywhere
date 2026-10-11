@@ -54,30 +54,51 @@ Clair sur `:root` ; sombre sous `:root[data-theme="dark"]` et sous `@media (pref
 | `--selection-bg` | #CFDDF0 | #27456E | texte dessus 12,44 / 7,75 |
 | `--scrim` | rgba(31,27,22,.32) | rgba(0,0,0,.55) | |
 
-Autres jetons : polices `--font-serif` (Source Serif 4), `--font-sans` (Inter), `--font-mono` (JetBrains Mono), chacune avec repli système ; échelle `--fs-*` / `--lh-*` (display 28/34, h1 22/28, h2 18/24, h3 15/20, row-title 17/24, reading 16/26, reading-compact 15/23, ui 14/20, label 13/18, caption 12/16, mono 12,5/18, numeral 11/16) ; `--measure: 62ch` ; espacement `--s-2` à `--s-72`, `--section-gap` (3,5 rem) pour l'espace au-dessus de chaque section titrée (`h2`) ; rayons `--r-0`, `--r-1` (2 px), `--r-2` (4 px), `--r-pill` ; ombres `--shadow-1` (menus), `--shadow-2` (dialogue) ; couches `--z-sticky`, `--z-menu`, `--z-dialog` ; durées `--t-1` 80 ms, `--t-2` 120, `--t-3` 180, `--t-4` 260, `--t-5` 320 ; courbes `--ease-out`, `--ease-in`, `--ease-standard`.
+Autres jetons : polices `--font-serif` (Source Serif 4), `--font-sans` (Inter), `--font-mono` (JetBrains Mono), chacune avec repli système ; échelle `--fs-*` / `--lh-*` (display 28/34, h1 22/28, h2 18/24, h3 15/20, row-title 17/24, reading 16/26, reading-compact 15/23, ui 14/20, label 13/18, caption 12/16, mono 12,5/18, numeral 11/16) ; `--measure: 62ch` ; espacement `--s-2` à `--s-72`, `--section-gap` (3,5 rem) pour l'espace au-dessus de chaque section titrée (`h2`) ; rayons `--r-0`, `--r-1` (2 px), `--r-2` (4 px), `--r-pill` ; ombres `--shadow-1` (menus, surcouche), `--shadow-2` (dialogue) ; couches `--z-sticky`, `--z-menu`, `--z-dialog` ; durées `--t-1` 80 ms, `--t-2` 120, `--t-3` 180, `--t-4` 260, `--t-5` 320 ; courbes `--ease-out`, `--ease-in`, `--ease-standard`.
+
+Aucune nouvelle paire de couleurs : les nouveaux états (suggestions, pastille de lecture, avis qui tombe) reprennent les paires du tableau ci-dessus, donc le contraste AA reste valide.
 
 ## 3. Composants et états
 
 | Composant | Classes | États |
 |---|---|---|
-| Bouton | `.btn` + `--primary`, `--secondary`, `--quiet`, `--danger`, `--danger-solid`, `--compact`, `--large`, `--icon-only`, `--stop`, `--send` | repos, survol, focus, actif, `aria-disabled`, `aria-busy` (points animés) |
+| Bouton | `.btn` + `--primary`, `--secondary`, `--quiet`, `--danger`, `--danger-solid`, `--compact`, `--large`, `--icon-only`, `--stop`, `--send` | repos, survol, focus, actif (`--send` : scale .94), `aria-disabled`, `aria-busy` (points animés) |
 | Bouton icône | `.icon-btn`, `--sm` | repos, survol, focus ; infobulle `.tip` |
 | Champ | `.field`, `.input`, `.textarea`, `.select`, `.input-group`, `.help` | repos, focus, `aria-invalid`, désactivé, aide ok / erreur |
 | Contrôle segmenté | `.seg`, `.seg__cell` (`role=radio`, `aria-checked`) | sélectionné, désactivé |
 | Interrupteur, case | `.switch`, `.check` | off, on, focus, désactivé |
-| Pastille de contexte | `.chip` + `--off`, `--unreadable`, `--loading` | incluse (plein, `.sent`), non incluse (pointillé), illisible (icône cadenas), chargement |
+| Pastille de contexte | `.chip` + `.sent`, `--off`, `--unreadable`, `--reading` | incluse (plein, `.sent`, « Page lue »), non incluse (pointillé), illisible (cadenas), lecture en cours (pointillé, `role=status`, points) |
+| Suggestion | `.suggestion` | disponible (pointillé), survol ; jamais incluse |
 | Étiquette, badge, genre, statut | `.tag`, `.badge`, `.badge--local`, `.kind`, `.status-tag` | |
-| Bordereau | `.slip`, `.preview`, `.receipt` | fermé, ouvert (`data-open`), aperçu exact ; lignes sans retour à la ligne (le titre seul se tronque, « 4 812 car. » reste entier) |
-| Messages | `.msg-user`, `.msg-ai`, `.md`, `.msg-footer`, `.caret`, `.codeblock`, `.scroll-down` | en cours, terminé, interrompu |
-| Avis | `.notice` + `--success`, `--warning`, `--error` ; `.inline-confirm` | |
-| Squelette | `.ghost` | chargement de la bibliothèque, attente du premier jeton (`role=status`, texte lisible, barres `aria-hidden`) |
+| Bordereau | `.slip`, `.preview`, `.receipt` | fermé (« Part : la page, N car. »), ouvert (`data-open`), aperçu exact ; lignes sans retour à la ligne (le titre seul se tronque, « 4 812 car. » reste entier) |
+| Messages | `.msg-user`, `.msg-ai`, `.md`, `.msg-footer`, `.caret`, `.codeblock`, `.scroll-down` | en attente (points + texte), en cours (curseur), terminé, interrompu ; « Garder » devient « Gardé » sur place |
+| Avis | `.notice` + `--success`, `--warning`, `--error`, `--drop` ; `.inline-confirm` | `--drop` : tombe du haut, en tête du pied (nouvel onglet) |
+| Squelette | `.ghost` | chargement de la bibliothèque (`role=status`, texte lisible, barres `aria-hidden`) |
 | Menu, onglets, dialogue | `.menu`, `.tabs`, `.dialog`, `.scrim` | sélectionné, focus |
-| Surcouche | `.toolbar`, `.overlay-card` | |
-| Coquilles de surfaces | `.sidebar`, `.popup`, `.toc`, `.lib`, `.page`, `.section`, `.folio` | |
+| Surcouche | `.toolbar`, `.overlay-card` | barre « Demander » ; carte : en cours, terminée, erreur, tronquée |
+| Coquilles de surfaces | `.sidebar`, `.toc`, `.lib`, `.page`, `.section`, `.folio` | |
+
+Les surfaces retirées : la fenêtre rapide (`.popup`) et l'accueil en assistant (onboarding) n'existent plus. La clé se règle dans le panneau.
 
 ## 4. Mouvement
 
-Durées : 80 ms couleur, 120 ms pression, 180 ms menus et bordereau, 260 ms dialogue, 320 ms page. Un balayage (`.sent.is-new`) marque l'inclusion d'un élément au contexte. Curseur de rédaction et points de chargement sont décoratifs. Dans les maquettes (`.frame`), les animations d'entrée de `.overlay-card` et `.notice--error` sont désactivées pour que chaque état soit visible en capture statique. Avec `prefers-reduced-motion: reduce`, durées ramenées à 80 ms de fondu au plus, curseur et points statiques, aucun balayage.
+Durées (tokens) : 80 ms couleur, 120 ms pression, 180 ms avis et réponse, 260 ms panneau, 320 ms balayage.
+
+| Classe | Effet | Durée | Usage |
+|---|---|---|---|
+| `.anim-slide-in` | glisse depuis la droite, fondu | 260 ms, `--ease-out` | ouverture du panneau |
+| `.anim-sweep` | balayage du surligneur sur `.sent` | 320 ms | pastille qui devient incluse après la lecture de la page |
+| `.anim-rise` | 8 px vers le haut, fondu ; décalage `--i * 40 ms` | 180 ms | message utilisateur, suggestions en cascade |
+| `.anim-dots` | trois points qui rebondissent | 1,2 s, boucle | attente du premier jeton ; toujours accompagnés d'un texte lisible |
+| `.anim-caret` | curseur qui clignote (`steps(1)`) | 1 s, boucle | rédaction en cours |
+| `.anim-pop` (et `.overlay-card`) | fondu, 4 px, échelle .97 → 1 | 180 ms | carte de réponse de la surcouche |
+| `.anim-drop` (et `.notice--drop`) | avis qui tombe du haut | 180 ms | « Nouvel onglet… » |
+
+Pression : `.btn--send:active` passe à l'échelle .94 en 120 ms. Aucune animation ne bloque la saisie ; aucun toast.
+
+Dans les maquettes (`.frame`), les animations d'entrée (`.anim-slide-in`, `.anim-rise`, `.anim-pop`, `.anim-drop`, `.notice--drop`, `.anim-sweep`, `.overlay-card`, `.notice--error`) sont désactivées pour que chaque état soit visible en capture statique ; les points et le curseur restent animés.
+
+Avec `prefers-reduced-motion: reduce` : entrées réduites à un fondu de 80 ms, points et curseur statiques (visibles), aucun balayage. Les règles sont dans `components.css`, bloc « Motion » et bloc `prefers-reduced-motion`.
 
 ## 5. Accessibilité
 
@@ -91,17 +112,16 @@ Durées : 80 ms couleur, 120 ms pression, 180 ms menus et bordereau, 260 ms dial
 
 ## 6. Notes par surface
 
-- Panneau latéral (360 px, variante 280 px) : en-tête, conversation, pied avec bordereau « Ce qui part », pastilles, champ, modèle, Envoyer / Arrêter. Le bordereau résume le prochain envoi et ouvre l'aperçu exact. États montrés : vide, réponse en cours, élément de bibliothèque joint, erreurs (clé refusée et limite de débit ; réseau et interruption, en deux maquettes), page protégée, page tronquée (avis chiffré « N car. envoyés sur M », bordereau et pastille idem), contexte PDF (pastille `PDF`), attente du premier jeton (squelette), sans clé API.
-- Fenêtre rapide (320 px) : sommaire de pointillés guidés, une action principale, lien vers le panneau ; états résumé en cours, réponse, sans clé API (action unique « Ajouter une clé API »), page protégée.
-- Surcouche : barre flottante et carte de réponse sur la page hôte ; la carte a les états en cours, terminée, erreur (clé manquante) et page tronquée. Racine : shadow root fermé, `popover="manual"`, unités en px, piles de polices système uniquement (aucune police chargée dans les pages), thème du système. Documentation de `:host` : `all: initial`, `color-scheme: light dark`, les jetons y sont redéclarés en px via `tokens.css` embarqué ; z-index maximal géré par le popover.
-- Bibliothèque : liste, recherche (surlignage `mark.hit`, ni jaune d'envoi), état sans résultat, état vide (aucune entrée encore), chargement (squelette), détail avec éditions, étiquettes, export, jonction au contexte. Marque « local » sur toute action qui n'envoie rien.
-- Réglages : sections numérotées en folios, rail de navigation.
-- Accueil : trois étapes, clé API validée avant de continuer.
+- Panneau latéral (360 px, variante 280 px), ouvert par l'icône de la barre d'outils (deuxième clic : fermeture) : en-tête (titre, nouvelle conversation, bibliothèque, réglages, icônes à `aria-label`), conversation, pied (avis éventuel en tête, pastille de contexte, bordereau « Part : … », champ, « Entrée envoie · Maj+Entrée saute une ligne », Envoyer / Arrêter). États montrés, dans `screens/sidebar.html` : conversation vide avec trois suggestions ; lecture de la page en cours (pastille pointillée, champ actif, envoi désactivé) ; page lue avec réponse (Garder / Copier, suggestions de suite) ; réponse en cours (points et texte, curseur, Arrêter) ; « Gardé » sur place ; page protégée (sans pastille) ; nouvel onglet (avis « Lire cette page à la place ? ») ; page longue et PDF (avis chiffré « N car. envoyés sur M », suggestions par chapitre) ; clé manquante (une seule page inline : titre « Une clé, et c'est parti. », champ validé à la saisie, « Commencer à discuter », « Où trouver ma clé ? », « ou », « Utiliser mon abonnement via Claude Code ») ; erreurs (réseau, clé refusée, limite de débit) ; largeur 280 avec icônes seules.
+- Surcouche : une barre flottante « Demander » sur la sélection, puis une carte de réponse avec la ligne « Part : cette sélection, N car. », fermer, « Continuer dans le panneau » (primaire), Copier, Garder. États dans `screens/overlay.html` : en cours, terminée, clé manquante, tronquée. Racine : shadow root fermé, `popover="manual"`, unités en px, piles de polices système uniquement (aucune police chargée dans les pages), thème du système. Documentation de `:host` : `all: initial`, `color-scheme: light dark`, les jetons y sont redéclarés en px via `tokens.css` embarqué ; z-index maximal géré par le popover.
+- Bibliothèque (`screens/library.html`) : titre « Gardé », compteur « N entrées · local », un seul champ de recherche (surlignage `mark.hit`, ni jaune d'envoi), liste à plat (titre serif, extrait sur une ligne, étiquettes, source et date), clic = réouverture dans la conversation, Exporter ; état sans résultat, état vide qui renvoie vers la conversation, chargement (squelette).
+- Réglages (`screens/settings.html`) : une page courte, essentiels d'abord (clé / moteur, modèle, langue, thème), section « Avancé » repliée.
 
 ## 7. Consommation par l'implémentation
 
-1. Pages d'extension (panneau, fenêtre, options, bibliothèque, accueil) : `<link rel="stylesheet" href="tokens.css">` puis `components.css` ; tailles en rem.
+1. Pages d'extension (panneau, surcouche, bibliothèque, réglages) : `<link rel="stylesheet" href="tokens.css">` puis `components.css` ; tailles en rem.
 2. Surcouche : construire un `CSSStyleSheet` à partir des deux fichiers et l'adopter dans le shadow root fermé ; convertir rem en px à la génération ; ne charger aucune police.
 3. Thème : poser `data-theme="light|dark"` sur `:root` pour forcer ; l'absence d'attribut suit le système. Les pages de cette maquette partagent `theme.js` (sélecteur Système / Clair / Sombre) et acceptent `?theme=light|dark` dans l'URL.
 4. Jamais de couleur codée en dur dans le code de l'extension : ajouter un jeton ici d'abord.
 5. Toute évolution de valeur passe par `tokens.css` et par un contrôle de contraste.
+6. Mouvement : utiliser les classes `.anim-*` par leur nom, avec `--i` pour la cascade ; ne pas écrire de `@keyframes` dans le code de l'extension.

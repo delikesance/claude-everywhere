@@ -3,12 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marginalia — Bibliothèque</title>
+<title>Marginalia — Gardé</title>
 <link rel="stylesheet" href="../tokens.css">
 <link rel="stylesheet" href="../components.css">
 <style>
   .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
   .mock { display: flex; flex-wrap: wrap; gap: var(--s-32); align-items: flex-start; margin-top: var(--s-16); }
+  .lib__row { grid-template-columns: minmax(0, 1fr); }
+  .lib__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4) var(--s-8); }
 </style>
 <script src="../theme.js" defer></script>
 </head>
@@ -24,7 +26,8 @@
 <div class="doc">
 <header>
   <p class="overline"><a href="../index.html">← Système de design</a></p>
-  <h1 class="display">Bibliothèque</h1>
+  <h1 class="display">Gardé</h1>
+  <p class="caption" style="margin-top:var(--s-4)">24 entrées · <span class="badge badge--local"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>local</span></p>
   <div role="radiogroup" aria-label="Apparence" class="seg" style="margin-top:var(--s-12)">
     <button class="seg__cell" role="radio" aria-checked="true" data-theme-set="system">Système</button>
     <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="light">Clair</button>
@@ -35,80 +38,45 @@
 
 <section aria-labelledby="h-list">
   <h2 id="h-list">Liste</h2>
-  <div class="mock"><figure><figcaption class="caption frame-caption">Liste, tout est local</figcaption>
-  <div class="frame" style="width:880px"><div class="lib">
-    <nav class="lib__rail" aria-label="Filtres">
-      <p class="overline">Étiquettes</p>
-      <ul class="stack" style="list-style:none;padding:0;gap:var(--s-4)">
-        <li><a href="#h-list">Toutes (24)</a></li><li><a href="#h-list">abeilles (6)</a></li><li><a href="#h-list">lecture (11)</a></li><li><a href="#h-list">traduction (4)</a></li>
-      </ul>
-      <span class="badge badge--local"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Stocké sur cet appareil</span>
-    </nav>
-    <div class="lib__main">
-      <div class="row"><h2 class="grow">Bibliothèque</h2><div class="input-group" style="width:260px"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input class="input" type="search" aria-label="Rechercher" placeholder="Rechercher…"></div></div>
-      <ul style="list-style:none;padding:0">
-        <li class="lib__row"><span class="pilcrow" aria-hidden="true">¶</span><div class="grow"><p class="row-title">Le déclin des abeilles sauvages</p><p class="caption">lemonde.fr · 12 octobre · 3 éditions <span class="tag">abeilles</span> <span class="tag">lecture</span></p></div></li>
-        <li class="lib__row"><span class="pilcrow" aria-hidden="true">¶</span><div class="grow"><p class="row-title">Réforme communale : le calendrier</p><p class="caption">lemonde.fr · 10 octobre · 1 édition <span class="tag">lecture</span></p></div></li>
-        <li class="lib__row"><span class="pilcrow" aria-hidden="true">¶</span><div class="grow"><p class="row-title">Traduction du paragraphe 4</p><p class="caption">nature.com · 8 octobre · 2 éditions <span class="tag">traduction</span></p></div></li>
-      </ul>
-    </div>
+  <div class="mock"><figure><figcaption class="caption frame-caption">Liste à plat, recherche unique, clic = réouverture dans la conversation</figcaption>
+  <div class="frame" style="width:560px"><div class="lib__main">
+    <div class="row" style="margin-bottom:var(--s-12)"><div class="input-group grow"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input class="input" type="search" aria-label="Rechercher" placeholder="Rechercher…"></div><button class="btn btn--secondary btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Exporter</button></div>
+    <ul style="list-style:none;padding:0">
+      <li class="lib__row"><div><a href="#h-list" class="row-title">Le déclin des abeilles sauvages</a><p class="caption clamp-1">Deux causes principales : la disparition des milieux naturels et l'usage des pesticides.</p><p class="lib__meta caption"><span class="tag">abeilles</span><span class="tag">lecture</span><span>lemonde.fr · 12 octobre</span></p></div></li>
+      <li class="lib__row"><div><a href="#h-list" class="row-title">Réforme communale : le calendrier</a><p class="caption clamp-1">L'application est prévue pour l'automne, avec une phase d'essai dans six régions.</p><p class="lib__meta caption"><span class="tag">lecture</span><span>lemonde.fr · 10 octobre</span></p></div></li>
+      <li class="lib__row"><div><a href="#h-list" class="row-title">Traduction du paragraphe 4</a><p class="caption clamp-1">Version française du paragraphe sur les pollinisateurs.</p><p class="lib__meta caption"><span class="tag">traduction</span><span>nature.com · 8 octobre</span></p></div></li>
+    </ul>
   </div></div></figure></div>
-  <div class="mock">
-    <figure><figcaption class="caption frame-caption">Bibliothèque vide, aucune entrée encore</figcaption>
-    <div class="frame" style="width:520px"><div class="lib__main">
-      <div class="sb-empty"><h2>La bibliothèque est vide.</h2><p class="caption" style="margin-top:var(--s-4)">Aucune entrée encore. Enregistrez une réponse depuis le panneau latéral, elle apparaîtra ici.</p><span class="badge badge--local" style="margin-top:var(--s-12)"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Stocké sur cet appareil</span></div>
-    </div></div></figure>
-    <figure><figcaption class="caption frame-caption">Chargement de la liste</figcaption>
-    <div class="frame" style="width:520px"><div class="lib__main" role="status" aria-busy="true">
-      <p class="caption">Chargement de la bibliothèque…</p>
-      <ul style="list-style:none;padding:0" aria-hidden="true">
-        <li class="lib__row"><span class="pilcrow">¶</span><div class="grow"><div class="ghost" style="width:60%;height:16px"></div><div class="ghost" style="width:80%"></div></div></li>
-        <li class="lib__row"><span class="pilcrow">¶</span><div class="grow"><div class="ghost" style="width:45%;height:16px"></div><div class="ghost" style="width:70%"></div></div></li>
-        <li class="lib__row"><span class="pilcrow">¶</span><div class="grow"><div class="ghost" style="width:55%;height:16px"></div><div class="ghost" style="width:65%"></div></div></li>
-      </ul></div></div></figure>
-  </div>
 </section>
 
 <section aria-labelledby="h-search">
-  <h2 id="h-search">Recherche</h2>
+  <h2 id="h-search">Recherche et états</h2>
   <div class="mock">
     <figure><figcaption class="caption frame-caption">Résultats</figcaption>
     <div class="frame" style="width:520px"><div class="lib__main">
       <div class="input-group"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input class="input" type="search" aria-label="Rechercher" value="pesticides"></div>
-      <p class="caption" role="status">2 résultats pour «&#8239;pesticides&#8239;»</p>
+      <p class="caption" role="status" style="margin:var(--s-8) 0">2 résultats pour «&#8239;pesticides&#8239;»</p>
       <ul style="list-style:none;padding:0">
-        <li class="lib__row"><span class="pilcrow" aria-hidden="true">¶</span><div class="grow"><p class="row-title">Le déclin des abeilles sauvages</p><p class="caption">…l'usage des <mark class="hit">pesticides</mark>. D'autres facteurs…</p></div></li>
-        <li class="lib__row"><span class="pilcrow" aria-hidden="true">¶</span><div class="grow"><p class="row-title">Agriculture et biodiversité</p><p class="caption">…réduction des <mark class="hit">pesticides</mark> de synthèse…</p></div></li>
+        <li class="lib__row"><div><p class="row-title">Le déclin des abeilles sauvages</p><p class="caption clamp-1">…l'usage des <mark class="hit">pesticides</mark>. D'autres facteurs…</p></div></li>
+        <li class="lib__row"><div><p class="row-title">Agriculture et biodiversité</p><p class="caption clamp-1">…réduction des <mark class="hit">pesticides</mark> de synthèse…</p></div></li>
       </ul></div></div></figure>
     <figure><figcaption class="caption frame-caption">Aucun résultat</figcaption>
     <div class="frame" style="width:520px"><div class="lib__main">
       <div class="input-group"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input class="input" type="search" aria-label="Rechercher" value="zzyzx"></div>
-      <div class="sb-empty" role="status"><h2>Rien dans la marge pour «&#8239;zzyzx&#8239;».</h2><p class="caption" style="margin-top:var(--s-4)">Essayez un autre mot, ou retirez une étiquette.</p><button class="btn btn--secondary" style="margin-top:var(--s-12)">Effacer la recherche</button></div>
+      <div class="sb-empty" role="status"><h2>Rien dans la marge pour «&#8239;zzyzx&#8239;».</h2><p class="caption" style="margin-top:var(--s-4)">Essayez un autre mot.</p><button class="btn btn--secondary" style="margin-top:var(--s-12)">Effacer la recherche</button></div>
     </div></div></figure>
+    <figure><figcaption class="caption frame-caption">Vide : aucune entrée encore</figcaption>
+    <div class="frame" style="width:520px"><div class="lib__main">
+      <div class="sb-empty"><h2>Rien n'est encore gardé.</h2><p class="caption" style="margin-top:var(--s-4)">Une réponse gardée depuis la conversation apparaîtra ici.</p><a href="#h-search" class="btn btn--secondary" style="margin-top:var(--s-12)">Retour à la conversation</a></div>
+    </div></div></figure>
+    <figure><figcaption class="caption frame-caption">Chargement</figcaption>
+    <div class="frame" style="width:520px"><div class="lib__main" role="status" aria-busy="true">
+      <p class="caption">Chargement de « Gardé »…</p>
+      <ul style="list-style:none;padding:0" aria-hidden="true">
+        <li class="lib__row"><div><div class="ghost" style="width:60%;height:16px"></div><div class="ghost" style="width:80%"></div></div></li>
+        <li class="lib__row"><div><div class="ghost" style="width:45%;height:16px"></div><div class="ghost" style="width:70%"></div></div></li>
+      </ul></div></div></figure>
   </div>
-</section>
-
-<section aria-labelledby="h-detail">
-  <h2 id="h-detail">Détail</h2>
-  <div class="mock"><figure><figcaption class="caption frame-caption">Entrée avec éditions, étiquettes, export et ajout au contexte</figcaption>
-  <div class="frame" style="width:880px"><div class="lib">
-    <nav class="lib__rail" aria-label="Retour"><a href="#h-list">← Toute la bibliothèque</a></nav>
-    <div class="lib__main">
-      <h2>Le déclin des abeilles sauvages</h2>
-      <p class="caption">lemonde.fr · enregistré le 12 octobre · stocké sur cet appareil</p>
-      <div class="row" style="flex-wrap:wrap"><span class="tag">abeilles<button class="tag__x" aria-label="Retirer l'étiquette abeilles"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></span><span class="tag">lecture<button class="tag__x" aria-label="Retirer l'étiquette lecture"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></span><button class="btn btn--quiet btn--compact">+ Étiquette</button></div>
-      <div class="tabs" role="tablist" aria-label="Éditions"><button class="tab" role="tab" aria-selected="true">Édition 3 (actuelle)</button><button class="tab" role="tab" aria-selected="false">Édition 2</button><button class="tab" role="tab" aria-selected="false">Édition 1</button></div>
-      <div role="tabpanel"><p class="reading">Deux causes principales&#8239;: la disparition des milieux naturels et l'usage des pesticides. Le climat vient en troisième position, loin derrière.</p></div>
-      <div class="row" style="flex-wrap:wrap;margin-top:var(--s-12)">
-        <button class="btn btn--primary"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Joindre au contexte</button>
-        <button class="btn btn--secondary">Exporter en Markdown</button>
-        <button class="btn btn--secondary">Exporter en JSON</button>
-        <span class="grow"></span>
-        <button class="btn btn--danger">Supprimer</button>
-      </div>
-      <p class="inline-confirm"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Joint à la conversation en cours.</p>
-    </div>
-  </div></div></figure></div>
 </section>
 </main>
 </div>

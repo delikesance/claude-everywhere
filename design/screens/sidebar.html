@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marginalia — Panneau latéral</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components.css">
+<style>
+  .doc { max-width: 1120px; margin: 0 auto; padding: var(--s-32) var(--s-24) var(--s-72); }
+  .mock { display: flex; flex-wrap: wrap; gap: var(--s-32); align-items: flex-start; margin-top: var(--s-16); }
+  .sb-conv .suggestions { display: grid; gap: var(--s-8); justify-items: start; }
+  .sb-key { display: grid; gap: var(--s-12); padding: var(--s-16) 0; }
+</style>
+<script src="../theme.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-egress" viewBox="0 0 24 24"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></symbol>
+<symbol id="i-library" viewBox="0 0 24 24"><path d="m16 6 4 14M12 6v14M8 8v12M4 4v16"/></symbol>
+<symbol id="i-square-pen" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4Z"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+<symbol id="i-bookmark-plus" viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/><path d="M12 7v6M9 10h6"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+<symbol id="i-triangle-alert" viewBox="0 0 24 24"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+<symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+<symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14m7-7-7 7-7-7"/></symbol>
+</svg>
+
+<div class="doc">
+<header>
+  <p class="overline"><a href="../index.html">← Système de design</a></p>
+  <h1 class="display">Panneau latéral</h1>
+  <p class="reading reading--compact muted" style="margin-top:var(--s-8)">Ouvert par l'icône de la barre d'outils ; un second clic le referme. Lit la page une fois, sur demande : jamais en silence.</p>
+  <div role="radiogroup" aria-label="Apparence" class="seg" style="margin-top:var(--s-12)">
+    <button class="seg__cell" role="radio" aria-checked="true" data-theme-set="system">Système</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="light">Clair</button>
+    <button class="seg__cell" role="radio" aria-checked="false" data-theme-set="dark">Sombre</button>
+  </div>
+</header>
+<main>
+
+<section aria-labelledby="h-flow">
+  <h2 id="h-flow">Parcours</h2>
+  <div class="mock">
+
+    <figure><figcaption class="caption frame-caption">Ouverture : conversation vide, trois suggestions</figcaption>
+    <div class="frame" style="width:360px;height:640px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0">
+        <button class="icon-btn" aria-label="Nouvelle conversation"><svg class="icon" aria-hidden="true"><use href="#i-square-pen"/></svg></button>
+        <button class="icon-btn" aria-label="Bibliothèque"><svg class="icon" aria-hidden="true"><use href="#i-library"/></svg></button>
+        <button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv">
+        <div class="sb-empty anim-rise" style="--i:0"><h2>Que veux-tu savoir sur cette page ?</h2></div>
+        <div class="suggestions">
+          <button class="suggestion anim-rise" style="--i:1">Résume en cinq points</button>
+          <button class="suggestion anim-rise" style="--i:2">Explique-moi simplement</button>
+          <button class="suggestion anim-rise" style="--i:3">Quels sont les chiffres clés ?</button>
+        </div>
+      </div>
+      <div class="sb-foot">
+        <div class="sb-chips"><span class="chip sent anim-sweep"><button class="chip__main" aria-pressed="true"><span class="kind">¶</span><span>Page lue</span><span class="chip__title">Le Monde — Réforme…</span><span>4&#8239;812 car.</span></button><button class="chip__x" aria-label="Retirer du contexte"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></span></div>
+        <div class="slip"><button class="slip__toggle" aria-expanded="false">Part&#8239;: la page, 4&#8239;812 car. <svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></div>
+        <textarea class="textarea" rows="1" aria-label="Message" placeholder="Poser une question…"></textarea>
+        <div class="sb-row"><p class="caption"><kbd>Entrée</kbd> envoie · <kbd>Maj</kbd>+<kbd>Entrée</kbd> saute une ligne</p><button class="btn btn--primary btn--compact btn--send" aria-disabled="true"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Envoyer</button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Lecture de la page en cours : composeur actif, envoi désactivé</figcaption>
+    <div class="frame" style="width:360px;height:640px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0">
+        <button class="icon-btn" aria-label="Nouvelle conversation"><svg class="icon" aria-hidden="true"><use href="#i-square-pen"/></svg></button>
+        <button class="icon-btn" aria-label="Bibliothèque"><svg class="icon" aria-hidden="true"><use href="#i-library"/></svg></button>
+        <button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv"><div class="sb-empty"><h2>Que veux-tu savoir sur cette page ?</h2></div></div>
+      <div class="sb-foot">
+        <div class="sb-chips"><span class="chip chip--reading" role="status"><span class="kind" aria-hidden="true">¶</span>Lecture de la page<span class="anim-dots" aria-hidden="true"><span></span><span></span><span></span></span></span></div>
+        <div class="slip"><button class="slip__toggle" aria-expanded="false">Part&#8239;: la page, 4&#8239;812 car. <svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></div>
+        <textarea class="textarea is-focus" rows="1" aria-label="Message" placeholder="Poser une question…"></textarea>
+        <div class="sb-row"><p class="caption"><kbd>Entrée</kbd> envoie · <kbd>Maj</kbd>+<kbd>Entrée</kbd> saute une ligne</p><button class="btn btn--primary btn--compact btn--send" aria-disabled="true"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Envoyer</button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Page lue, réponse terminée, Garder en place, suggestions de suite</figcaption>
+    <div class="frame" style="width:360px;height:720px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0">
+        <button class="icon-btn" aria-label="Nouvelle conversation"><svg class="icon" aria-hidden="true"><use href="#i-square-pen"/></svg></button>
+        <button class="icon-btn" aria-label="Bibliothèque"><svg class="icon" aria-hidden="true"><use href="#i-library"/></svg></button>
+        <button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv">
+        <article class="msg-user anim-rise" style="--i:0" aria-label="Votre message"><p class="overline">Vous</p><p>Résume cette page en trois points.</p></article>
+        <article class="msg-ai" aria-label="Réponse 1"><div class="msg-ai__margin"><span class="numeral" aria-hidden="true">1</span></div>
+          <div class="msg-ai__body"><p class="reading">Le texte présente la réforme en trois temps. D'abord, le calendrier&#8239;: l'application est prévue pour l'automne, avec une phase d'essai dans six régions.</p>
+          <div class="msg-footer"><button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copier</button><button class="btn btn--quiet btn--compact" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-bookmark-plus"/></svg>Garder</button></div></div></article>
+        <div class="suggestions">
+          <button class="suggestion anim-rise" style="--i:0">Et le coût pour les communes&#8239;?</button>
+          <button class="suggestion anim-rise" style="--i:1">Cite la phrase sur le calendrier</button>
+        </div>
+      </div>
+      <div class="sb-foot">
+        <div class="sb-chips"><span class="chip sent"><button class="chip__main" aria-pressed="true"><span class="kind">¶</span><span>Page lue</span><span class="chip__title">Le Monde — Réforme…</span><span>4&#8239;812 car.</span></button><button class="chip__x" aria-label="Retirer du contexte"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></span></div>
+        <div class="slip"><button class="slip__toggle" aria-expanded="false">Part&#8239;: la page, 4&#8239;812 car. <svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></div>
+        <textarea class="textarea" rows="1" aria-label="Message" placeholder="Poser une question…"></textarea>
+        <div class="sb-row"><p class="caption"><kbd>Entrée</kbd> envoie · <kbd>Maj</kbd>+<kbd>Entrée</kbd> saute une ligne</p><button class="btn btn--primary btn--compact btn--send"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Envoyer</button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Réponse en attente (points et texte), curseur, Arrêter</figcaption>
+    <div class="frame" style="width:360px;height:640px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0"><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv">
+        <article class="msg-user" aria-label="Votre message"><p class="overline">Vous</p><p>Et le coût pour les communes&#8239;?</p></article>
+        <article class="msg-ai" aria-label="Réponse 2, en cours"><div class="msg-ai__margin"><span class="numeral" aria-hidden="true">2</span></div>
+          <div class="msg-ai__body"><p class="reading">Le coût est partagé. L'État prend en charge la moitié, le reste dépend de la taille de la commune<span class="caret anim-caret" aria-hidden="true"></span></p>
+          <div class="msg-footer"><span class="status-tag" role="status"><span class="anim-dots" aria-hidden="true"><span></span><span></span><span></span></span>&nbsp;Réponse en cours</span></div></div></article>
+      </div>
+      <div class="sb-foot">
+        <textarea class="textarea" rows="1" aria-label="Message" readonly placeholder="Poser une question…"></textarea>
+        <div class="sb-row"><p class="caption">Réponse en cours</p>
+          <button class="btn btn--secondary btn--compact btn--stop"><span class="stop-square"></span>Arrêter <kbd>Échap</kbd></button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Garder : libellé « Gardé » sur place, sans notification</figcaption>
+    <div class="frame" style="width:360px;height:360px"><div class="sidebar">
+      <div class="sb-conv">
+        <article class="msg-ai" aria-label="Réponse 1"><div class="msg-ai__margin"><span class="numeral" aria-hidden="true">1</span></div>
+          <div class="msg-ai__body"><p class="reading">Le texte présente la réforme en trois temps.</p>
+          <div class="msg-footer"><button class="btn btn--quiet btn--compact"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copier</button><button class="btn btn--quiet btn--compact" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Gardé</button></div></div></article>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Page protégée (about:, addons.mozilla.org) : pas de pastille, question libre</figcaption>
+    <div class="frame" style="width:360px;height:640px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0"><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv"><div class="sb-empty"><h2>Que veux-tu savoir ?</h2></div></div>
+      <div class="sb-foot">
+        <div class="notice" role="status"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></span><div><p class="notice__title">Firefox ne laisse pas lire cette page.</p><p class="notice__body">Vous pouvez tout de même poser une question sans contexte.</p></div></div>
+        <div class="slip"><button class="slip__toggle" aria-expanded="false">Part&#8239;: votre message seulement.</button></div>
+        <textarea class="textarea" rows="1" aria-label="Message" placeholder="Poser une question…"></textarea>
+        <div class="sb-row"><p class="caption"><kbd>Entrée</kbd> envoie · <kbd>Maj</kbd>+<kbd>Entrée</kbd> saute une ligne</p><button class="btn btn--primary btn--compact btn--send"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Envoyer</button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Nouvel onglet pendant la conversation : jamais de relecture silencieuse</figcaption>
+    <div class="frame" style="width:360px;height:640px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0"><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv"><article class="msg-ai" aria-label="Réponse 1"><div class="msg-ai__margin"><span class="numeral" aria-hidden="true">1</span></div>
+        <div class="msg-ai__body"><p class="reading">Le texte présente la réforme en trois temps.</p></div></article></div>
+      <div class="sb-foot">
+        <div class="notice notice--warning notice--drop" role="status"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><div><p class="notice__title">Nouvel onglet : Agriculture et biodiversité.</p><p class="notice__body">Lire cette page à la place ?</p><div class="notice__actions"><button class="btn btn--primary btn--compact">Lire</button><button class="btn btn--secondary btn--compact">Garder l'ancienne</button></div></div></div>
+        <div class="sb-chips"><span class="chip sent"><button class="chip__main" aria-pressed="true"><span class="kind">¶</span><span>Page lue</span><span class="chip__title">Le Monde — Réforme…</span><span>4&#8239;812 car.</span></button><button class="chip__x" aria-label="Retirer du contexte"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></span></div>
+        <textarea class="textarea" rows="1" aria-label="Message" placeholder="Poser une question…"></textarea>
+        <div class="sb-row"><p class="caption"><kbd>Entrée</kbd> envoie</p><button class="btn btn--primary btn--compact btn--send"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Envoyer</button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Page longue tronquée : avis chiffré, suggestions par chapitre</figcaption>
+    <div class="frame" style="width:360px;height:720px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0"><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv">
+        <div class="notice notice--warning" role="status"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><div><p class="notice__title">Page tronquée&#8239;: 120&#8239;000 car. envoyés sur 310&#8239;000</p><p class="notice__body">La fin de la page ne part pas. Visez un chapitre pour la suite.</p></div></div>
+        <div class="suggestions">
+          <button class="suggestion anim-rise" style="--i:0">Résume le chapitre 2</button>
+          <button class="suggestion anim-rise" style="--i:1">Quels sont les chiffres clés du chapitre 3 ?</button>
+        </div>
+      </div>
+      <div class="sb-foot">
+        <div class="sb-chips"><span class="chip sent"><button class="chip__main" aria-pressed="true"><span class="kind">PDF</span><span class="chip__title">rapport-2024.pdf</span><span>120&#8239;000 / 310&#8239;000 car.</span></button><button class="chip__x" aria-label="Retirer du contexte"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></span></div>
+        <div class="slip"><button class="slip__toggle" aria-expanded="false">Part&#8239;: la page, 120&#8239;000 car. sur 310&#8239;000 <svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></div>
+        <textarea class="textarea" rows="1" aria-label="Message" placeholder="Poser une question…"></textarea>
+        <div class="sb-row"><p class="caption"><kbd>Entrée</kbd> envoie</p><button class="btn btn--primary btn--compact btn--send"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg>Envoyer</button></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Clé manquante : résolue dans le panneau, sans assistant</figcaption>
+    <div class="frame" style="width:360px;height:640px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0"><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv sb-key">
+        <h2>Une clé, et c'est parti.</h2>
+        <div class="field"><label class="field__label" for="api-key">Clé API</label><input id="api-key" class="input" type="password" value="sk-ant-api03-xxxxxxxx" aria-describedby="api-key-status"><span id="api-key-status" class="help help--ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Valide</span></div>
+        <button class="btn btn--primary">Commencer à discuter</button>
+        <a href="#sb-key">Où trouver ma clé ?</a>
+        <p class="caption" style="text-align:center">ou</p>
+        <button class="btn btn--secondary">Utiliser mon abonnement via Claude Code</button>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Erreurs : réseau hors ligne, clé refusée, limite de débit</figcaption>
+    <div class="frame" style="width:360px;height:640px"><div class="sidebar">
+      <div class="sb-header"><span class="wordmark">Claude Everywhere</span><span class="row" style="gap:0"><button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv">
+        <div class="notice notice--error" role="alert"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-circle-alert"/></svg></span><div><p class="notice__title">Connexion impossible</p><p class="notice__body">Rien n'a été envoyé.</p><div class="notice__actions"><button class="btn btn--secondary btn--compact">Réessayer</button></div></div></div>
+        <div class="notice notice--error" role="alert"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-circle-alert"/></svg></span><div><p class="notice__title">Clé API refusée</p><p class="notice__body">Anthropic a répondu 401. Vérifiez la clé dans les réglages.</p><div class="notice__actions"><button class="btn btn--secondary btn--compact">Ouvrir les réglages</button></div></div></div>
+        <div class="notice notice--warning" role="status"><span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-triangle-alert"/></svg></span><div><p class="notice__title">Limite de débit atteinte</p><p class="notice__body">Nouvel essai possible dans 23&#8239;s.</p><div class="notice__actions"><button class="btn btn--secondary btn--compact" aria-disabled="true">Réessayer</button></div></div></div>
+      </div></div></div></figure>
+
+    <figure><figcaption class="caption frame-caption">Largeur 280 : icônes seules</figcaption>
+    <div class="frame" style="width:280px;height:640px"><div class="sidebar sidebar--narrow">
+      <div class="sb-header" style="padding-left:var(--s-12)"><span class="wordmark" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">Claude Everywhere</span><span class="row" style="gap:0;flex-wrap:nowrap">
+        <button class="icon-btn" aria-label="Nouvelle conversation"><svg class="icon" aria-hidden="true"><use href="#i-square-pen"/></svg></button>
+        <button class="icon-btn" aria-label="Réglages"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button></span></div>
+      <div class="sb-conv" style="padding:var(--s-12)">
+        <article class="msg-ai" aria-label="Réponse 3"><div class="msg-ai__margin"><span class="numeral" aria-hidden="true">3</span></div>
+          <div class="msg-ai__body"><p class="reading">Trois communes sur quatre devraient bénéficier de l'aide dès la première année.</p></div></article></div>
+      <div class="sb-foot" style="padding:0 var(--s-12) var(--s-12)">
+        <div class="sb-chips"><span class="chip sent"><button class="chip__main" aria-pressed="true"><span class="kind">¶</span><span class="chip__title">Le Monde</span></button></span></div>
+        <textarea class="textarea" rows="1" aria-label="Message" placeholder="Poser une question…"></textarea>
+        <div class="sb-row"><button class="icon-btn" aria-label="Ajouter du contexte"><svg class="icon" aria-hidden="true"><use href="#i-library"/></svg></button>
+          <button class="btn btn--primary btn--send btn--icon-only" aria-label="Envoyer"><svg class="icon" aria-hidden="true"><use href="#i-egress"/></svg></button></div>
+      </div></div></div></figure>
+
+  </div>
+</section>
+</main>
+</div>
+</body>
+</html>
