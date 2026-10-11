@@ -25,13 +25,15 @@ export function App() {
   return (
     <div class="sidebar anim-slide-in">
       <Header />
-      {view.value === "history" ? <HistoryList /> : <ConversationView />}
+      <div class="sb-body">
+        {view.value === "history" ? <HistoryList /> : <ConversationView />}
+        {view.value === "chat" && <TabNotice />}
+      </div>
       {view.value === "chat" && (
         <div class="sb-foot">
           {!hasKey.value && <MissingKey />}
           <SendSlip />
           <ContextBar />
-          <TabNotice />
           <Composer />
         </div>
       )}
