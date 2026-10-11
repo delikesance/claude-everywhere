@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { MAX_TOOL_TURNS } from "../tools";
 import { runToolLoop, type ToolCall, type TurnRunner } from "./tool-loop";
 
+vi.mock("../tools/youtube", () => ({ youtubeTools: [] }));
 vi.mock("../tools/page", () => ({
   pageTools: [
     {
