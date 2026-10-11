@@ -26,9 +26,16 @@ export function parseCaptionJson3(json: unknown): Cue[] {
   });
 }
 
+const MAX_CODE_POINT = 0x10ffff;
+
+function decodeCodePoint(entity: string, digits: string): string {
+  const codePoint = Number(digits);
+  return codePoint <= MAX_CODE_POINT ? String.fromCodePoint(codePoint) : entity;
+}
+
 function decodeEntities(text: string): string {
   return text.replace(ENTITY, (entity, name: string) =>
-    name.startsWith("#") ? String.fromCodePoint(Number(name.slice(1))) : (NAMED_ENTITIES[name] ?? entity),
+    name.startsWith("#") ? decodeCodePoint(entity, name.slice(1)) : (NAMED_ENTITIES[name] ?? entity),
   );
 }
 
