@@ -27,17 +27,29 @@ export function useFrameValue<T>(value: T): T {
   return shown;
 }
 
-export function useScrolledUp(): { ref: RefObject<HTMLDivElement | null>; scrolledUp: boolean; scrollToBottom: () => void } {
+const isScrolledUp = (element: HTMLElement): boolean =>
+  element.scrollHeight - element.scrollTop - element.clientHeight > SCROLLED_UP_THRESHOLD_PX;
+
+export function useScrolledUp(
+  content: unknown,
+  conversationId: string,
+): { ref: RefObject<HTMLDivElement | null>; scrolledUp: boolean; scrollToBottom: () => void } {
   const ref = useRef<HTMLDivElement>(null);
   const [scrolledUp, setScrolledUp] = useState(false);
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-    const update = () =>
-      setScrolledUp(element.scrollHeight - element.scrollTop - element.clientHeight > SCROLLED_UP_THRESHOLD_PX);
+    const update = () => setScrolledUp(isScrolledUp(element));
     element.addEventListener("scroll", update);
     return () => element.removeEventListener("scroll", update);
   }, []);
+  useEffect(() => {
+    if (ref.current) setScrolledUp(isScrolledUp(ref.current));
+  }, [content]);
+  useEffect(() => {
+    if (ref.current) ref.current.scrollTop = ref.current.scrollHeight;
+    setScrolledUp(false);
+  }, [conversationId]);
   const scrollToBottom = () => ref.current?.scrollTo({ top: ref.current.scrollHeight, behavior: "smooth" });
   return { ref, scrolledUp, scrollToBottom };
 }

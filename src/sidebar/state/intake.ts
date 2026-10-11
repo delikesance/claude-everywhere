@@ -82,7 +82,8 @@ const isIdList = (value: unknown): value is string[] =>
 
 export async function attachArtifacts(ids: string[]): Promise<void> {
   await browser.storage.session.remove(STORAGE_KEYS.pendingAttach);
-  const loaded = await Promise.all(ids.map(loadArtifactItem));
+  const settled = await Promise.allSettled([...new Set(ids)].map(loadArtifactItem));
+  const loaded = settled.map((result) => (result.status === "fulfilled" ? result.value : null));
   const [first, ...rest] = loaded.filter((item) => item !== null);
   if (!first) return;
   if (conversation.value.messages.length > 0) resetConversation();

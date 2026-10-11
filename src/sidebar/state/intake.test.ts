@@ -118,6 +118,13 @@ describe("intake", () => {
     await vi.waitFor(() => expect(conversation.value.items[0]).toMatchObject({ artifactId: "a1" }));
   });
 
+  it("attaches the loadable artifacts when one fails, loading each id once", async () => {
+    library.getArtifact.mockRejectedValueOnce(new Error("boom")).mockResolvedValueOnce({ ...artifact, id: "a2" });
+    await intake.attachArtifacts(["a1", "a2", "a2"]);
+    expect(library.getArtifact).toHaveBeenCalledTimes(2);
+    expect(conversation.value.items.map((item) => item.id)).toEqual(["artifact-a2"]);
+  });
+
   it("adds a library artifact once", async () => {
     library.getArtifact.mockResolvedValue(artifact);
     await intake.addArtifact("a1");

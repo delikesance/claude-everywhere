@@ -1,21 +1,32 @@
 import { useState } from "preact/hooks";
 import { t } from "../../shared/i18n";
-import { Button, Dialog, IconButton } from "../../shared/ui";
+import { Button, Dialog, IconButton, Notice } from "../../shared/ui";
 import { conversations, openConversation, removeConversation } from "../state/history";
 
 function ConfirmDelete({ id, onClose }: { id: string; onClose: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
   const confirm = async () => {
-    await removeConversation(id);
-    onClose();
+    setBusy(true);
+    setFailed(false);
+    try {
+      await removeConversation(id);
+      onClose();
+    } catch {
+      setFailed(true);
+    } finally {
+      setBusy(false);
+    }
   };
   return (
     <Dialog titleId="confirm-delete-title" title={t("sidebar_confirmDeleteTitle")} onClose={onClose}>
       <p>{t("sidebar_confirmDeleteBody")}</p>
+      {failed && <Notice tone="error" title={t("sidebar_deleteError")} />}
       <div class="row row--end">
         <Button variant="quiet" onClick={onClose}>
           {t("sidebar_cancel")}
         </Button>
-        <Button variant="danger-solid" onClick={() => void confirm()}>
+        <Button variant="danger-solid" disabled={busy} onClick={() => void confirm()}>
           {t("sidebar_delete")}
         </Button>
       </div>
