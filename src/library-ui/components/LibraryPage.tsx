@@ -36,6 +36,10 @@ function ResultsCount({ count, query }: { count: number; query: string }) {
   );
 }
 
+function EntryCount({ count }: { count: number }) {
+  return <p class="caption">{count === 1 ? t("library_ui_countOne") : t("library_ui_countMany", { count })}</p>;
+}
+
 export function LibraryPage({ library }: { library: Library }) {
   const [sort, setSort] = useState<Sort>("updated");
   const [tag, setTag] = useState<string | null>(null);
@@ -81,6 +85,7 @@ export function LibraryPage({ library }: { library: Library }) {
             />
           </div>
         </div>
+        <EntryCount count={artifacts.length} />
         {ids.length > 0 && (
           <SelectionBar
             count={ids.length}
@@ -94,7 +99,13 @@ export function LibraryPage({ library }: { library: Library }) {
         {rows.length > 0 && (
           <ul class="toc">
             {rows.map((row) => (
-              <ArtifactRow key={row.artifact.id} {...row} selected={selected.has(row.artifact.id)} onToggle={toggle} />
+              <ArtifactRow
+                key={row.artifact.id}
+                {...row}
+                selected={selected.has(row.artifact.id)}
+                onToggle={toggle}
+                onOpen={(id) => run(() => attachToContext([id]), "library_ui_attached")}
+              />
             ))}
           </ul>
         )}
