@@ -1,4 +1,8 @@
-export const MODEL_IDS = ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"] as const;
+export const MODEL_IDS = [
+  "claude-haiku-5-5",
+  "claude-sonnet-5-5",
+  "claude-opus-5-5",
+] as const;
 export type ModelId = (typeof MODEL_IDS)[number];
 export const DEFAULT_MODEL: ModelId = "claude-sonnet-5-5";
 export const DEFAULT_MAX_TOKENS = 4096;
@@ -15,7 +19,11 @@ export const INPUT_BUDGET_CHARS: Record<ModelId, number> = {
 };
 
 export const CHAT_PORT_NAME = "chat";
-export const STORAGE_KEYS = { settings: "settings", pendingCapture: "pendingCapture" } as const;
+export const STORAGE_KEYS = {
+  settings: "settings",
+  pendingCapture: "pendingCapture",
+  pendingAttach: "pendingAttach",
+} as const;
 export const DB_NAME = "claude-everywhere";
 export const DB_VERSION = 1;
 export const LIBRARY_CHANNEL = "library-changed";
