@@ -24,9 +24,9 @@ const ENTRIES: MenuEntry[] = [
 
 export async function createMenus(): Promise<void> {
   await initI18n((await getSettings()).uiLocale);
-  await browser.menus.removeAll();
+  await browser.contextMenus.removeAll();
   for (const { id, titleKey, contexts } of ENTRIES) {
-    browser.menus.create({ id, title: t(titleKey), contexts });
+    browser.contextMenus.create({ id, title: t(titleKey), contexts });
   }
 }
 

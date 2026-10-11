@@ -61,6 +61,6 @@ describe("persistent overlay registration", () => {
     expect(fake.tabs.create).not.toHaveBeenCalled();
     await onInstalled({ reason: "install" });
     expect(fake.tabs.create).toHaveBeenCalledWith({ url: "moz-extension://uuid/onboarding.html" });
-    expect(fake.menus.create).toHaveBeenCalled();
+    expect(fake.contextMenus.create).toHaveBeenCalled();
   });
 });

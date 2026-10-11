@@ -31,7 +31,7 @@ export function installBrowserFake() {
     permissions: { contains: vi.fn(async () => true) },
     action: { setBadgeText: vi.fn(async () => undefined) },
     sidebarAction: { open: vi.fn(async () => undefined) },
-    menus: { removeAll: vi.fn(async () => undefined), create: vi.fn() },
+    contextMenus: { removeAll: vi.fn(async () => undefined), create: vi.fn() },
     i18n: { getUILanguage: () => "fr" },
   };
   Object.assign(globalThis, { browser: fake });

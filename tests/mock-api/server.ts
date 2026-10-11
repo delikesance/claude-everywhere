@@ -1,6 +1,8 @@
+import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import type { IncomingMessage, Server, ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
+import { basename, join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export interface RecordedRequest {
@@ -16,7 +18,7 @@ export interface MockApi {
   close: () => Promise<void>;
 }
 
-type Scenario = "normal" | "slow" | "rate_limit" | "overloaded" | "refusal" | "max_tokens" | "drop";
+type Scenario = "normal" | "slow" | "rate_limit" | "overloaded" | "refusal" | "max_tokens" | "drop" | "unsafe_markdown";
 
 const DEFAULT_PORT = 8787;
 const INVALID_KEY = "sk-ant-invalid";
@@ -26,6 +28,11 @@ const SLOW_DELAY_MS = 250;
 const RETRY_AFTER_SEC = 7;
 const DROP_AFTER_DELTAS = 1;
 const DELTAS = ["Bonjour", " depuis", " le", " serveur", " factice."];
+const UNSAFE_DELTAS = [
+  "Titre sûr <script>window.pwned = 1</script>\n\n",
+  "<img src=x onerror=\"window.pwned = 2\"> ",
+  "[lien](javascript:window.pwned=3) et [sain](https://example.org/ok)",
+];
 const USAGE = { input_tokens: 12, output_tokens: 5 };
 const CORS_HEADERS = {
   "access-control-allow-origin": "*",
@@ -40,7 +47,9 @@ const ERROR_BODIES: Record<string, { status: number; type: string; headers?: Rec
 };
 const STOP_REASONS: Partial<Record<Scenario, string>> = { refusal: "refusal", max_tokens: "max_tokens" };
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const deltasFor = (scenario: Scenario) => (scenario === "unsafe_markdown" ? UNSAFE_DELTAS : DELTAS);
+
+const sleep =(ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -101,7 +110,7 @@ async function streamMessage(res: ServerResponse, model: string, scenario: Scena
   sendEvent(res, "message_start", { message: messageShell(model, null, { input_tokens: USAGE.input_tokens, output_tokens: 0 }) });
   sendEvent(res, "content_block_start", { index: 0, content_block: { type: "text", text: "" } });
   const delay = scenario === "slow" ? SLOW_DELAY_MS : NORMAL_DELAY_MS;
-  for (const [position, text] of DELTAS.entries()) {
+  for (const [position, text] of deltasFor(scenario).entries()) {
     await sleep(delay);
     if (scenario === "drop" && position === DROP_AFTER_DELTAS) return void res.socket?.destroy();
     sendEvent(res, "content_block_delta", { index: 0, delta: { type: "text_delta", text } });
@@ -117,7 +126,7 @@ async function streamMessage(res: ServerResponse, model: string, scenario: Scena
 
 function sendWholeMessage(res: ServerResponse, model: string, scenario: Scenario): void {
   const message = messageShell(model, STOP_REASONS[scenario] ?? "end_turn", USAGE);
-  sendJson(res, 200, { ...message, content: [{ type: "text", text: DELTAS.join("") }] });
+  sendJson(res, 200, { ...message, content: [{ type: "text", text: deltasFor(scenario).join("") }] });
 }
 
 async function handleMessages(res: ServerResponse, record: RecordedRequest): Promise<void> {
@@ -130,6 +139,18 @@ async function handleMessages(res: ServerResponse, record: RecordedRequest): Pro
   sendWholeMessage(res, model, scenario as Scenario);
 }
 
+const PDF_FIXTURE_PREFIX = "/fixtures/";
+const FIXTURES_DIR = join(import.meta.dirname, "../fixtures");
+
+/** Lets an end-to-end test read a document from the single non-API origin the test CSP allows; never recorded. */
+function sendPdfFixture(res: ServerResponse, name: string): void {
+  try {
+    res.writeHead(200, { "content-type": "application/pdf", ...CORS_HEADERS }).end(readFileSync(join(FIXTURES_DIR, basename(name))));
+  } catch {
+    res.writeHead(404).end();
+  }
+}
+
 export function startMockApi(port = 0): Promise<MockApi> {
   const requests: RecordedRequest[] = [];
   const server: Server = createServer(async (req, res) => {
@@ -140,6 +161,7 @@ export function startMockApi(port = 0): Promise<MockApi> {
       requests.length = 0;
       return sendJson(res, 200, {});
     }
+    if (req.method === "GET" && url.startsWith(PDF_FIXTURE_PREFIX)) return sendPdfFixture(res, url.slice(PDF_FIXTURE_PREFIX.length));
     const record: RecordedRequest = { method: req.method ?? "", url, headers: req.headers, body: parseJson(await readBody(req)) };
     requests.push(record);
     if (req.method === "POST" && url.startsWith("/v1/messages")) return handleMessages(res, record);
