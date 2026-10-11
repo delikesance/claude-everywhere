@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { MAX_VERSIONS } from "./artifacts";
 import { artifactToContextItem } from "./index";
 import type { Library } from "./contract";
 import { draft, freshLibrary } from "./test-utils";
@@ -22,6 +23,25 @@ describe("artifacts", () => {
     expect(second.id).toBe(first.id);
     expect(await library.listVersions(first.id)).toHaveLength(1);
     expect(await library.listArtifacts()).toHaveLength(1);
+  });
+
+  it("emits no change event when the saved content is unchanged", async () => {
+    await library.saveArtifact(draft());
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    let events = 0;
+    library.onChange(() => events++);
+    await library.saveArtifact(draft());
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(events).toBe(0);
+  });
+
+  it("keeps at most MAX_VERSIONS versions, dropping the oldest", async () => {
+    const saved = await library.saveArtifact(draft({ markdown: "v0" }));
+    for (let n = 1; n <= MAX_VERSIONS + 2; n++) await library.addVersion(saved.id, `v${n}`);
+    const versions = await library.listVersions(saved.id);
+    expect(versions).toHaveLength(MAX_VERSIONS);
+    expect(versions[0]?.markdown).toBe(`v${MAX_VERSIONS + 2}`);
+    expect(versions.some((version) => version.markdown === "v0")).toBe(false);
   });
 
   it("adds a version for the same url and new content", async () => {

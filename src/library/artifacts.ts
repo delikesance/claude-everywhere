@@ -4,6 +4,7 @@ import { VERSION_STORES, type LibraryDb, type VersionTx } from "./db";
 import { sha256Hex } from "./hash";
 
 const EXCERPT_CHARS = 200;
+export const MAX_VERSIONS = 20;
 
 type ArtifactBase = Omit<Artifact, "updatedAt" | "currentVersionId" | "excerpt" | "charCount">;
 
@@ -50,19 +51,35 @@ async function writeVersion(
   };
   await tx.objectStore("versions").add(version);
   await tx.objectStore("artifacts").put(artifact);
+  await pruneOldVersions(tx, base.id);
   return { artifact, version };
 }
 
-export async function saveArtifact(db: LibraryDb, draft: ArtifactDraft): Promise<Artifact> {
+async function pruneOldVersions(tx: VersionTx, artifactId: string): Promise<void> {
+  const store = tx.objectStore("versions");
+  const versions = await store.index("by-artifact").getAll(artifactId);
+  const oldest = versions.sort((a, b) => a.createdAt - b.createdAt).slice(0, Math.max(0, versions.length - MAX_VERSIONS));
+  await Promise.all(oldest.map((version) => store.delete(version.id)));
+}
+
+export interface SaveResult {
+  artifact: Artifact;
+  changed: boolean;
+}
+
+export async function saveArtifact(db: LibraryDb, draft: ArtifactDraft): Promise<SaveResult> {
   const contentHash = await sha256Hex(draft.markdown);
   const tx = db.transaction(VERSION_STORES, "readwrite");
   const existing = draft.url === null ? undefined : await tx.objectStore("artifacts").index("by-url").get(draft.url);
   if (existing) {
     const current = await tx.objectStore("versions").get(existing.currentVersionId);
-    if (current?.contentHash === contentHash) return existing;
+    if (current?.contentHash === contentHash) {
+      await tx.done;
+      return { artifact: existing, changed: false };
+    }
     const written = await writeVersion(tx, existing, draft.markdown, contentHash);
     await tx.done;
-    return written.artifact;
+    return { artifact: written.artifact, changed: true };
   }
   const base: ArtifactBase = {
     id: crypto.randomUUID(),
@@ -74,7 +91,7 @@ export async function saveArtifact(db: LibraryDb, draft: ArtifactDraft): Promise
   };
   const written = await writeVersion(tx, base, draft.markdown, contentHash);
   await tx.done;
-  return written.artifact;
+  return { artifact: written.artifact, changed: true };
 }
 
 export async function addVersion(db: LibraryDb, id: string, markdown: string): Promise<ArtifactVersion> {
