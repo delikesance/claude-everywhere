@@ -101,6 +101,9 @@
   "sidebar_keep": "Keep",
   "sidebar_kept": "✓ Kept",
   "sidebar_tabChangedTitle": "New tab: {title}. Read this page instead?",
+  "sidebar_tabChangedGeneric": "New tab detected. Read this page instead?",
   "sidebar_readPage": "Read",
-  "sidebar_keepPreviousPage": "Keep the previous one"
+  "sidebar_keepPreviousPage": "Keep the previous one",
+  "sidebar_followUpDetail": "Detail the last point",
+  "sidebar_followUpCompare": "Compare with another source"
 }

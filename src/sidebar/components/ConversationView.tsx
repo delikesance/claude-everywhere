@@ -56,6 +56,7 @@ export function ConversationView() {
             number={answerNumber}
             phase={isLast ? phase.value : null}
             onRegenerate={isLast ? regenerate : undefined}
+            onFollowUp={isLast ? ask : undefined}
           />
         );
       })}

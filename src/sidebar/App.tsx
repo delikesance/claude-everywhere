@@ -6,6 +6,7 @@ import { Header } from "./components/Header";
 import { HistoryList } from "./components/HistoryList";
 import { MissingKey } from "./components/MissingKey";
 import { SendSlip } from "./components/SendSlip";
+import { TabNotice } from "./components/TabNotice";
 import { view } from "./state/history";
 import { hasKey } from "./state/session";
 import { cancelTurn } from "./state/turn";
@@ -30,6 +31,7 @@ export function App() {
           {!hasKey.value && <MissingKey />}
           <SendSlip />
           <ContextBar />
+          <TabNotice />
           <Composer />
         </div>
       )}
