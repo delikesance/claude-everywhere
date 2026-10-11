@@ -82,9 +82,13 @@ function onTool(turn: ActiveTurn, msg: Extract<ChatServerMsg, { type: "tool" }>)
   updateMessage(turn.assistantId, { toolCalls: [...previous, call] });
 }
 
+function hasToolCalls(turn: ActiveTurn): boolean {
+  return (conversation.value.messages.find((m) => m.id === turn.assistantId)?.toolCalls?.length ?? 0) > 0;
+}
+
 function onError(turn: ActiveTurn, error: ApiError): void {
   const text = answerText(turn);
-  if (text === "") rollback(turn);
+  if (text === "" && !hasToolCalls(turn)) rollback(turn);
   else interrupt(turn, text);
   if (error.kind !== "aborted") turnNotice.value = error;
   finishTurn();

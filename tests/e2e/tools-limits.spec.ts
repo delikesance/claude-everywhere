@@ -5,7 +5,7 @@ import type { Harness } from "./harness";
 import { enableAllSites, startSession, storeApiKey } from "./session";
 import { addFromPage, answerText, ask, openSidebarBeside, waitForDone } from "./sidebar";
 import type { PageUnderTest } from "./sidebar";
-import { closeOtherTabs, find, findByText, t } from "./ui";
+import { closeOtherTabs, find, findByText, jsClick, t } from "./ui";
 
 const MAX_TOOL_TURNS = 6;
 const TOOL_CALLS_RUN = MAX_TOOL_TURNS - 1;
@@ -119,5 +119,7 @@ it("keeps the tool rows of a finished turn after the conversation is reloaded", 
   expect(await countOf(TOOL_NAME)).toBe(TOOL_CALLS_RUN);
 
   await harness.driver.navigate().refresh();
+  await jsClick(harness.driver, await find(harness.driver, ".sb-title"));
+  await jsClick(harness.driver, await findByText(harness.driver, ".sb-conv button", "Lis la page"));
   await harness.driver.wait(async () => (await countOf(TOOL_NAME)) === TOOL_CALLS_RUN, WAIT_MS);
 });

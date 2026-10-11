@@ -5,6 +5,7 @@ export const MAX_CONVERSATIONS = 10_000;
 export const MAX_MESSAGES_PER_CONVERSATION = 5_000;
 export const MAX_ITEMS_PER_CONVERSATION = 100;
 export const MAX_LINES_PER_BORDEREAU = 100;
+export const MAX_TOOL_CALLS_PER_MESSAGE = 100;
 export const MAX_TAGS = 50;
 export const MAX_ID_CHARS = 100;
 export const MAX_TITLE_CHARS = 500;
